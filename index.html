@@ -1,0 +1,903 @@
+<!DOCTYPE html>
+<html lang="si">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#0a2e1c">
+<meta name="description" content="ජීව විද්‍යා ඉගෙනුම් මධ්‍යස්ථානය — ශාක ජීව විද්‍යා පාඩම් සියල්ල එකම තැනකින්.">
+<title>ජීව විද්‍යා ඉගෙනුම් මධ්‍යස්ථානය | Biology Learning Hub</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Sinhala:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --forest-950:#04140a;
+  --forest-900:#061a0f;
+  --forest-800:#0a2e1c;
+  --forest-700:#0f3d26;
+  --forest-600:#155033;
+  --emerald-600:#059669;
+  --emerald-500:#10b981;
+  --emerald-400:#34d399;
+  --emerald-300:#6ee7b7;
+  --emerald-100:#d1fae5;
+  --emerald-50:#ecfdf5;
+  --bg:#f6faf7;
+  --surface:#ffffff;
+  --surface-2:#f9fcf9;
+  --text:#0f2818;
+  --text-muted:#5a7062;
+  --border:#e2ece5;
+  --border-strong:#c8d9cc;
+  --shadow-sm:0 1px 2px rgba(15,40,24,.05);
+  --shadow:0 4px 16px rgba(15,40,24,.06);
+  --shadow-lg:0 12px 32px rgba(15,40,24,.10);
+  --radius:16px;
+  --radius-lg:24px;
+  --font:'Noto Sans Sinhala',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%;text-size-adjust:100%}
+body{
+  font-family:var(--font);background:var(--bg);color:var(--text);
+  line-height:1.6;min-height:100vh;overflow-x:hidden;
+  -webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;
+}
+a{color:inherit;text-decoration:none}
+button{font-family:inherit;cursor:pointer;border:none;background:none}
+img,svg{max-width:100%;display:block}
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+.skip-link{position:absolute;top:-100px;left:12px;background:var(--forest-800);color:#fff;padding:10px 16px;border-radius:8px;z-index:999;transition:top .2s}
+.skip-link:focus{top:12px}
+
+/* ===== HEADER ===== */
+.site-header{
+  position:sticky;top:0;z-index:100;
+  background:rgba(246,250,247,.85);
+  backdrop-filter:saturate(180%) blur(12px);
+  -webkit-backdrop-filter:saturate(180%) blur(12px);
+  border-bottom:1px solid var(--border);
+  padding-top:env(safe-area-inset-top);
+}
+.header-inner{
+  max-width:1200px;margin:0 auto;padding:14px 20px;
+  display:flex;align-items:center;justify-content:space-between;gap:16px;
+}
+.brand{display:flex;align-items:center;gap:12px;min-width:0}
+.brand-mark{
+  width:40px;height:40px;flex-shrink:0;border-radius:12px;
+  background:linear-gradient(135deg,var(--forest-700),var(--emerald-600));
+  display:flex;align-items:center;justify-content:center;
+  box-shadow:0 4px 12px rgba(5,150,105,.25);
+}
+.brand-mark svg{width:22px;height:22px;color:#fff}
+.brand-text{min-width:0}
+.brand-title{font-size:16px;font-weight:700;color:var(--forest-900);letter-spacing:-.01em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.brand-sub{font-size:11px;color:var(--text-muted);font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.header-progress{
+  display:flex;align-items:center;gap:10px;padding:8px 14px;
+  background:var(--surface);border:1px solid var(--border);border-radius:999px;
+  font-size:13px;font-weight:600;color:var(--forest-800);
+  box-shadow:var(--shadow-sm);flex-shrink:0;
+}
+.header-progress .dot{width:8px;height:8px;border-radius:50%;background:var(--emerald-500);box-shadow:0 0 0 3px var(--emerald-100)}
+
+/* ===== HERO ===== */
+main{max-width:1200px;margin:0 auto;padding:20px}
+.hero{
+  position:relative;overflow:hidden;
+  background:
+    radial-gradient(circle at 15% 20%,rgba(52,211,153,.22),transparent 50%),
+    radial-gradient(circle at 90% 80%,rgba(16,185,129,.18),transparent 55%),
+    linear-gradient(135deg,var(--forest-900) 0%,var(--forest-800) 45%,var(--forest-700) 100%);
+  border-radius:var(--radius-lg);
+  padding:56px 32px 48px;
+  color:#fff;
+  box-shadow:0 20px 50px -12px rgba(6,26,15,.35);
+}
+.hero::before{
+  content:"";position:absolute;inset:0;
+  background-image:
+    linear-gradient(rgba(255,255,255,.03) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(255,255,255,.03) 1px,transparent 1px);
+  background-size:32px 32px;
+  mask-image:radial-gradient(circle at 50% 50%,#000 20%,transparent 75%);
+  -webkit-mask-image:radial-gradient(circle at 50% 50%,#000 20%,transparent 75%);
+  pointer-events:none;
+}
+.hero-grid{
+  position:relative;display:grid;grid-template-columns:1.2fr .8fr;
+  gap:40px;align-items:center;
+}
+.hero-eyebrow{
+  display:inline-flex;align-items:center;gap:8px;
+  padding:6px 14px;border-radius:999px;
+  background:rgba(52,211,153,.12);
+  border:1px solid rgba(52,211,153,.25);
+  color:var(--emerald-300);
+  font-size:12px;font-weight:600;letter-spacing:.02em;
+  margin-bottom:20px;
+}
+.hero-eyebrow .pulse{width:6px;height:6px;border-radius:50%;background:var(--emerald-400);animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1;box-shadow:0 0 0 0 rgba(52,211,153,.6)}50%{opacity:.7;box-shadow:0 0 0 6px rgba(52,211,153,0)}}
+.hero h1{
+  font-size:clamp(28px,4.5vw,44px);
+  line-height:1.15;font-weight:800;letter-spacing:-.02em;
+  margin-bottom:16px;
+}
+.hero h1 .accent{
+  background:linear-gradient(120deg,var(--emerald-300),var(--emerald-400));
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+}
+.hero-lead{
+  font-size:clamp(14px,1.7vw,16px);
+  color:rgba(209,250,229,.75);
+  max-width:52ch;margin-bottom:28px;line-height:1.7;
+}
+.hero-cta-row{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.btn-primary{
+  display:inline-flex;align-items:center;gap:10px;
+  padding:14px 26px;border-radius:12px;
+  background:linear-gradient(135deg,var(--emerald-500),var(--emerald-600));
+  color:#fff;font-weight:700;font-size:15px;
+  box-shadow:0 8px 24px -6px rgba(16,185,129,.55),inset 0 1px 0 rgba(255,255,255,.2);
+  transition:transform .15s,box-shadow .2s;
+  min-height:48px;
+}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 12px 30px -6px rgba(16,185,129,.65),inset 0 1px 0 rgba(255,255,255,.2)}
+.btn-primary:active{transform:translateY(0)}
+.btn-primary svg{width:18px;height:18px;transition:transform .2s}
+.btn-primary:hover svg{transform:translateX(3px)}
+.hero-meta{font-size:13px;color:rgba(209,250,229,.55)}
+.hero-meta strong{color:var(--emerald-300);font-weight:700}
+.hero-illustration{position:relative}
+.hero-illustration svg{width:100%;height:auto;filter:drop-shadow(0 20px 40px rgba(0,0,0,.3))}
+
+/* ===== DASHBOARD ===== */
+.dashboard{
+  margin-top:20px;
+  display:grid;grid-template-columns:auto 1fr;gap:28px;align-items:center;
+  background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);
+  padding:28px 32px;box-shadow:var(--shadow);
+}
+.progress-ring-wrap{position:relative;width:120px;height:120px;flex-shrink:0}
+.progress-ring{width:120px;height:120px;transform:rotate(-90deg)}
+.progress-ring .track{fill:none;stroke:var(--border);stroke-width:8}
+.progress-ring .bar{
+  fill:none;stroke:url(#progressGrad);stroke-width:8;stroke-linecap:round;
+  stroke-dasharray:283;stroke-dashoffset:283;
+  transition:stroke-dashoffset .8s cubic-bezier(.4,0,.2,1);
+}
+.progress-center{
+  position:absolute;inset:0;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;text-align:center;
+}
+.progress-percent{font-size:26px;font-weight:800;color:var(--forest-800);line-height:1;letter-spacing:-.02em}
+.progress-label{font-size:10px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:.06em;margin-top:2px}
+.dashboard-text h2{font-size:19px;font-weight:700;color:var(--forest-900);margin-bottom:4px}
+.dashboard-text p{font-size:14px;color:var(--text-muted);margin-bottom:14px}
+.dashboard-text strong{color:var(--emerald-600);font-weight:700}
+.dashboard-actions{display:flex;gap:10px;flex-wrap:wrap}
+.btn-ghost{
+  display:inline-flex;align-items:center;gap:6px;
+  padding:9px 16px;border-radius:10px;background:var(--surface-2);
+  border:1px solid var(--border);color:var(--text);font-size:13px;font-weight:600;
+  transition:background .15s,border-color .15s;min-height:40px;
+}
+.btn-ghost:hover{background:var(--emerald-50);border-color:var(--emerald-300)}
+.btn-ghost.danger:hover{background:#fef2f2;border-color:#fecaca;color:#b91c1c}
+
+/* ===== SECTION HEAD ===== */
+.section-head{margin-top:44px;margin-bottom:20px}
+.section-head h2{
+  font-size:clamp(20px,2.6vw,26px);font-weight:800;color:var(--forest-900);
+  letter-spacing:-.02em;margin-bottom:4px;
+  display:flex;align-items:center;gap:12px;
+}
+.section-head h2::before{
+  content:"";width:4px;height:24px;border-radius:2px;
+  background:linear-gradient(180deg,var(--emerald-500),var(--forest-700));
+}
+.section-head p{font-size:14px;color:var(--text-muted);padding-left:16px}
+
+/* ===== SEARCH & FILTERS ===== */
+.controls{display:flex;flex-direction:column;gap:14px;margin-bottom:24px}
+.search-wrap{position:relative}
+.search-icon{position:absolute;left:18px;top:50%;transform:translateY(-50%);width:20px;height:20px;color:var(--text-muted);pointer-events:none}
+.search-input{
+  width:100%;padding:15px 48px 15px 50px;
+  border-radius:14px;border:1.5px solid var(--border);
+  background:var(--surface);font-size:15px;font-family:inherit;color:var(--text);
+  transition:border-color .15s,box-shadow .15s;
+  min-height:52px;
+}
+.search-input::placeholder{color:var(--text-muted)}
+.search-input:focus{outline:none;border-color:var(--emerald-400);box-shadow:0 0 0 4px rgba(52,211,153,.15)}
+.search-clear{
+  position:absolute;right:14px;top:50%;transform:translateY(-50%);
+  width:28px;height:28px;border-radius:50%;background:var(--border);
+  color:var(--text-muted);display:none;align-items:center;justify-content:center;
+  transition:background .15s;
+}
+.search-clear.show{display:flex}
+.search-clear:hover{background:var(--border-strong)}
+.filters{display:flex;gap:8px;overflow-x:auto;padding-bottom:4px;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+.filters::-webkit-scrollbar{display:none}
+.filter-chip{
+  flex-shrink:0;padding:9px 16px;border-radius:999px;
+  background:var(--surface);border:1.5px solid var(--border);
+  color:var(--text-muted);font-size:13px;font-weight:600;
+  transition:all .15s;min-height:40px;
+}
+.filter-chip:hover{border-color:var(--emerald-300);color:var(--forest-800)}
+.filter-chip.active{background:var(--forest-800);border-color:var(--forest-800);color:#fff}
+.filter-chip .count{
+  display:inline-block;margin-left:6px;padding:1px 7px;border-radius:999px;
+  background:rgba(255,255,255,.15);font-size:11px;font-weight:700;
+}
+.filter-chip:not(.active) .count{background:var(--border);color:var(--text-muted)}
+
+/* ===== LESSON GRID ===== */
+.lessons-grid{
+  display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));
+  gap:18px;
+}
+.lesson-card{
+  position:relative;background:var(--surface);
+  border:1.5px solid var(--border);border-radius:var(--radius);
+  padding:22px 22px 20px;box-shadow:var(--shadow-sm);
+  transition:transform .2s ease,box-shadow .2s ease,border-color .2s ease;
+  overflow:hidden;
+}
+.lesson-card:hover{
+  transform:translateY(-3px);
+  box-shadow:var(--shadow-lg);
+  border-color:var(--emerald-300);
+}
+.lesson-card.is-complete{
+  background:linear-gradient(180deg,var(--emerald-50) 0%,var(--surface) 60%);
+  border-color:var(--emerald-300);
+}
+.card-link{position:absolute;inset:0;z-index:1;border-radius:var(--radius)}
+.card-link:focus-visible{outline:2px solid var(--emerald-500);outline-offset:2px}
+.card-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:14px}
+.lesson-num{
+  display:inline-block;padding:4px 10px;border-radius:8px;
+  background:var(--emerald-50);color:var(--emerald-600);
+  font-size:12px;font-weight:800;letter-spacing:.04em;
+  border:1px solid var(--emerald-100);
+}
+.lesson-card.is-complete .lesson-num{background:var(--emerald-500);color:#fff;border-color:var(--emerald-500)}
+.complete-toggle{
+  position:relative;z-index:2;width:36px;height:36px;border-radius:50%;
+  border:2px solid var(--border-strong);background:var(--surface);
+  display:flex;align-items:center;justify-content:center;
+  transition:all .2s;
+}
+.complete-toggle svg{width:18px;height:18px;color:transparent;transition:color .15s,transform .2s}
+.complete-toggle:hover{border-color:var(--emerald-400);background:var(--emerald-50)}
+.complete-toggle:hover svg{color:var(--emerald-500)}
+.lesson-card.is-complete .complete-toggle{background:var(--emerald-500);border-color:var(--emerald-500)}
+.lesson-card.is-complete .complete-toggle svg{color:#fff;transform:scale(1.1)}
+.lesson-icon{
+  width:44px;height:44px;border-radius:12px;
+  background:linear-gradient(135deg,var(--emerald-50),var(--emerald-100));
+  display:flex;align-items:center;justify-content:center;
+  font-size:22px;margin-bottom:14px;
+}
+.lesson-card.is-complete .lesson-icon{background:linear-gradient(135deg,var(--emerald-400),var(--emerald-500))}
+.lesson-title{
+  font-size:16px;font-weight:700;color:var(--forest-900);
+  line-height:1.4;margin-bottom:8px;letter-spacing:-.01em;
+}
+.lesson-desc{
+  font-size:13px;color:var(--text-muted);line-height:1.6;
+  margin-bottom:18px;min-height:42px;
+}
+.lesson-footer{display:flex;justify-content:space-between;align-items:center;padding-top:14px;border-top:1px solid var(--border)}
+.lesson-tag{
+  font-size:11px;font-weight:600;color:var(--text-muted);
+  padding:3px 10px;background:var(--surface-2);border-radius:999px;border:1px solid var(--border);
+}
+.lesson-cta{
+  display:inline-flex;align-items:center;gap:5px;
+  font-size:13px;font-weight:700;color:var(--emerald-600);
+}
+.lesson-cta svg{width:14px;height:14px;transition:transform .2s}
+.lesson-card:hover .lesson-cta svg{transform:translateX(3px)}
+.lesson-card.is-complete .lesson-cta{color:var(--emerald-700)}
+
+/* ===== NO RESULTS ===== */
+.no-results{
+  display:none;text-align:center;padding:60px 20px;
+  background:var(--surface);border:1.5px dashed var(--border);border-radius:var(--radius-lg);
+}
+.no-results.show{display:block}
+.no-results-icon{font-size:48px;margin-bottom:12px;opacity:.7}
+.no-results h3{font-size:17px;color:var(--forest-900);margin-bottom:6px}
+.no-results p{font-size:14px;color:var(--text-muted);margin-bottom:16px}
+.no-results button{
+  padding:10px 20px;background:var(--forest-800);color:#fff;
+  border-radius:10px;font-size:14px;font-weight:600;min-height:44px;
+}
+
+/* ===== FOOTER ===== */
+footer{
+  margin-top:60px;padding:32px 20px calc(32px + env(safe-area-inset-bottom));
+  border-top:1px solid var(--border);text-align:center;
+}
+footer p{font-size:13px;color:var(--text-muted)}
+footer .small{font-size:11.5px;color:var(--text-muted);opacity:.7;margin-top:6px}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width:860px){
+  .hero-grid{grid-template-columns:1fr;gap:24px}
+  .hero-illustration{max-width:340px;margin:0 auto;order:-1}
+  .hero{padding:40px 24px 32px}
+  .dashboard{grid-template-columns:1fr;text-align:center;padding:24px}
+  .progress-ring-wrap{margin:0 auto}
+  .dashboard-actions{justify-content:center}
+}
+@media (max-width:600px){
+  main{padding:14px}
+  .header-inner{padding:12px 16px}
+  .brand-sub{display:none}
+  .brand-title{font-size:14px}
+  .header-progress{padding:6px 12px;font-size:12px}
+  .hero{padding:32px 20px 28px;border-radius:20px}
+  .hero h1{font-size:26px}
+  .btn-primary{width:100%;justify-content:center}
+  .lessons-grid{grid-template-columns:1fr}
+  .lesson-desc{min-height:0}
+  .section-head{margin-top:32px}
+  .section-head h2{font-size:19px}
+}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.001ms!important;transition-duration:.001ms!important}
+  html{scroll-behavior:auto}
+}
+</style>
+</head>
+<body>
+
+<a href="#lessons" class="skip-link">ප්‍රධාන අන්තර්ගතයට යන්න</a>
+
+<!-- ============ HEADER ============ -->
+<header class="site-header">
+  <div class="header-inner">
+    <div class="brand">
+      <div class="brand-mark" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 22V12"/>
+          <path d="M12 12C12 7 8 3 3 3c0 5 4 9 9 9z"/>
+          <path d="M12 12c0-5 4-9 9-9 0 5-4 9-9 9z"/>
+        </svg>
+      </div>
+      <div class="brand-text">
+        <div class="brand-title">ජීව විද්‍යා ඉගෙනුම් මධ්‍යස්ථානය</div>
+        <div class="brand-sub">Biology Learning Hub</div>
+      </div>
+    </div>
+    <div class="header-progress" aria-live="polite">
+      <span class="dot" aria-hidden="true"></span>
+      <span><span id="headerDone">0</span> / <span id="headerTotal">0</span> සම්පූර්ණයි</span>
+    </div>
+  </div>
+</header>
+
+<main>
+
+  <!-- ============ HERO ============ -->
+  <section class="hero" aria-labelledby="heroHeading">
+    <div class="hero-grid">
+      <div class="hero-content">
+        <span class="hero-eyebrow">
+          <span class="pulse" aria-hidden="true"></span>
+          G.C.E. A/L ජීව විද්‍යාව · ශාක ඒකකය
+        </span>
+        <h1 id="heroHeading">
+          ඔබේ <span class="accent">ජීව විද්‍යා</span> ගමන<br>
+          එකම තැනකින්.
+        </h1>
+        <p class="hero-lead">
+          අන්තර්ක්‍රියාකාරී සිමියුලේෂන්, ක්‍රියාකාරී රූප සටහන් සහ ස්වයං-ඇගයීම් සමඟින්
+          සකස් කරන ලද පාඩම් එකතුවක්. ඔබේ ප්‍රගතිය මෙම උපාංගයේ ආරක්ෂිතව සුරැකේ.
+        </p>
+        <div class="hero-cta-row">
+          <button class="btn-primary" id="startBtn" type="button">
+            <span id="startBtnText">ඉගෙනීම අරඹන්න</span>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M5 12h14M13 6l6 6-6 6"/>
+            </svg>
+          </button>
+          <span class="hero-meta"><strong id="totalLessonsMeta">0</strong> අන්තර්ක්‍රියාකාරී පාඩම්</span>
+        </div>
+      </div>
+      <div class="hero-illustration" aria-hidden="true">
+        <svg viewBox="0 0 480 480" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="leafGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#6ee7b7"/>
+              <stop offset="100%" stop-color="#059669"/>
+            </linearGradient>
+            <linearGradient id="leafGrad2" x1="0%" y1="100%" x2="100%" y2="0%">
+              <stop offset="0%" stop-color="#34d399" stop-opacity=".6"/>
+              <stop offset="100%" stop-color="#10b981" stop-opacity=".2"/>
+            </linearGradient>
+            <radialGradient id="glowGrad" cx="50%" cy="50%" r="50%">
+              <stop offset="0%" stop-color="#34d399" stop-opacity=".28"/>
+              <stop offset="100%" stop-color="#34d399" stop-opacity="0"/>
+            </radialGradient>
+            <filter id="softGlow">
+              <feGaussianBlur stdDeviation="6" result="blur"/>
+              <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+            </filter>
+          </defs>
+          <circle cx="240" cy="240" r="210" fill="url(#glowGrad)"/>
+          <circle cx="240" cy="240" r="180" fill="none" stroke="#34d399" stroke-opacity=".18" stroke-width="1"/>
+          <circle cx="240" cy="240" r="150" fill="none" stroke="#34d399" stroke-opacity=".14" stroke-width="1" stroke-dasharray="3 9"/>
+          <g filter="url(#softGlow)">
+            <path d="M240 70 C130 92 62 178 108 288 C142 372 222 410 288 386 C374 352 414 250 368 158 C332 92 290 70 240 70 Z" fill="url(#leafGrad)" opacity=".92"/>
+          </g>
+          <path d="M240 70 C130 92 62 178 108 288 C142 372 222 410 288 386 C374 352 414 250 368 158 C332 92 290 70 240 70 Z" fill="url(#leafGrad2)" opacity=".55"/>
+          <g stroke="#ffffff" stroke-opacity=".5" stroke-width="2" fill="none" stroke-linecap="round">
+            <path d="M240 82 C232 172 232 282 240 380"/>
+            <path d="M240 140 C200 162 168 205 158 252"/>
+            <path d="M240 140 C280 162 312 205 322 252"/>
+            <path d="M240 232 C208 254 190 288 184 322"/>
+            <path d="M240 232 C272 254 290 288 296 322"/>
+            <path d="M240 320 C220 336 208 356 204 376"/>
+            <path d="M240 320 C260 336 272 356 276 376"/>
+          </g>
+          <g fill="#ffffff" opacity=".35">
+            <ellipse cx="176" cy="168" rx="9" ry="4.5" transform="rotate(-32 176 168)"/>
+            <ellipse cx="300" cy="184" rx="9" ry="4.5" transform="rotate(32 300 184)"/>
+            <ellipse cx="196" cy="262" rx="9" ry="4.5" transform="rotate(-42 196 262)"/>
+            <ellipse cx="298" cy="278" rx="9" ry="4.5" transform="rotate(42 298 278)"/>
+            <ellipse cx="228" cy="322" rx="9" ry="4.5" transform="rotate(12 228 322)"/>
+          </g>
+          <g fill="#6ee7b7">
+            <circle cx="78" cy="118" r="4" opacity=".7">
+              <animate attributeName="cy" values="118;100;118" dur="4.2s" repeatCount="indefinite"/>
+            </circle>
+            <circle cx="404" cy="176" r="3" opacity=".6">
+              <animate attributeName="cy" values="176;158;176" dur="3.2s" repeatCount="indefinite"/>
+            </circle>
+            <circle cx="96" cy="356" r="5" opacity=".45">
+              <animate attributeName="cy" values="356;336;356" dur="5.2s" repeatCount="indefinite"/>
+            </circle>
+            <circle cx="424" cy="330" r="4" opacity=".55">
+              <animate attributeName="cy" values="330;310;330" dur="4.7s" repeatCount="indefinite"/>
+            </circle>
+            <circle cx="150" cy="60" r="3" opacity=".5">
+              <animate attributeName="cy" values="60;44;60" dur="3.8s" repeatCount="indefinite"/>
+            </circle>
+          </g>
+          <g opacity=".55" stroke="#6ee7b7" fill="none" stroke-width="1.5">
+            <g transform="translate(360 78)">
+              <circle r="20"/><circle r="5" fill="#6ee7b7" stroke="none"/>
+            </g>
+            <g transform="translate(84 388)">
+              <circle r="15"/><circle r="3" fill="#6ee7b7" stroke="none"/>
+            </g>
+            <g transform="translate(388 358)">
+              <circle r="12"/><circle r="2.5" fill="#6ee7b7" stroke="none"/>
+            </g>
+          </g>
+        </svg>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ DASHBOARD ============ -->
+  <section class="dashboard" aria-labelledby="dashHeading">
+    <div class="progress-ring-wrap" aria-hidden="true">
+      <svg class="progress-ring" viewBox="0 0 120 120">
+        <defs>
+          <linearGradient id="progressGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#10b981"/>
+            <stop offset="100%" stop-color="#059669"/>
+          </linearGradient>
+        </defs>
+        <circle class="track" cx="60" cy="60" r="45"/>
+        <circle class="bar" id="progressRing" cx="60" cy="60" r="45"/>
+      </svg>
+      <div class="progress-center">
+        <div class="progress-percent" id="progressPercent">0%</div>
+        <div class="progress-label">සම්පූර්ණයි</div>
+      </div>
+    </div>
+    <div class="dashboard-text">
+      <h2 id="dashHeading">ඔබේ ප්‍රගතිය</h2>
+      <p>
+        ඔබ <strong><span id="dashDone">0</span></strong> / <strong><span id="dashTotal">0</span></strong> පාඩම් සම්පූර්ණ කර ඇත.
+        ඉගෙනීම දිගටම කරගෙන යාමට ඊළඟ පාඩමට යන්න.
+      </p>
+      <div class="dashboard-actions">
+        <button class="btn-ghost" id="continueBtn" type="button">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+          ඊළඟ පාඩම
+        </button>
+        <button class="btn-ghost danger" id="resetBtn" type="button">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/></svg>
+          ප්‍රගතිය යළි සකසන්න
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ LESSONS ============ -->
+  <section id="lessons" aria-labelledby="lessonsHeading">
+    <div class="section-head">
+      <h2 id="lessonsHeading">පාඩම් එකතුව</h2>
+      <p>ඔබට අවශ්‍ය පාඩම සොයාගෙන ආරම්භ කරන්න — සියල්ල අන්තර්ක්‍රියාකාරීයි.</p>
+    </div>
+
+    <div class="controls">
+      <div class="search-wrap">
+        <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/>
+        </svg>
+        <label for="searchInput" class="sr-only">පාඩම් සොයන්න</label>
+        <input
+          type="search"
+          id="searchInput"
+          class="search-input"
+          placeholder="පාඩම් නම හෝ අංකය අනුව සොයන්න…"
+          autocomplete="off"
+          inputmode="search"
+        >
+        <button class="search-clear" id="searchClear" type="button" aria-label="සෙවුම හිස් කරන්න">
+          <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
+        </button>
+      </div>
+      <div class="filters" id="filters" role="tablist" aria-label="පාඩම් ප්‍රවර්ග"></div>
+    </div>
+
+    <div class="lessons-grid" id="lessonsGrid"></div>
+    <div class="no-results" id="noResults">
+      <div class="no-results-icon" aria-hidden="true">🔍</div>
+      <h3>කිසිදු පාඩමක් හමු නොවිය</h3>
+      <p>ඔබේ සෙවුම වෙනස් කර නැවත උත්සාහ කරන්න.</p>
+      <button type="button" id="clearFiltersBtn">සියලු පෙරහන් ඉවත් කරන්න</button>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <p>© ජීව විද්‍යා ඉගෙනුම් මධ්‍යස්ථානය · G.C.E. A/L ශාක ඒකකය</p>
+  <p class="small">ඔබේ ප්‍රගතිය මෙම උපාංගයේ පමණක් (localStorage) සුරැකේ.</p>
+</footer>
+
+<script>
+(function(){
+  'use strict';
+
+  /* ================================================================
+     LESSON DATA — derived exactly from your uploaded files.
+     DO NOT rename files; these are the exact filenames on disk.
+     ================================================================ */
+  const LESSONS = [
+    {
+      num: '01',
+      file: '1.html',
+      icon: '🌱',
+      title: 'ශාක ආකාරය හා ක්‍රියාකාරිත්වය',
+      desc: 'ශාක පටක, විභාජක පටක සහ ප්‍රාථමික හා ද්විතීයික වර්ධනය පිළිබඳ හැඳින්වීමක්.',
+      category: 'structure'
+    },
+    {
+      num: '02',
+      file: '2.html',
+      icon: '🔬',
+      title: 'ශාක පටක පද්ධති සහ පටක',
+      desc: 'චර්මීය, පූරක සහ සනාල පටක පද්ධති — රූප, සංසන්දන වගු සහ අභ්‍යාස සමඟින්.',
+      category: 'structure'
+    },
+    {
+      num: '03',
+      file: '3.html',
+      icon: '🌳',
+      title: 'ශාක වර්ධනය හා විකසනය',
+      desc: 'සෛල විභාජනය, දිගුවීම, විශේෂණය, කොම්බියම් සහ වාර්ෂික වළලු.',
+      category: 'structure'
+    },
+    {
+      num: '04',
+      file: '5,6.html',
+      icon: '🍃',
+      title: 'පත්‍රය, සිදුරු හා ජල අවශෝෂණය',
+      desc: 'පත්‍රයේ අභ්‍යන්තර ව්‍යුහය, ආරක්ෂක සෛල, සිදුරු යාන්ත්‍රණය සහ මුල් රෝම.',
+      category: 'function'
+    },
+    {
+      num: '05',
+      file: '7.,8.html',
+      icon: '💧',
+      title: 'ශාක තුළ පරිවහනය',
+      desc: 'ජල විභවය, අරීය පරිවහනය, ශයිලමය ආරෝහණය සහ සංසක්ති-ආතන්‍ය සිද්ධාන්තය.',
+      category: 'function'
+    },
+    {
+      num: '06',
+      file: '9,10.html',
+      icon: '🧪',
+      title: 'ශාක පෝෂණය',
+      desc: 'අත්‍යවශ්‍ය මූලද්‍රව්‍ය 17, සාර්ව හා සූක්ෂ්ම පෝෂක, ඌනතා ලක්ෂණ සහ සහජීවනය.',
+      category: 'function'
+    },
+    {
+      num: '07',
+      file: '11.html',
+      icon: '♻️',
+      title: 'ශාක ජීවන චක්‍ර',
+      desc: 'Pogonatum, Nephrolepis, Selaginella සහ Cycas හි ජීවන චක්‍ර හා භෞමික අනුවර්තන.',
+      category: 'reproduction'
+    },
+    {
+      num: '08',
+      file: '12.html',
+      icon: '🌸',
+      title: 'පුෂ්ප, පරාගණය, සංසේචනය හා බීජ',
+      desc: 'පුෂ්පයේ කොටස්, පරාගණය, ද්විත්ව සංසේචනය සහ බීජ විසිරීමේ ක්‍රම.',
+      category: 'reproduction'
+    },
+    {
+      num: '09',
+      file: '13,14,15.html',
+      icon: '🌿',
+      title: 'ශාක උත්තේජන හා හෝමෝන',
+      desc: 'අභිසාරී චලන, නිස්ථිතික චලන, වර්ධක හෝමෝන සහ ශාක ආරක්ෂණය.',
+      category: 'response'
+    }
+  ];
+
+  const CATEGORIES = [
+    { key: 'all',          label: 'සියල්ල' },
+    { key: 'structure',    label: 'ව්‍යුහය හා වර්ධනය' },
+    { key: 'function',     label: 'ක්‍රියාකාරිත්වය' },
+    { key: 'reproduction', label: 'ප්‍රජනනය' },
+    { key: 'response',     label: 'ප්‍රතිචාර' }
+  ];
+
+  const STORAGE_KEY = 'bio-hub-progress-v1';
+  const RING_CIRCUM = 283; // 2 * π * 45
+
+  /* ================================================================
+     SAFE STORAGE (file:// and privacy modes safe)
+     ================================================================ */
+  function loadProgress(){
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      const arr = raw ? JSON.parse(raw) : [];
+      return Array.isArray(arr) ? arr.filter(n => LESSONS.some(l => l.num === n)) : [];
+    } catch(e) { return []; }
+  }
+  function saveProgress(arr){
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(arr)); } catch(e) {}
+  }
+
+  /* ================================================================
+     STATE
+     ================================================================ */
+  let completed = loadProgress();
+  let searchQuery = '';
+  let activeCategory = 'all';
+
+  /* ================================================================
+     HELPERS
+     ================================================================ */
+  function isComplete(num){ return completed.indexOf(num) !== -1; }
+  function totalLessons(){ return LESSONS.length; }
+  function nextIncomplete(){
+    return LESSONS.find(l => !isComplete(l.num)) || null;
+  }
+  function matchesFilters(lesson){
+    if (activeCategory !== 'all' && lesson.category !== activeCategory) return false;
+    if (!searchQuery) return true;
+    const q = searchQuery.toLowerCase().trim();
+    return (
+      lesson.title.toLowerCase().includes(q) ||
+      lesson.desc.toLowerCase().includes(q) ||
+      lesson.num.includes(q) ||
+      lesson.file.toLowerCase().includes(q)
+    );
+  }
+  function escapeHtml(s){
+    return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c]);
+  }
+
+  /* ================================================================
+     RENDER — FILTERS
+     ================================================================ */
+  const filtersEl = document.getElementById('filters');
+  function renderFilters(){
+    filtersEl.innerHTML = '';
+    CATEGORIES.forEach(cat => {
+      const count = cat.key === 'all'
+        ? LESSONS.length
+        : LESSONS.filter(l => l.category === cat.key).length;
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'filter-chip' + (activeCategory === cat.key ? ' active' : '');
+      btn.setAttribute('role', 'tab');
+      btn.setAttribute('aria-selected', activeCategory === cat.key ? 'true' : 'false');
+      btn.dataset.cat = cat.key;
+      btn.innerHTML = escapeHtml(cat.label) + '<span class="count">' + count + '</span>';
+      btn.addEventListener('click', () => {
+        activeCategory = cat.key;
+        renderFilters();
+        renderGrid();
+      });
+      filtersEl.appendChild(btn);
+    });
+  }
+
+  /* ================================================================
+     RENDER — LESSON CARDS
+     ================================================================ */
+  const gridEl = document.getElementById('lessonsGrid');
+  const noResultsEl = document.getElementById('noResults');
+
+  function renderGrid(){
+    const visible = LESSONS.filter(matchesFilters);
+    gridEl.innerHTML = '';
+    noResultsEl.classList.toggle('show', visible.length === 0);
+
+    visible.forEach(lesson => {
+      const done = isComplete(lesson.num);
+      const article = document.createElement('article');
+      article.className = 'lesson-card' + (done ? ' is-complete' : '');
+      article.setAttribute('data-num', lesson.num);
+      article.innerHTML =
+        '<a class="card-link" href="' + escapeHtml(lesson.file) + '" aria-label="' + escapeHtml(lesson.title) + ' පාඩම විවෘත කරන්න"></a>' +
+        '<div class="card-top">' +
+          '<span class="lesson-num">' + escapeHtml(lesson.num) + '</span>' +
+          '<button class="complete-toggle" type="button" aria-label="' + (done ? 'සම්පූර්ණ ලෙස සලකුණු කර ඇත — ඉවත් කරන්න' : 'සම්පූර්ණ ලෙස සලකුණු කරන්න') + '" aria-pressed="' + (done ? 'true' : 'false') + '" data-num="' + lesson.num + '" title="' + (done ? 'සම්පූර්ණයි' : 'සම්පූර්ණ ලෙස සලකුණු කරන්න') + '">' +
+            '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>' +
+          '</button>' +
+        '</div>' +
+        '<div class="lesson-icon" aria-hidden="true">' + lesson.icon + '</div>' +
+        '<h3 class="lesson-title">' + escapeHtml(lesson.title) + '</h3>' +
+        '<p class="lesson-desc">' + escapeHtml(lesson.desc) + '</p>' +
+        '<div class="lesson-footer">' +
+          '<span class="lesson-tag">' + escapeHtml(categoryLabel(lesson.category)) + '</span>' +
+          '<span class="lesson-cta">' + (done ? 'නැවත බලන්න' : 'ආරම්භ කරන්න') +
+            '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>' +
+          '</span>' +
+        '</div>';
+
+      const toggle = article.querySelector('.complete-toggle');
+      toggle.addEventListener('click', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        toggleComplete(lesson.num);
+      });
+
+      gridEl.appendChild(article);
+    });
+  }
+
+  function categoryLabel(key){
+    const cat = CATEGORIES.find(c => c.key === key);
+    return cat ? cat.label : '';
+  }
+
+  /* ================================================================
+     COMPLETION TOGGLE
+     ================================================================ */
+  function toggleComplete(num){
+    const idx = completed.indexOf(num);
+    if (idx === -1) completed.push(num);
+    else completed.splice(idx, 1);
+    saveProgress(completed);
+    renderAll();
+  }
+
+  /* ================================================================
+     PROGRESS UI
+     ================================================================ */
+  const ringEl = document.getElementById('progressRing');
+  const percentEl = document.getElementById('progressPercent');
+  const dashDoneEl = document.getElementById('dashDone');
+  const dashTotalEl = document.getElementById('dashTotal');
+  const headerDoneEl = document.getElementById('headerDone');
+  const headerTotalEl = document.getElementById('headerTotal');
+
+  function updateProgressUI(){
+    const total = totalLessons();
+    const done = completed.length;
+    const percent = total === 0 ? 0 : Math.round((done / total) * 100);
+
+    ringEl.style.strokeDashoffset = RING_CIRCUM * (1 - percent / 100);
+    percentEl.textContent = percent + '%';
+    dashDoneEl.textContent = done;
+    dashTotalEl.textContent = total;
+    headerDoneEl.textContent = done;
+    headerTotalEl.textContent = total;
+    document.getElementById('totalLessonsMeta').textContent = total;
+
+    // Start button label
+    const startBtnText = document.getElementById('startBtnText');
+    const next = nextIncomplete();
+    if (done === total && total > 0) {
+      startBtnText.textContent = 'සියල්ල සම්පූර්ණයි 🎉';
+    } else if (done === 0) {
+      startBtnText.textContent = 'ඉගෙනීම අරඹන්න';
+    } else if (next) {
+      startBtnText.textContent = 'ඊළඟ පාඩම: ' + next.num;
+    }
+  }
+
+  /* ================================================================
+     NAVIGATION ACTIONS
+     ================================================================ */
+  function goToNextLesson(){
+    const next = nextIncomplete();
+    if (next) {
+      window.location.href = next.file;
+    } else {
+      document.getElementById('lessons').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  }
+
+  document.getElementById('startBtn').addEventListener('click', goToNextLesson);
+  document.getElementById('continueBtn').addEventListener('click', goToNextLesson);
+
+  document.getElementById('resetBtn').addEventListener('click', () => {
+    if (completed.length === 0) return;
+    if (window.confirm('ඔබගේ සියලුම ප්‍රගතිය මකා දැමීමට අවශ්‍යද? මෙය ආපසු හැරවිය නොහැක.')) {
+      completed = [];
+      saveProgress(completed);
+      renderAll();
+    }
+  });
+
+  /* ================================================================
+     SEARCH
+     ================================================================ */
+  const searchInput = document.getElementById('searchInput');
+  const searchClear = document.getElementById('searchClear');
+
+  searchInput.addEventListener('input', (e) => {
+    searchQuery = e.target.value;
+    searchClear.classList.toggle('show', searchQuery.length > 0);
+    renderGrid();
+  });
+
+  searchClear.addEventListener('click', () => {
+    searchInput.value = '';
+    searchQuery = '';
+    searchClear.classList.remove('show');
+    searchInput.focus();
+    renderGrid();
+  });
+
+  document.getElementById('clearFiltersBtn').addEventListener('click', () => {
+    searchInput.value = '';
+    searchQuery = '';
+    activeCategory = 'all';
+    searchClear.classList.remove('show');
+    renderFilters();
+    renderGrid();
+  });
+
+  /* ================================================================
+     RENDER ALL
+     ================================================================ */
+  function renderAll(){
+    updateProgressUI();
+    renderGrid();
+  }
+
+  /* ================================================================
+     INIT
+     ================================================================ */
+  renderFilters();
+  renderAll();
+
+})();
+</script>
+</body>
+</html>

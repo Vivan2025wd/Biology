@@ -1,0 +1,909 @@
+<!DOCTYPE html>
+<html lang="si">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>ශාක පෝෂණය - අන්තර්ක්‍රියාකාරී ඉගෙනුම්</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Sinhala:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #2E7D32;
+            --primary-light: #4CAF50;
+            --primary-dark: #1B5E20;
+            --bg: #F1F8E9;
+            --surface: #FFFFFF;
+            --text-main: #1C2833;
+            --text-muted: #566573;
+            --border: #D5D8DC;
+            --shadow: 0 4px 12px rgba(0,0,0,0.08);
+            --nav-bg: rgba(255, 255, 255, 0.95);
+            --macro-color: #E8F5E9;
+            --micro-color: #FFF3E0;
+        }
+
+        [data-theme="dark"] {
+            --primary: #66BB6A;
+            --primary-light: #81C784;
+            --primary-dark: #388E3C;
+            --bg: #121212;
+            --surface: #1E1E1E;
+            --text-main: #F2F3F4;
+            --text-muted: #AAB7B8;
+            --border: #333333;
+            --shadow: 0 4px 12px rgba(0,0,0,0.3);
+            --nav-bg: rgba(30, 30, 30, 0.95);
+            --macro-color: #1B3320;
+            --micro-color: #332614;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: 'Noto Sans Sinhala', sans-serif;
+            background-color: var(--bg);
+            color: var(--text-main);
+            line-height: 1.6;
+            transition: background-color 0.3s, color 0.3s;
+            padding-bottom: 70px; /* Space for bottom nav */
+            overflow-x: hidden;
+        }
+
+        /* Header */
+        header {
+            position: sticky;
+            top: 0;
+            background-color: var(--surface);
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            z-index: 100;
+        }
+
+        header h1 {
+            font-size: 1.2rem;
+            color: var(--primary);
+            font-weight: 700;
+        }
+
+        .theme-toggle {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            padding: 5px;
+            color: var(--text-main);
+        }
+
+        /* Main Content */
+        main {
+            padding: 20px;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .section {
+            display: none;
+            animation: fadeIn 0.4s ease-out;
+        }
+
+        .section.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Cards */
+        .card {
+            background-color: var(--surface);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border);
+        }
+
+        .card h2 {
+            font-size: 1.1rem;
+            color: var(--primary);
+            margin-bottom: 12px;
+            border-bottom: 2px solid var(--primary-light);
+            padding-bottom: 8px;
+            display: inline-block;
+        }
+
+        .card h3 {
+            font-size: 1rem;
+            margin-top: 15px;
+            margin-bottom: 8px;
+            color: var(--text-main);
+        }
+
+        .card p, .card li {
+            font-size: 0.95rem;
+            margin-bottom: 8px;
+            color: var(--text-muted);
+        }
+
+        .card ul {
+            padding-left: 20px;
+        }
+
+        .highlight {
+            color: var(--primary-dark);
+            font-weight: 700;
+        }
+
+        /* Interactive Elements */
+        .btn {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 30px;
+            font-size: 1rem;
+            font-family: inherit;
+            font-weight: 500;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 10px;
+            transition: background-color 0.2s;
+        }
+        .btn:active {
+            background-color: var(--primary-dark);
+            transform: scale(0.98);
+        }
+
+        .sim-buttons {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .sim-btn {
+            flex: 1;
+            padding: 10px 5px;
+            font-size: 0.85rem;
+            border-radius: 10px;
+            border: 1px solid var(--border);
+            background-color: var(--surface);
+            color: var(--text-main);
+            cursor: pointer;
+        }
+        .sim-btn.active {
+            background-color: var(--primary-light);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        .sim-display {
+            background-color: var(--bg);
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            min-height: 150px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* Nutrient Grid */
+        .nutrient-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .nutrient-btn {
+            background-color: var(--surface);
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            padding: 10px 5px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            color: var(--text-main);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .nutrient-btn.macro { border-color: #66BB6A; }
+        .nutrient-btn.micro { border-color: #FFA726; }
+
+        .nutrient-btn:active {
+            transform: scale(0.95);
+        }
+
+        /* Modal */
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.5);
+            display: none;
+            justify-content: center;
+            align-items: flex-end;
+            z-index: 1000;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+            opacity: 1;
+        }
+
+        .modal-content {
+            background-color: var(--surface);
+            width: 100%;
+            max-width: 600px;
+            border-radius: 20px 20px 0 0;
+            padding: 25px 20px;
+            transform: translateY(100%);
+            transition: transform 0.3s ease-out;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .modal-overlay.active .modal-content {
+            transform: translateY(0);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 10px;
+        }
+
+        .modal-title {
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: var(--primary);
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: var(--text-muted);
+            cursor: pointer;
+        }
+
+        .info-row {
+            margin-bottom: 12px;
+        }
+        .info-label {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            font-weight: bold;
+        }
+        .info-value {
+            font-size: 0.95rem;
+            color: var(--text-main);
+        }
+
+        /* Quiz Styles */
+        .quiz-option {
+            display: block;
+            width: 100%;
+            padding: 15px;
+            margin-bottom: 10px;
+            background-color: var(--surface);
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            text-align: left;
+            font-family: inherit;
+            font-size: 0.95rem;
+            color: var(--text-main);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .quiz-option.correct {
+            background-color: #C8E6C9;
+            border-color: #4CAF50;
+            color: #1B5E20;
+        }
+        .quiz-option.wrong {
+            background-color: #FFCDD2;
+            border-color: #F44336;
+            color: #B71C1C;
+        }
+
+        /* Flashcard Styles */
+        .flashcard-container {
+            perspective: 1000px;
+            width: 100%;
+            height: 250px;
+            margin-bottom: 20px;
+        }
+
+        .flashcard {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            transition: transform 0.6s;
+            transform-style: preserve-3d;
+            cursor: pointer;
+        }
+
+        .flashcard.flipped {
+            transform: rotateY(180deg);
+        }
+
+        .flashcard-front, .flashcard-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            -webkit-backface-visibility: hidden;
+            backface-visibility: hidden;
+            background-color: var(--surface);
+            border-radius: 16px;
+            box-shadow: var(--shadow);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            text-align: center;
+            border: 1px solid var(--border);
+        }
+
+        .flashcard-back {
+            transform: rotateY(180deg);
+            background-color: var(--primary);
+            color: white;
+        }
+
+        /* Bottom Navigation */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background-color: var(--nav-bg);
+            backdrop-filter: blur(10px);
+            display: flex;
+            justify-content: space-around;
+            padding: 10px 0;
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.05);
+            z-index: 500;
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            font-family: inherit;
+            font-size: 0.75rem;
+            cursor: pointer;
+            padding: 5px 10px;
+            transition: color 0.2s;
+        }
+
+        .nav-item.active {
+            color: var(--primary);
+        }
+
+        .nav-icon {
+            font-size: 1.3rem;
+            margin-bottom: 4px;
+        }
+
+        /* Utility */
+        .text-center { text-align: center; }
+        .mt-15 { margin-top: 15px; }
+        .mb-15 { margin-bottom: 15px; }
+        
+        /* Progress Bar */
+        .progress-container {
+            width: 100%;
+            background-color: var(--border);
+            border-radius: 10px;
+            margin-bottom: 15px;
+            height: 8px;
+        }
+        .progress-bar {
+            height: 8px;
+            background-color: var(--primary);
+            border-radius: 10px;
+            width: 0%;
+            transition: width 0.3s;
+        }
+
+    </style>
+</head>
+<body data-theme="light">
+
+    <header>
+        <h1>ශාක පෝෂණය</h1>
+        <button class="theme-toggle" id="themeToggle" aria-label="Toggle Theme">🌙</button>
+    </header>
+
+    <main>
+        <!-- SECTION 1: HOME / LESSONS -->
+        <section id="section-home" class="section active">
+            <div class="card">
+                <h2>හැඳින්වීම (ශාක පෝෂණ ක්‍රම)</h2>
+                <p>ශාක පෝෂණ ක්‍රම කිහිපයක් දක්නට ලැබේ. බොහෝ ශාක ස්වයංපෝෂිත (ප්‍රභාසංශ්ලේෂණය) වන අතර, සමහරක් පරපෝෂිත, මෘතෝපජීවී හෝ අධිපතික වේ.</p>
+                <p>ශාකවල ප්‍රභාසංශ්ලේෂණය සඳහා හරිතප්‍රද අවශ්‍ය වේ. එයට ජලය, කාබන් ඩයොක්සයිඩ් සහ සූර්ය ආලෝකය අවශ්‍ය වේ.</p>
+            </div>
+
+            <div class="card">
+                <h2>සහජීවනය (Symbiosis)</h2>
+                <p>විවිධ ජීවී විශේෂ දෙකක් අතර පවතින අන්තර් සම්බන්ධතාවයි. ප්‍රධාන වර්ග 3කි.</p>
+                
+                <div class="sim-buttons mt-15">
+                    <button class="sim-btn active" onclick="showSymbiosis('mutualism', this)">අන්‍යෝන්‍යවාදය</button>
+                    <button class="sim-btn" onclick="showSymbiosis('commensalism', this)">සහභෝජීවාදය</button>
+                    <button class="sim-btn" onclick="showSymbiosis('parasitism', this)">පරපෝෂිතවාදය</button>
+                </div>
+
+                <div class="sim-display" id="symbiosisDisplay">
+                    <h3 style="color: var(--primary);">අන්‍යෝන්‍යවාදය (Mutualism)</h3>
+                    <p class="mt-15">එක් ජීවි විශේෂයකට පමණක් වාසි සැලසෙන ලෙසත්, අනෙක් විශේෂයට මෙලෙසම (හානියක් හෝ වාසියක්) ඇති නොවන ලෙසත් ජීවි විශේෂ දෙකක් අතර පවතින අන්තර් ක්‍රියාවකි.</p>
+                    <div style="font-size: 3rem; margin: 15px 0;">🌱🤝🦠</div>
+                    <p style="font-weight: bold; color: var(--primary);">උදා: Rhizobium (මූල ගැටිතිවල), Anabaena (Azolla ශාකයේ)</p>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2>මාංශ භක්ෂක ශාක</h2>
+                <p>මෙම ශාක ප්‍රභාසංශ්ලේෂකය. ය. නයිට්‍රජන් හා ඛනිජ වර්ග ලබා ගැනීමට කෘමීන් අල්ලා ජීර්ණය කර ගනී.</p>
+                <div class="sim-display" style="cursor: pointer;" onclick="alert('උදාහරණ: Nepenthes, Drosera, Utricularia')">
+                    <div style="font-size: 3rem;">🪴🪰</div>
+                    <p class="mt-15" style="font-size: 0.85rem; color: var(--primary);">උදාහරණ බැලීමට මෙහි තට්ටු කරන්න</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 2: NUTRIENTS (INTERACTIVE) -->
+        <section id="section-nutrients" class="section">
+            <div class="card text-center">
+                <h2>අත්‍යවශ්‍ය මූලද්‍රව්‍ය</h2>
+                <p>ශාක සඳහා අත්‍යවශ්‍ය මූලද්‍රව්‍ය 17ක් ඇත. ඒවා සාර්ව මූලද්‍රව්‍ය සහ සූක්ෂ්ම මූලද්‍රව්‍ය ලෙස වර්ග දෙකකි. විස්තර බැලීමට මූලද්‍රව්‍යයක් මත තට්ටු කරන්න.</p>
+                
+                <h3 class="mt-15" style="text-align: left;">සාර්ව මූලද්‍රව්‍ය (Macronutrients)</h3>
+                <div class="nutrient-grid" id="macroGrid">
+                    <!-- Populated by JS -->
+                </div>
+
+                <h3 class="mt-15" style="text-align: left;">සූක්ෂ්ම මූලද්‍රව්‍ය (Micronutrients)</h3>
+                <div class="nutrient-grid" id="microGrid">
+                    <!-- Populated by JS -->
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 3: QUIZ -->
+        <section id="section-quiz" class="section">
+            <div class="card">
+                <h2>දැනුම පරීක්ෂාව</h2>
+                <div class="progress-container">
+                    <div class="progress-bar" id="quizProgress"></div>
+                </div>
+                <div id="quizContent">
+                    <!-- Quiz questions injected here -->
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 4: FLASHCARDS -->
+        <section id="section-cards" class="section">
+            <div class="card">
+                <h2>මතක් කිරීමේ කට්ටි (Flashcards)</h2>
+                <p class="text-center mb-15" style="font-size: 0.85rem;">පිළිතුර බැලීමට කාඩ්පත මත තට්ටු කරන්න</p>
+                
+                <div class="flashcard-container" onclick="this.querySelector('.flashcard').classList.toggle('flipped')">
+                    <div class="flashcard" id="flashcard">
+                        <div class="flashcard-front">
+                            <h3 id="cardFrontText">ප්‍රශ්නය මෙහි</h3>
+                        </div>
+                        <div class="flashcard-back">
+                            <h3 id="cardBackText">පිළිතුර මෙහි</h3>
+                        </div>
+                    </div>
+                </div>
+                
+                <button class="btn" onclick="nextFlashcard()">ඊළඟ කාඩ්පත</button>
+            </div>
+        </section>
+    </main>
+
+    <!-- Modal for Nutrient Info -->
+    <div class="modal-overlay" id="nutrientModal" onclick="closeModal(event)">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <div class="modal-header">
+                <div class="modal-title" id="modalSymbol">N</div>
+                <button class="close-btn" onclick="closeModal()">✕</button>
+            </div>
+            <div class="info-row">
+                <div class="info-label">අවශෝෂණය කර ගන්නා ආකාරය</div>
+                <div class="info-value" id="modalAbsorb"></div>
+            </div>
+            <div class="info-row">
+                <div class="info-label">ප්‍රභවය</div>
+                <div class="info-value" id="modalSource"></div>
+            </div>
+            <div class="info-row">
+                <div class="info-label">කාර්යය</div>
+                <div class="info-value" id="modalFunction"></div>
+            </div>
+            <div class="info-row">
+                <div class="info-label">ඌනතා ලක්ෂණ</div>
+                <div class="info-value" id="modalDeficiency" style="color: #D32F2F;"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bottom Navigation -->
+    <nav class="bottom-nav">
+        <button class="nav-item active" onclick="switchTab('home', this)">
+            <span class="nav-icon">📖</span>
+            පාඩම්
+        </button>
+        <button class="nav-item" onclick="switchTab('nutrients', this)">
+            <span class="nav-icon">🧪</span>
+            මූලද්‍රව්‍ය
+        </button>
+        <button class="nav-item" onclick="switchTab('quiz', this)">
+            <span class="nav-icon">📝</span>
+            ප්‍රශ්න
+        </button>
+        <button class="nav-item" onclick="switchTab('cards', this)">
+            <span class="nav-icon">🗂️</span>
+            කට්ටි
+        </button>
+    </nav>
+
+    <script>
+        // --- Theme Toggle ---
+        const themeToggle = document.getElementById('themeToggle');
+        const body = document.body;
+        
+        themeToggle.addEventListener('click', () => {
+            if (body.getAttribute('data-theme') === 'light') {
+                body.setAttribute('data-theme', 'dark');
+                themeToggle.textContent = '☀️';
+            } else {
+                body.setAttribute('data-theme', 'light');
+                themeToggle.textContent = '🌙';
+            }
+        });
+
+        // --- Navigation Logic ---
+        function switchTab(tabId, btnElement) {
+            document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+            document.getElementById(`section-${tabId}`).classList.add('active');
+            
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+            btnElement.classList.add('active');
+            
+            window.scrollTo(0, 0);
+        }
+
+        // --- Symbiosis Simulation ---
+        const symbiosisData = {
+            mutualism: {
+                title: "අන්‍යෝන්‍යවාදය (Mutualism)",
+                desc: "එක් ජීවි විශේෂයකට පමණක් වාසි සැලසෙන ලෙසත්, අනෙක් විශේෂයට මෙලෙසම (හානියක් හෝ වාසියක්) ඇති නොවන ලෙසත් ජීවි විශේෂ දෙකක් අතර පවතින අන්තර් ක්‍රියාවකි.", // Note: The textbook text here is slightly confusing but I am copying exactly what is written. Wait, looking closely at image 2, Mutualism is "ජීවි විශේෂ දෙකකටම වාසි සැලසෙන..."
+                // Let me re-read image 2: "ජීවි විශේෂ දෙකකටම වාසි සැලසෙන ආකාරයේ සහජීවනය."
+                descCorrected: "ජීවි විශේෂ දෙකකටම වාසි සැලසෙන ආකාරයේ සහජීවනය.",
+                icon: "🌱🤝🦠",
+                example: "උදා: Rhizobium (මූල ගැටිතිවල), Anabaena (Azolla ශාකයේ)"
+            },
+            commensalism: {
+                title: "සහභෝජීවාදය (Commensalism)",
+                desc: "එක් ජීවි විශේෂයකට පමණක් වාසි සැලසෙන ලෙසත්, අනෙක් විශේෂයට මෙලෙසම (හානියක් හෝ වාසියක්) ඇති නොවන ලෙසත් ජීවි විශේෂ දෙකක් අතර පවතින අන්තර් ක්‍රියාවකි.",
+                icon: "🌳🌺",
+                example: "උදා: අධිපතික ශාක (Orchids)"
+            },
+            parasitism: {
+                title: "පරපෝෂිතවාදය (Parasitism)",
+                desc: "එක් ජීවි විශේෂයකට පමණක් වාසි සැලසෙන ලෙසත් (පරපෝෂිතයා), අනෙක් විශේෂයට හානි සිදු වන ලෙසත් (ධාරකයා) ජීවි විශේෂ දෙකක් අතර පවතින සම්බන්ධතාවයි.",
+                icon: "🌿🩸",
+                example: "උදා: Loranthus (විලා), Cuscuta (අග්නි)"
+            }
+        };
+
+        function showSymbiosis(type, btn) {
+            document.querySelectorAll('.sim-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            
+            const data = symbiosisData[type];
+            const display = document.getElementById('symbiosisDisplay');
+            
+            display.innerHTML = `
+                <h3 style="color: var(--primary);">${data.title}</h3>
+                <p class="mt-15">${data.descCorrected || data.desc}</p>
+                <div style="font-size: 3rem; margin: 15px 0;">${data.icon}</div>
+                <p style="font-weight: bold; color: var(--primary);">${data.example}</p>
+            `;
+        }
+
+        // --- Nutrient Data & Grid ---
+        // Content strictly extracted from images 3, 4, 5
+        const nutrientsData = {
+            macro: [
+                { sym: 'C', name: 'කාබන්', absorb: 'වායුගෝලීය වාතය', source: 'වායුගෝලීය CO₂', func: 'ශාකයේ අඩංගු කාබනික අණුවල ප්‍රධාන සංඝටකයකි.', def: 'වර්ධනය ඌන වීම' },
+                { sym: 'O', name: 'ඔක්සිජන්', absorb: 'වායුගෝලීය වාතය', source: 'වායුගෝලීය CO₂, O₂', func: 'ශාකයේ අඩංගු කාබනික අණුවල ප්‍රධාන සංඝටකයකි.', def: 'වර්ධනය ඌන වීම' },
+                { sym: 'H', name: 'හයිඩ්‍රජන්', absorb: 'පාංශු ද්‍රාවණය', source: 'ජලය (H₂O)', func: 'ශාකයේ අඩංගු කාබනික අණුවල ප්‍රධාන සංඝටකයකි.', def: 'වර්ධනය ඌන වීම මූලිකම' },
+                { sym: 'N', name: 'නයිට්‍රජන්', absorb: 'පාංශු ද්‍රාවණය', source: 'NO₃⁻, NH₄⁺', func: 'ඇමයිනෝ අම්ලවල, ප්‍රෝටීන, නාශක අම්ල, පිග්මෙන්ට ඇති නයිට්‍රජන් සංයෝගවල ඇත.', def: 'කූරු වර්ධනය, කොළ හැකිලීම, ප්‍රභාසංශ්ලේෂණය අඩාල වීම' },
+                { sym: 'K', name: 'පොටෑසියම්', absorb: 'පාංශු ද්‍රාවණය', source: 'K⁺', func: 'පූරිත: ප්‍රභාසංශ්ලේෂණය, ඇන්සයිම ක්‍රියාකාරීත්වය සහ ස්ටෝමා සෛලවල ක්‍රියාකාරීත්වය.', def: 'පත්‍ර අගින් සහ දාරවල මිය යාම, කඳන් දුර්වල වීම, මුල් වර්ධනය අඩාල වීම' },
+                { sym: 'Ca', name: 'කැල්සියම්', absorb: 'පාංශු ද්‍රාවණය', source: 'Ca²⁺', func: 'සෛල බිත්තියේ හා පටල ප්‍රවාහයේ සංඝටක, පටල වශ්‍යතාව හා පාරගම්‍යතාව පවත්වා ගැනීම, සෛලය තුළම සිටීම.', def: 'ඉපිරි පත්‍ර හැකිලීම, අග්‍රස්ථ අංකුර මිය යාම' },
+                { sym: 'Mg', name: 'මැග්නීසියම්', absorb: 'පාංශු ද්‍රාවණය', source: 'Mg²⁺', func: 'සෙලවොස්වල අඩංගු සංඝටකයකි, පොස්පේට් එන්සයිම වල සක්‍රීය කිරීම.', def: 'මැදිරි පත්‍ර හරිත වර්ණය අහිමි වීම' },
+                { sym: 'P', name: 'ෆොස්ෆරස්', absorb: 'පාංශු ද්‍රාවණය', source: 'H₂PO₄⁻, HPO₄²⁻', func: 'ATP, නාශක අම්ල, පොස්ෆොලිපිඩ්වල සංඝටකයකි.', def: 'කෘෂ වර්ධනය, කොළ තද කොළ පැහැයක් ගැනීම, කඳ, මුල් හා පත්‍ර කොටස්වල අඩංගු වීම' },
+                { sym: 'S', name: 'සල්ෆර්', absorb: 'පාංශු ද්‍රාවණය', source: 'SO₄²⁻', func: 'සමහර ඇමයිනෝ අම්ල සහ ප්‍රෝටීනවල සංඝටකයකි.', def: 'ලපය පත්‍රවල හරිතයක් ඇති වීම' }
+            ],
+            micro: [
+                { sym: 'Cl', name: 'ක්ලෝරීන්', absorb: 'පාංශු ද්‍රාවණය', source: 'Cl⁻', func: 'ප්‍රභාසංශ්ලේෂණයේ දී ජලය විඝටනය කිරීමට අවශ්‍ය වේ.', def: 'පත්‍ර මැලවීම, පත්‍ර හැකිලීම (කොළ පැහැයට හැරීම), කෙඳි වාතය මුල්' },
+                { sym: 'Fe', name: 'යකඩ', absorb: 'පාංශු ද්‍රාවණය', source: 'Fe²⁺, Fe³⁺', func: 'ප්‍රභාසංශ්ලේෂණයේ දී ඉලෙක්ට්‍රෝන පරිවහනය සිදු කිරීමට අවශ්‍ය වේ.', def: 'ලපය පත්‍රවල හරිත වර්ණය අඩු වීම' },
+                { sym: 'Zn', name: 'සින්ක්', absorb: 'පාංශු ද්‍රාවණය', source: 'Zn²⁺', func: 'සමහර එන්සයිම සක්‍රීය කරයි, ඕක්සින් සංශ්ලේෂණය සඳහා අවශ්‍ය වේ.', def: 'පත්‍ර රෝල් වීම, පත්‍රවල ප්‍රමාණය අඩු වීම' },
+                { sym: 'B', name: 'බෝරෝන්', absorb: 'පාංශු ද්‍රාවණය', source: 'H₂BO₃⁻', func: 'ශර්කරා සංශ්ලේෂණය සඳහා අවශ්‍ය වේ, සෛල බෙදීමට අවශ්‍ය වේ.', def: 'අග්‍රස්ථ මුදුන් මිය යාම, කඳ කොටස් බිඳීම' },
+                { sym: 'Cu', name: 'තඹ', absorb: 'පාංශු ද්‍රාවණය', source: 'Cu²⁺, Cu⁺', func: 'සමහර එන්සයිමවල සංඝටක හෝ සක්‍රීය කරයි.', def: 'ලපය පත්‍ර ලා කොළ පැහැයක් ගැනීම, පත්‍ර අග්‍රය මියයාම, මුල් වර්ධනය බලවත් ලෙස අඩාල වීම' },
+                { sym: 'Mo', name: 'මොලිබ්ඩිනම්', absorb: 'පාංශු ද්‍රාවණය', source: 'MoO₄²⁻', func: 'නයිට්‍රජන් පරිවර්තනයට අවශ්‍ය වේ.', def: 'කෘෂ වර්ධනය, ලා කොළ පැහැය, මැදිරි පත්‍රවල හරිතයක්' },
+                { sym: 'Ni', name: 'නිකල්', absorb: 'පාංශු ද්‍රාවණය', source: 'Ni²⁺', func: 'නයිට්‍රජන් පරිවර්තනයට අවශ්‍ය වේ.', def: 'පත්‍ර අග්‍රය මිය යාම, මැදිරි පත්‍රවල හරිතයක්' },
+                { sym: 'Mn', name: 'මැංගනීස්', absorb: 'පාංශු ද්‍රාවණය', source: 'Mn²⁺', func: 'ප්‍රභාසංශ්ලේෂණයේ දී අණුක ඔක්සිජන් බිඳීම සඳහා අවශ්‍ය වේ.', def: 'පත්‍ර අතර ඇති පටකවල හරිතයක් ඇති වීම' }
+            ]
+        };
+
+        function buildNutrientGrid() {
+            const macroContainer = document.getElementById('macroGrid');
+            const microContainer = document.getElementById('microGrid');
+
+            nutrientsData.macro.forEach(n => {
+                const btn = document.createElement('button');
+                btn.className = 'nutrient-btn macro';
+                btn.textContent = n.sym;
+                btn.onclick = () => openNutrientModal(n);
+                macroContainer.appendChild(btn);
+            });
+
+            nutrientsData.micro.forEach(n => {
+                const btn = document.createElement('button');
+                btn.className = 'nutrient-btn micro';
+                btn.textContent = n.sym;
+                btn.onclick = () => openNutrientModal(n);
+                microContainer.appendChild(btn);
+            });
+        }
+
+        // --- Modal Logic ---
+        const modal = document.getElementById('nutrientModal');
+        
+        function openNutrientModal(data) {
+            document.getElementById('modalSymbol').textContent = `${data.sym} - ${data.name}`;
+            document.getElementById('modalAbsorb').textContent = data.absorb;
+            document.getElementById('modalSource').textContent = data.source;
+            document.getElementById('modalFunction').textContent = data.func;
+            document.getElementById('modalDeficiency').textContent = data.def;
+            
+            modal.classList.add('active');
+        }
+
+        function closeModal(e) {
+            if (e && e.target !== modal) return;
+            modal.classList.remove('active');
+        }
+
+        // Initialize nutrients on load
+        buildNutrientGrid();
+
+        // --- Quiz Logic ---
+        const quizData = [
+            {
+                q: "අන්‍යෝන්‍යවාදය (Mutualism) සඳහා පෙළපොතේ දක්වා ඇති උදාහරණය කුමක්ද?",
+                options: ["Loranthus (විලා)", "Cuscuta (අග්නි)", "Rhizobium", "Nepenthes"],
+                answer: 2
+            },
+            {
+                q: "පරපෝෂිතවාදයේ (Parasitism) දී සිදුවන්නේ කුමක්ද?",
+                options: [
+                    "ජීවි විශේෂ දෙකකටම වාසි සැලසීම",
+                    "එකකට වාසි සැලසී අනෙකට හානි සිදුවීම",
+                    "එකකට වාසි සැලසී අනෙකට හානියක් හෝ වාසියක් නොවීම",
+                    "දෙකටම හානි සිදුවීම"
+                ],
+                answer: 1
+            },
+            {
+                q: "ශාක සඳහා අත්‍යවශ්‍ය මූලද්‍රව්‍ය කීයක් ඇති බව පෙළපොතේ සඳහන්ද?",
+                options: ["10", "15", "17", "20"],
+                answer: 2
+            },
+            {
+                q: "පහත සඳහන් මූලද්‍රව්‍ය අතරින් සාර්ව මූලද්‍රව්‍යයක් (Macronutrient) වන්නේ කුමක්ද?",
+                options: ["Cl", "Fe", "Mg", "Mn"],
+                answer: 2
+            },
+            {
+                q: "නයිට්‍රජන් (N) ඌනතාවයේ ලක්ෂණයක් වන්නේ?",
+                options: [
+                    "මැදිරි පත්‍ර හරිත වර්ණය අහිමි වීම",
+                    "කොළ හැකිලීම සහ කූරු වර්ධනය අඩාල වීම",
+                    "කඳන් දුර්වල වීම",
+                    "ඉපිරි පත්‍ර හැකිලීම"
+                ],
+                answer: 1
+            }
+        ];
+
+        let currentQuizIndex = 0;
+        let score = 0;
+        let answered = false;
+
+        function renderQuiz() {
+            const container = document.getElementById('quizContent');
+            const progress = document.getElementById('quizProgress');
+            
+            if (currentQuizIndex >= quizData.length) {
+                progress.style.width = '100%';
+                container.innerHTML = `
+                    <div class="text-center" style="padding: 20px 0;">
+                        <h2 style="color: var(--primary);">සම්පූර්ණයි!</h2>
+                        <p class="mt-15">ඔබේ ලකුණු: ${score} / ${quizData.length}</p>
+                        <button class="btn mt-15" onclick="resetQuiz()">නැවත උත්සාහ කරන්න</button>
+                    </div>
+                `;
+                return;
+            }
+
+            progress.style.width = `${(currentQuizIndex / quizData.length) * 100}%`;
+            const q = quizData[currentQuizIndex];
+            answered = false;
+
+            let optionsHTML = '';
+            q.options.forEach((opt, index) => {
+                optionsHTML += `<button class="quiz-option" onclick="checkAnswer(${index}, ${q.answer}, this)">${opt}</button>`;
+            });
+
+            container.innerHTML = `
+                <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 10px;">ප්‍රශ්නය ${currentQuizIndex + 1} / ${quizData.length}</p>
+                <h3 class="mb-15">${q.q}</h3>
+                <div id="optionsContainer">
+                    ${optionsHTML}
+                </div>
+                <button class="btn" id="nextBtn" style="display: none;" onclick="nextQuestion()">ඊළඟ ප්‍රශ්නය</button>
+            `;
+        }
+
+        function checkAnswer(selected, correct, btn) {
+            if (answered) return;
+            answered = true;
+            
+            const options = document.querySelectorAll('.quiz-option');
+            options.forEach(o => o.style.pointerEvents = 'none');
+
+            if (selected === correct) {
+                btn.classList.add('correct');
+                score++;
+            } else {
+                btn.classList.add('wrong');
+                options[correct].classList.add('correct');
+            }
+
+            document.getElementById('nextBtn').style.display = 'block';
+        }
+
+        function nextQuestion() {
+            currentQuizIndex++;
+            renderQuiz();
+        }
+
+        function resetQuiz() {
+            currentQuizIndex = 0;
+            score = 0;
+            renderQuiz();
+        }
+
+        // Initialize Quiz
+        renderQuiz();
+
+        // --- Flashcard Logic ---
+        const flashcards = [
+            { front: "සහභෝජීවාදය (Commensalism) යනු?", back: "එක් ජීවි විශේෂයකට පමණක් වාසි සැලසෙන ලෙසත්, අනෙක් විශේෂයට හානියක් හෝ වාසියක් ඇති නොවන ලෙසත් ජීවි විශේෂ දෙකක් අතර පවතින අන්තර් ක්‍රියාවකි. (උදා: අධිපතික ශාක)" },
+            { front: "පරපෝෂිතවාදයට උදාහරණ දෙකක් දෙන්න.", back: "Loranthus (විලා) සහ Cuscuta (අග්නි)" },
+            { front: "මාංශ භක්ෂක ශාක යනු?", back: "ප්‍රභාසංශ්ලේෂක වන අතර, නයිට්‍රජන් හා ඛනිජ වර්ග ලබා ගැනීමට කෘමීන් අල්ලා ජීර්ණය කර ගන්නා ශාකයි. (උදා: Nepenthes, Drosera, Utricularia)" },
+            { front: "සාර්ව මූලද්‍රව්‍ය (Macronutrients) මොනවාද?", back: "C, O, H, N, P, S, K, Ca, Mg" },
+            { front: "මැග්නීසියම් (Mg) ඌනතාවයේ ලක්ෂණය?", back: "මැදිරි පත්‍ර හරිත වර්ණය අහිමි වීම." },
+            { front: "සූක්ෂ්ම මූලද්‍රව්‍ය (Micronutrients) මොනවාද?", back: "Cl, Fe, Mn, B, Zn, Cu, Ni, Mo" }
+        ];
+
+        let currentCardIndex = 0;
+
+        function nextFlashcard() {
+            const card = document.getElementById('flashcard');
+            card.classList.remove('flipped');
+            
+            setTimeout(() => {
+                currentCardIndex = (currentCardIndex + 1) % flashcards.length;
+                document.getElementById('cardFrontText').textContent = flashcards[currentCardIndex].front;
+                document.getElementById('cardBackText').textContent = flashcards[currentCardIndex].back;
+            }, 300); // Wait for flip animation to finish
+        }
+
+        // Initialize first flashcard
+        document.getElementById('cardFrontText').textContent = flashcards[0].front;
+        document.getElementById('cardBackText').textContent = flashcards[0].back;
+
+    </script>
+<!-- ========== BIO HUB FLOATING NAV — DO NOT REMOVE ========== -->
+<style>
+.biohub-nav{
+  position:fixed;
+  left:50%;
+  transform:translateX(-50%);
+  bottom:calc(88px + env(safe-area-inset-bottom, 0px));
+  z-index:9999;
+  display:flex;
+  align-items:center;
+  gap:4px;
+  padding:6px;
+  background:rgba(15,40,24,.92);
+  backdrop-filter:blur(14px) saturate(180%);
+  -webkit-backdrop-filter:blur(14px) saturate(180%);
+  border:1px solid rgba(110,231,183,.25);
+  border-radius:999px;
+  box-shadow:0 8px 28px rgba(0,0,0,.35), 0 2px 8px rgba(0,0,0,.2);
+  font-family:'Noto Sans Sinhala',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+  -webkit-tap-highlight-color:transparent;
+}
+.biohub-nav a,
+.biohub-nav span.biohub-btn{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  width:44px;
+  height:44px;
+  border-radius:50%;
+  color:#ecfdf5;
+  background:transparent;
+  border:none;
+  font-size:18px;
+  line-height:1;
+  cursor:pointer;
+  text-decoration:none;
+  transition:background .15s, transform .1s;
+  -webkit-tap-highlight-color:transparent;
+}
+.biohub-nav a:hover{background:rgba(16,185,129,.28);color:#fff}
+.biohub-nav a:active,
+.biohub-nav span.biohub-btn:active{transform:scale(.92)}
+.biohub-nav a.biohub-home{background:rgba(16,185,129,.35);margin:0 2px}
+.biohub-nav a.biohub-home:hover{background:rgba(16,185,129,.55)}
+.biohub-nav .biohub-disabled{
+  opacity:.32;
+  cursor:not-allowed;
+  pointer-events:none;
+}
+@media (max-width:380px){
+  .biohub-nav a,.biohub-nav span.biohub-btn{width:40px;height:40px;font-size:16px}
+}
+@media (max-height:500px){
+  .biohub-nav{bottom:calc(20px + env(safe-area-inset-bottom, 0px))}
+}
+</style>
+<nav class="biohub-nav" aria-label="පාඩම් සංචාලනය">
+  <!-- PREV (see per-file table) -->
+  <a href="7.,8.html" class="biohub-prev" aria-label="පෙර පාඩම" title="පෙර පාඩම">◀</a>
+  <!-- HOME -->
+  <a href="index.html" class="biohub-home" aria-label="මුල් පිටුව" title="මුල් පිටුව">🏠</a>
+  <!-- NEXT (see per-file table) -->
+  <a href="11.html" class="biohub-next" aria-label="ඊළඟ පාඩම" title="ඊළඟ පාඩම">▶</a>
+</nav>
+<!-- ========== /BIO HUB FLOATING NAV ========== -->
+</body>
+</html>

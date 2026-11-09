@@ -1,0 +1,808 @@
+<!DOCTYPE html>
+<html lang="si">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>ශාක ආකාරය හා ක්‍රියාකාරිත්වය - Interactive Biology</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Sinhala:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #f4f7f6;
+            --text-main: #2c3e50;
+            --text-muted: #546e7a;
+            --primary: #2e7d32;
+            --primary-light: #e8f5e9;
+            --card-bg: #ffffff;
+            --nav-bg: #ffffff;
+            --border-color: #e0e0e0;
+            --shadow: 0 4px 6px rgba(0,0,0,0.05);
+            --highlight: #fff59d;
+        }
+
+        [data-theme="dark"] {
+            --bg-color: #121212;
+            --text-main: #e0e0e0;
+            --text-muted: #9e9e9e;
+            --primary: #4caf50;
+            --primary-light: #1b5e20;
+            --card-bg: #1e1e1e;
+            --nav-bg: #1e1e1e;
+            --border-color: #333333;
+            --shadow: 0 4px 6px rgba(0,0,0,0.3);
+            --highlight: #fbc02d;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Noto Sans Sinhala', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            transition: background-color 0.3s, color 0.3s;
+            padding-bottom: 70px; /* Space for bottom nav */
+            line-height: 1.6;
+        }
+
+        /* Top Header */
+        header {
+            background-color: var(--primary);
+            color: white;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: var(--shadow);
+        }
+
+        header h1 {
+            font-size: 1.2rem;
+            font-weight: 500;
+        }
+
+        .theme-toggle {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Main Content Container */
+        main {
+            padding: 15px;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .section {
+            display: none;
+            animation: fadeIn 0.4s ease-in-out;
+        }
+
+        .section.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Cards */
+        .card {
+            background-color: var(--card-bg);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border-color);
+        }
+
+        .card h2 {
+            color: var(--primary);
+            font-size: 1.1rem;
+            margin-bottom: 10px;
+            border-bottom: 2px solid var(--primary-light);
+            padding-bottom: 5px;
+        }
+
+        .card p {
+            margin-bottom: 10px;
+            font-size: 0.95rem;
+        }
+
+        .highlight {
+            background-color: var(--highlight);
+            color: #000;
+            padding: 2px 4px;
+            border-radius: 4px;
+        }
+
+        ul {
+            padding-left: 20px;
+            margin-bottom: 15px;
+        }
+
+        li {
+            margin-bottom: 8px;
+            font-size: 0.95rem;
+        }
+
+        /* Interactive Simulations */
+        .sim-container {
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .sim-btn {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 25px;
+            font-size: 0.95rem;
+            cursor: pointer;
+            margin: 5px;
+            transition: transform 0.2s;
+            box-shadow: var(--shadow);
+        }
+
+        .sim-btn:active {
+            transform: scale(0.95);
+        }
+
+        .sim-display {
+            background-color: var(--bg-color);
+            border: 2px dashed var(--border-color);
+            border-radius: 12px;
+            padding: 20px;
+            margin-top: 15px;
+            min-height: 200px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Cell SVG Styles */
+        .cell-svg {
+            transition: all 0.5s ease;
+        }
+        
+        .cell-wall { fill: none; stroke: #4caf50; stroke-width: 4; transition: all 0.5s ease; }
+        .cytoplasm { fill: #c8e6c9; transition: all 0.5s ease; }
+        .nucleus { fill: #f44336; transition: all 0.5s ease; }
+        .vacuole { fill: #bbdefb; transition: all 0.5s ease; }
+
+        [data-theme="dark"] .cytoplasm { fill: #2e7d32; }
+        [data-theme="dark"] .vacuole { fill: #1565c0; }
+
+        /* Interactive Root Tip */
+        .root-region {
+            transition: fill 0.3s;
+            cursor: pointer;
+        }
+        .root-region:hover, .root-region.active {
+            fill: var(--primary) !important;
+        }
+        .root-info-box {
+            background-color: var(--primary-light);
+            color: var(--text-main);
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+            font-size: 0.9rem;
+            min-height: 80px;
+            text-align: right;
+        }
+
+        /* Quiz Styles */
+        .quiz-question {
+            font-weight: 500;
+            margin-bottom: 15px;
+        }
+        .quiz-options {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .quiz-opt {
+            background-color: var(--bg-color);
+            border: 1px solid var(--border-color);
+            padding: 12px 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: right;
+        }
+        .quiz-opt:hover {
+            border-color: var(--primary);
+        }
+        .quiz-opt.correct {
+            background-color: #c8e6c9;
+            border-color: #4caf50;
+            color: #1b5e20;
+        }
+        .quiz-opt.wrong {
+            background-color: #ffcdd2;
+            border-color: #f44336;
+            color: #b71c1c;
+        }
+        .feedback {
+            margin-top: 15px;
+            font-weight: bold;
+            display: none;
+        }
+
+        /* Flashcards */
+        .flashcard-container {
+            perspective: 1000px;
+            margin-bottom: 20px;
+        }
+        .flashcard {
+            width: 100%;
+            height: 150px;
+            position: relative;
+            transition: transform 0.6s;
+            transform-style: preserve-3d;
+            cursor: pointer;
+        }
+        .flashcard.flipped {
+            transform: rotateY(180deg);
+        }
+        .flashcard-front, .flashcard-back {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            backface-visibility: hidden;
+            border-radius: 12px;
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            box-shadow: var(--shadow);
+        }
+        .flashcard-front {
+            background-color: var(--card-bg);
+            border: 2px solid var(--primary);
+            font-weight: bold;
+            font-size: 1.1rem;
+            color: var(--primary);
+        }
+        .flashcard-back {
+            background-color: var(--primary);
+            color: white;
+            transform: rotateY(180deg);
+            font-size: 0.95rem;
+        }
+
+        /* Bottom Navigation */
+        nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background-color: var(--nav-bg);
+            display: flex;
+            justify-content: space-around;
+            padding: 10px 0;
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
+            z-index: 100;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .nav-item {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            font-size: 0.75rem;
+            cursor: pointer;
+            transition: color 0.3s;
+        }
+
+        .nav-item svg {
+            width: 24px;
+            height: 24px;
+            margin-bottom: 3px;
+            fill: currentColor;
+        }
+
+        .nav-item.active {
+            color: var(--primary);
+        }
+
+        .table-container {
+            overflow-x: auto;
+            margin-top: 15px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.85rem;
+        }
+        th, td {
+            border: 1px solid var(--border-color);
+            padding: 10px;
+            text-align: right;
+        }
+        th {
+            background-color: var(--primary-light);
+            color: var(--text-main);
+        }
+
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>04. ශාක ආකාරය හා ක්‍රියාකාරිත්වය</h1>
+        <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle Theme">
+            <svg id="theme-icon" viewBox="0 0 24 24" width="24" height="24">
+                <path d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+            </svg>
+        </button>
+    </header>
+
+    <main>
+        <!-- LEARN SECTION -->
+        <section id="learn" class="section active">
+            <div class="card">
+                <h2>ශාකවල ව්‍යුහය, වර්ධනය හා විකසනය</h2>
+                <p>මේ පාඩමේ මූලික අවධානය යොමු වන්නේ <span class="highlight">ශාකවල ව්‍යුහය, වර්ධනය හා විකසනය</span> පිළිබඳවයි.</p>
+                <p>ශාක මූල පටකයින් හා ප්‍රාථමික පටකයින් සමන්විත වන අතර, මේ ඒවා පටක පද්ධතිය ප්‍රධාන පද්ධතියකින් වර්ධනය වේ. මෙම අවස්ථා ප්‍රදේශ විශේෂිත හැකියාව සහිත අතර, අල්පෙන, අංකුර හා විභාජක ලෙස හඳුන්වයි.</p>
+            </div>
+
+            <div class="card">
+                <h2>ශාක පටක වර්ග, ස්ථාන හා කෘත්‍යයන්</h2>
+                <p>විශේෂිත කාර්යයන් සඳහා කර්යය කිරීමට ඇති පෙළ පටක වර්ග එක් වී වැඩි වර්ගයකින් යුතු පටක සමූහයක් එක් වී පටක පද්ධතියක් ලෙස හඳුන්වනු ලැබේ.</p>
+            </div>
+
+            <div class="card">
+                <h2>පාංශුකා පටක, බිහිවීම සහ ශාක වර්ධනයේ දී ඒවායේ කාර්යභාරය</h2>
+                <p>ශාක දේහය තුළ දක්නට ලැබෙන විශේෂිත පටක විභාජක ලෙස හඳුන්වන්නේ මේ විභාජක සෛලවලට දරනු ලබන අවකාශය සෛල විභාජනයට ලක් වෙමින් හා වර්ධනය වෙමින් හා පටක පද්ධතියේ හැකියාව ඇත. මෙමගින් ශාකවලට නව සෛලවලින් සමන්විත වර්ධක දිගටම පවත්වා ගෙන යාමට හැක. විශේෂයෙන්ම ශාක දේහයට නව පටක සැදීමට අවශ්‍ය වන අල්පෙන අවකාශ සෛල විභාජන ලෙස පවතී. විභාජකවල ක්‍රියාකාරීත්වයෙන් නව සෛල ඇති වීමට හා විශේෂිත වීමට පටක ඇති වන බැවින් ශාකවල වර්ධනය සිදු වේ.</p>
+            </div>
+
+            <div class="card">
+                <h2>විභාජක පටකවල සෛලවල ලාක්ෂණික ලක්ෂණ</h2>
+                <p>විභාජක පටකවල ඇති සෛල පහත සඳහන් ලක්ෂණ වලින් යුක්ත වේ.</p>
+                <ul>
+                    <li>සම විෂ්කම්භක සෛල වේ.</li>
+                    <li>සිහින් සෛල බිත්ති හා (ඝන වශයෙන් ප්‍රෝටෝප්ලාස්මය).</li>
+                    <li>කුඩා ප්‍රමාණයේ හා ක්‍රියාකාරී වශයෙන් විශේෂණය වී නැත.</li>
+                    <li>මධ්‍යම න්‍යෂ්ටීන් යුක්තයි.</li>
+                    <li>කුඩා සෛල අවකාශයන්ගෙන් සමන්විතයි.</li>
+                    <li>විභාජනය වීමේ හැකියාව දරයි.</li>
+                </ul>
+            </div>
+
+            <div class="card">
+                <h2>පාංශුකා පටක වර්ග</h2>
+                <p>මේ පටක වර්ග දෙකකට බෙදිය හැක. ඒවා නම්,</p>
+                <ol>
+                    <li>අග්‍රස්ථ පටක</li>
+                    <li>පාර්ශ්වික පටක</li>
+                    <li>අන්තර්කලා පටක</li>
+                </ol>
+            </div>
+
+            <div class="card">
+                <h2>අග්‍රස්ථ පටක</h2>
+                <p>මේ පටක මුල්වල හා දංඩවල කෙළවරවල පිහිටයි. <span class="highlight">මෙමගින් ශාකයේ දිග වැඩීම සිදු වේ.</span> මෙම පටක මූලික ප්‍රාථමික පටක ලෙසද හඳුන්වනු ලැබේ.</p>
+            </div>
+
+            <div class="card">
+                <h2>පාර්ශ්වික පටක</h2>
+                <p>ශාකයේ අංගවල දෙපැත්තට සමාන්තරව පිහිටන පටක පාර්ශ්වික පටක ලෙස හැඳින්වේ. මෙමගින් ශාකයේ අංගවල ඝනකම වැඩීම සිදු වේ.</p>
+                <p>ශාකයේ පාර්ශ්වික වර්ධනය සිදුවන ස්ථානයන්හි ඇති වන පටක වර්ග දෙකකි. එනම්, අංශු සංවහන හා කොර්ක් කේම්බියම් ලෙසයි. වර්ධන කේම්බියම් මගින් ශාකයේ සමහර පටක වශයෙන් දෙවන වර්ධනය සිදුවන අතර, කොර්ක් කේම්බියම් මගින් කොර්ක් සෛල සාදයි.</p>
+            </div>
+
+            <div class="card">
+                <h2>අන්තර්කලා පටක</h2>
+                <p><span class="highlight">ශාකයේ වැඩෙන කොටස් අතරමැදි ස්ථානවල පිහිටා ඇත. මෙම පටක මගින් දිග වැඩීම සිදු කරයි.</span> මෙම පටක ක්‍රියාකාරී වන පටක අතර, අවුරුදු හා වට ප්‍රමාණවලින් යුත් ශාකවල පවතී.</p>
+            </div>
+
+            <div class="card">
+                <h2>මූලික ප්‍රාථමික පටක</h2>
+                <p>මූලික අග්‍රස්ථ පටක මගින් මූලික විභාජන ක්‍රියාකාරීත්වයෙන් මූලික වර්ග තුනක් ලෙස වෙන් කළ හැක. ඒවා නම් මේවාය.</p>
+                <ol>
+                    <li>ආවරණ පටක - අනුවර්තන විභාජනයෙන්</li>
+                    <li>මූලික පටක - ප්‍රාථමික පටක</li>
+                    <li>සංවහන පටක - විශේෂිත වර්ධනය</li>
+                </ol>
+                <p>ප්‍රාථමික පටක මගින් මේ සියල්ලම එකට එකතු වී එක් පද්ධතියක් නිර්මාණය කරයි. එම ප්‍රදේශ පහත සඳහන් රූපසටහනෙන් දැක්වේ.</p>
+            </div>
+        </section>
+
+        <!-- SIMULATE SECTION -->
+        <section id="simulate" class="section">
+            <div class="card">
+                <h2>විභාජක සෛල vs පරිණත සෛල</h2>
+                <p>පාඩමේ දැක්වෙන විභාජක පටකවල ලක්ෂණ අනුව සෛල වෙනස් වන ආකාරය අත්හදා බලන්න.</p>
+                <div class="sim-container">
+                    <button class="sim-btn" onclick="setCellState('meristem')">විභාජක සෛලය</button>
+                    <button class="sim-btn" onclick="setCellState('permanent')">පරිණත සෛලය</button>
+                    
+                    <div class="sim-display">
+                        <svg id="cellDiagram" width="200" height="200" viewBox="0 0 200 200">
+                            <!-- Cell Wall -->
+                            <rect id="cellWall" class="cell-wall" x="50" y="50" width="100" height="100" rx="10" />
+                            <!-- Cytoplasm -->
+                            <rect id="cytoplasm" class="cytoplasm" x="54" y="54" width="92" height="92" rx="8" />
+                            <!-- Vacuole -->
+                            <circle id="vacuole" class="vacuole" cx="100" cy="100" r="10" />
+                            <!-- Nucleus -->
+                            <circle id="nucleus" class="nucleus" cx="100" cy="100" r="15" />
+                        </svg>
+                        <p id="cellDesc" style="margin-top: 15px; font-weight: bold; color: var(--primary);">
+                            විභාජක සෛලය: කුඩා, සම විෂ්කම්භක, මධ්‍යම න්‍යෂ්ටියක් සහිතයි.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2>මුලේ කලාප (Fig 4.1)</h2>
+                <p>රූපසටහනේ ඇති කලාප මත ක්ලික් කර ඒවායේ කාර්යයන් දැනගන්න.</p>
+                <div class="sim-container">
+                    <svg width="100%" height="300" viewBox="0 0 200 300" style="max-width: 300px; margin: 0 auto; display: block;">
+                        <!-- Maturation Zone -->
+                        <rect x="50" y="20" width="100" height="80" fill="#a5d6a7" class="root-region" onclick="showRootInfo('maturation')" />
+                        <text x="100" y="65" text-anchor="middle" font-size="12" fill="#000" pointer-events="none">පරිණත වීමේ කලාපය</text>
+                        
+                        <!-- Elongation Zone -->
+                        <rect x="50" y="100" width="100" height="70" fill="#c8e6c9" class="root-region" onclick="showRootInfo('elongation')" />
+                        <text x="100" y="140" text-anchor="middle" font-size="12" fill="#000" pointer-events="none">දිගු වීමේ කලාපය</text>
+                        
+                        <!-- Meristematic Zone -->
+                        <rect x="50" y="170" width="100" height="70" fill="#81c784" class="root-region" onclick="showRootInfo('meristem')" />
+                        <text x="100" y="210" text-anchor="middle" font-size="12" fill="#000" pointer-events="none">විභාජන පටකය</text>
+                        
+                        <!-- Root Cap -->
+                        <path d="M50,240 Q100,280 150,240 Z" fill="#4caf50" class="root-region" onclick="showRootInfo('cap')" />
+                        <text x="100" y="255" text-anchor="middle" font-size="12" fill="#fff" pointer-events="none">මුදුන් පටකය</text>
+                    </svg>
+
+                    <div class="root-info-box" id="rootInfo">
+                        කරුණාකර රූපසටහනේ එක් කලාපයක් මත ක්ලික් කරන්න.
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- QUIZ SECTION -->
+        <section id="quiz" class="section">
+            <div class="card">
+                <h2>දැනුම පරීක්ෂාව</h2>
+                <div id="quiz-container">
+                    <!-- Quiz questions will be injected here -->
+                </div>
+            </div>
+        </section>
+
+        <!-- FLASHCARDS SECTION -->
+        <section id="flashcards" class="section">
+            <div class="card">
+                <h2>මතක කාඩ්පත්</h2>
+                <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 15px;">පිළිතුර බැලීමට කාඩ්පත මත ක්ලික් කරන්න.</p>
+                
+                <div class="flashcard-container" onclick="this.querySelector('.flashcard').classList.toggle('flipped')">
+                    <div class="flashcard">
+                        <div class="flashcard-front">පටකය යනු කුමක්ද?</div>
+                        <div class="flashcard-back">එකම මූලාරම්භයක් හා සමාන කෘත්‍යයක් ඇති සෛල සමූහයක්.</div>
+                    </div>
+                </div>
+
+                <div class="flashcard-container" onclick="this.querySelector('.flashcard').classList.toggle('flipped')">
+                    <div class="flashcard">
+                        <div class="flashcard-front">විභාජක පටකවල ප්‍රධාන ලක්ෂණය කුමක්ද?</div>
+                        <div class="flashcard-back">විභාජනය වීමේ හැකියාව දැරීම සහ මධ්‍යම න්‍යෂ්ටීන් යුක්ත වීම.</div>
+                    </div>
+                </div>
+
+                <div class="flashcard-container" onclick="this.querySelector('.flashcard').classList.toggle('flipped')">
+                    <div class="flashcard">
+                        <div class="flashcard-front">අග්‍රස්ථ පටක මගින් සිදුවන කාර්යය?</div>
+                        <div class="flashcard-back">ශාකයේ දිග වැඩීම සිදු කිරීම.</div>
+                    </div>
+                </div>
+
+                <div class="flashcard-container" onclick="this.querySelector('.flashcard').classList.toggle('flipped')">
+                    <div class="flashcard">
+                        <div class="flashcard-front">පාර්ශ්වික පටක මගින් සිදුවන කාර්යය?</div>
+                        <div class="flashcard-back">ශාකයේ අංගවල ඝනකම වැඩීම සිදු කිරීම.</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- BOTTOM NAVIGATION -->
+    <nav>
+        <button class="nav-item active" onclick="switchTab('learn', this)">
+            <svg viewBox="0 0 24 24"><path d="M12 3L1 9l4 2.18v6L12 21l7-3.82v-6l2-1.09V17h2V9L12 3zm6.82 6L12 12.72 5.18 9 12 5.28 18.82 9zM17 15.99l-5 2.73-5-2.73v-3.72L12 15l5-2.73v3.72z"/></svg>
+            පාඩම
+        </button>
+        <button class="nav-item" onclick="switchTab('simulate', this)">
+            <svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V5h14v14zM7 10h2v7H7zm4-3h2v10h-2zm4-3h2v13h-2z"/></svg>
+            අත්දැකීම්
+        </button>
+        <button class="nav-item" onclick="switchTab('quiz', this)">
+            <svg viewBox="0 0 24 24"><path d="M11 18h2v-2h-2v2zm1-16C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm0-14c-2.21 0-4 1.79-4 4h2c0-1.1.9-2 2-2s2 .9 2 2c0 2-3 1.75-3 5h2c0-2.25 3-2.5 3-5 0-2.21-1.79-4-4-4z"/></svg>
+            ප්‍රශ්න
+        </button>
+        <button class="nav-item" onclick="switchTab('flashcards', this)">
+            <svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V5h14v14zm-5.04-6.71l-2.75 3.54-2.04-2.51-2.92 3.68H15.28l-1.32-4.71z"/></svg>
+            කාඩ්පත්
+        </button>
+    </nav>
+
+    <script>
+        // --- THEME TOGGLE ---
+        function toggleTheme() {
+            const body = document.body;
+            const currentTheme = body.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            body.setAttribute('data-theme', newTheme);
+            
+            // Update icon
+            const icon = document.getElementById('theme-icon');
+            if (newTheme === 'dark') {
+                icon.innerHTML = '<path d="M12 3a9 9 0 109 9c0-.46-.04-.92-.1-1.36a5.389 5.389 0 01-4.4 2.26 5.403 5.403 0 01-3.14-9.8c-.44-.06-.9-.1-1.36-.1z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>';
+            } else {
+                icon.innerHTML = '<path d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>';
+            }
+        }
+
+        // --- NAVIGATION ---
+        function switchTab(tabId, btn) {
+            // Hide all sections
+            document.querySelectorAll('.section').forEach(sec => sec.classList.remove('active'));
+            // Show selected section
+            document.getElementById(tabId).classList.add('active');
+            
+            // Update active button
+            document.querySelectorAll('.nav-item').forEach(nav => nav.classList.remove('active'));
+            btn.classList.add('active');
+
+            // Scroll to top
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // --- SIMULATION 1: CELL STATES ---
+        function setCellState(state) {
+            const cellWall = document.getElementById('cellWall');
+            const cytoplasm = document.getElementById('cytoplasm');
+            const vacuole = document.getElementById('vacuole');
+            const nucleus = document.getElementById('nucleus');
+            const desc = document.getElementById('cellDesc');
+
+            if (state === 'meristem') {
+                // Isodiametric, small vacuole, prominent nucleus
+                cellWall.setAttribute('width', '100');
+                cellWall.setAttribute('height', '100');
+                cellWall.setAttribute('x', '50');
+                cellWall.setAttribute('y', '50');
+                cellWall.setAttribute('rx', '50'); // Circle-like
+
+                cytoplasm.setAttribute('width', '92');
+                cytoplasm.setAttribute('height', '92');
+                cytoplasm.setAttribute('x', '54');
+                cytoplasm.setAttribute('y', '54');
+                cytoplasm.setAttribute('rx', '46');
+
+                vacuole.setAttribute('r', '10');
+                nucleus.setAttribute('r', '20');
+                nucleus.setAttribute('cx', '100');
+                nucleus.setAttribute('cy', '100');
+                
+                desc.innerHTML = "විභාජක සෛලය: කුඩා, සම විෂ්කම්භක, මධ්‍යම න්‍යෂ්ටියක් සහිතයි.";
+            } else {
+                // Elongated, large vacuole, small nucleus
+                cellWall.setAttribute('width', '140');
+                cellWall.setAttribute('height', '70');
+                cellWall.setAttribute('x', '30');
+                cellWall.setAttribute('y', '65');
+                cellWall.setAttribute('rx', '10');
+
+                cytoplasm.setAttribute('width', '132');
+                cytoplasm.setAttribute('height', '62');
+                cytoplasm.setAttribute('x', '34');
+                cytoplasm.setAttribute('y', '69');
+                cytoplasm.setAttribute('rx', '8');
+
+                vacuole.setAttribute('r', '25');
+                nucleus.setAttribute('r', '10');
+                nucleus.setAttribute('cx', '50');
+                nucleus.setAttribute('cy', '100');
+                
+                desc.innerHTML = "පරිණත සෛලය: විශාල වීම, විශාල රික්තකයක් සහිත වීම.";
+            }
+        }
+
+        // --- SIMULATION 2: ROOT REGIONS ---
+        function showRootInfo(region) {
+            const infoBox = document.getElementById('rootInfo');
+            
+            // Highlight active region
+            document.querySelectorAll('.root-region').forEach(el => el.classList.remove('active'));
+            event.currentTarget.classList.add('active');
+
+            switch(region) {
+                case 'maturation':
+                    infoBox.innerHTML = "<strong>පරිණත වීමේ කලාපය:</strong> සෛල විශේෂිත වී පරිණත පටක බවට පත්වේ.";
+                    break;
+                case 'elongation':
+                    infoBox.innerHTML = "<strong>දිගු වීමේ කලාපය:</strong> සෛලවල දිග වැඩීම සිදුවේ.";
+                    break;
+                case 'meristem':
+                    infoBox.innerHTML = "<strong>විභාජන පටකය:</strong> සෛල සක්‍රීයව විභාජනය වීම සිදුවේ.";
+                    break;
+                case 'cap':
+                    infoBox.innerHTML = "<strong>මුදුන් පටකය (Root cap):</strong> අග්‍රස්ථ පටකය ආරක්ෂා කරයි.";
+                    break;
+            }
+        }
+
+        // --- QUIZ LOGIC ---
+        const quizData = [
+            {
+                q: "පාංශුකා පටකවල සෛලවල ප්‍රධාන ලක්ෂණය කුමක්ද?",
+                options: ["විශාල රික්තක තිබීම", "විභාජනය වීමේ හැකියාව", "ඝන සෛල බිත්ති තිබීම"],
+                ans: 1
+            },
+            {
+                q: "ශාකයක උස (දිග) වැඩීමට වගකිව යුත්තේ කුමන පටකයද?",
+                options: ["පාර්ශ්වික පටක", "අන්තර්කලා පටක", "අග්‍රස්ථ පටක"],
+                ans: 2
+            },
+            {
+                q: "මුල් හා දංඩවල කෙළවරවල පිහිටන පටක කුමක්ද?",
+                options: ["අග්‍රස්ථ පටක", "පාර්ශ්වික පටක", "කොර්ක් කේම්බියම්"],
+                ans: 0
+            }
+        ];
+
+        let currentQ = 0;
+        const quizContainer = document.getElementById('quiz-container');
+
+        function renderQuiz() {
+            if (currentQ >= quizData.length) {
+                quizContainer.innerHTML = `
+                    <h3 style="text-align:center; color:var(--primary);">සම්පූර්ණයි!</h3>
+                    <p style="text-align:center;">ඔබ සියලු ප්‍රශ්න සම්පූර්ණ කර ඇත.</p>
+                    <button class="sim-btn" style="display:block; margin: 20px auto;" onclick="resetQuiz()">නැවත උත්සාහ කරන්න</button>
+                `;
+                return;
+            }
+
+            const q = quizData[currentQ];
+            let html = `<div class="quiz-question">${currentQ + 1}. ${q.q}</div><div class="quiz-options">`;
+            
+            q.options.forEach((opt, index) => {
+                html += `<div class="quiz-opt" onclick="checkAnswer(${index}, this)">${opt}</div>`;
+            });
+            
+            html += `</div><div class="feedback" id="feedback"></div>`;
+            quizContainer.innerHTML = html;
+        }
+
+        function checkAnswer(selected, el) {
+            const q = quizData[currentQ];
+            const feedback = document.getElementById('feedback');
+            const options = document.querySelectorAll('.quiz-opt');
+
+            // Disable further clicks
+            options.forEach(opt => opt.style.pointerEvents = 'none');
+
+            if (selected === q.ans) {
+                el.classList.add('correct');
+                feedback.style.color = '#4caf50';
+                feedback.innerText = "නිවැරදියි!";
+            } else {
+                el.classList.add('wrong');
+                options[q.ans].classList.add('correct');
+                feedback.style.color = '#f44336';
+                feedback.innerText = "වැරදියි. නිවැරදි පිළිතුර කොළ පැහැයෙන් දැක්වේ.";
+            }
+
+            feedback.style.display = 'block';
+            
+            setTimeout(() => {
+                currentQ++;
+                renderQuiz();
+            }, 2000);
+        }
+
+        function resetQuiz() {
+            currentQ = 0;
+            renderQuiz();
+        }
+
+        // Initialize quiz
+        renderQuiz();
+
+    </script>
+<!-- ========== BIO HUB FLOATING NAV — DO NOT REMOVE ========== -->
+<style>
+.biohub-nav{
+  position:fixed;
+  left:50%;
+  transform:translateX(-50%);
+  bottom:calc(88px + env(safe-area-inset-bottom, 0px));
+  z-index:9999;
+  display:flex;
+  align-items:center;
+  gap:4px;
+  padding:6px;
+  background:rgba(15,40,24,.92);
+  backdrop-filter:blur(14px) saturate(180%);
+  -webkit-backdrop-filter:blur(14px) saturate(180%);
+  border:1px solid rgba(110,231,183,.25);
+  border-radius:999px;
+  box-shadow:0 8px 28px rgba(0,0,0,.35), 0 2px 8px rgba(0,0,0,.2);
+  font-family:'Noto Sans Sinhala',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+  -webkit-tap-highlight-color:transparent;
+}
+.biohub-nav a,
+.biohub-nav span.biohub-btn{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  width:44px;
+  height:44px;
+  border-radius:50%;
+  color:#ecfdf5;
+  background:transparent;
+  border:none;
+  font-size:18px;
+  line-height:1;
+  cursor:pointer;
+  text-decoration:none;
+  transition:background .15s, transform .1s;
+  -webkit-tap-highlight-color:transparent;
+}
+.biohub-nav a:hover{background:rgba(16,185,129,.28);color:#fff}
+.biohub-nav a:active,
+.biohub-nav span.biohub-btn:active{transform:scale(.92)}
+.biohub-nav a.biohub-home{background:rgba(16,185,129,.35);margin:0 2px}
+.biohub-nav a.biohub-home:hover{background:rgba(16,185,129,.55)}
+.biohub-nav .biohub-disabled{
+  opacity:.32;
+  cursor:not-allowed;
+  pointer-events:none;
+}
+@media (max-width:380px){
+  .biohub-nav a,.biohub-nav span.biohub-btn{width:40px;height:40px;font-size:16px}
+}
+@media (max-height:500px){
+  .biohub-nav{bottom:calc(20px + env(safe-area-inset-bottom, 0px))}
+}
+</style>
+<nav class="biohub-nav" aria-label="පාඩම් සංචාලනය">
+  <!-- PREV (see per-file table) -->
+  <span class="biohub-btn biohub-prev biohub-disabled" aria-label="පෙර පාඩමක් නැත" title="පෙර පාඩමක් නැත">◀</span>
+  <!-- HOME -->
+  <a href="index.html" class="biohub-home" aria-label="මුල් පිටුව" title="මුල් පිටුව">🏠</a>
+  <!-- NEXT (see per-file table) -->
+  <a href="2.html" class="biohub-next" aria-label="ඊළඟ පාඩම" title="ඊළඟ පාඩම">▶</a>
+</nav>
+<!-- ========== /BIO HUB FLOATING NAV ========== -->
+</body>
+</html>

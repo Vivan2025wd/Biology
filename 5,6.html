@@ -1,0 +1,1015 @@
+<!DOCTYPE html>
+<html lang="si">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>ශාක ජීව විද්‍යාව - Interactive Lesson</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Sinhala:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #f4f7f6;
+            --text-color: #2c3e50;
+            --primary-color: #2e7d32;
+            --secondary-color: #81c784;
+            --card-bg: #ffffff;
+            --nav-bg: #ffffff;
+            --border-color: #e0e0e0;
+            --highlight: #ffeb3b;
+            --shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        [data-theme="dark"] {
+            --bg-color: #121212;
+            --text-color: #e0e0e0;
+            --primary-color: #4caf50;
+            --secondary-color: #388e3c;
+            --card-bg: #1e1e1e;
+            --nav-bg: #1e1e1e;
+            --border-color: #333333;
+            --highlight: #ffc107;
+            --shadow: 0 4px 6px rgba(0,0,0,0.5);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Noto Sans Sinhala', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            transition: background-color 0.3s, color 0.3s;
+            padding-bottom: 70px; /* Space for bottom nav */
+        }
+
+        header {
+            background-color: var(--card-bg);
+            padding: 15px;
+            text-align: center;
+            box-shadow: var(--shadow);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        header h1 {
+            font-size: 1.2rem;
+            color: var(--primary-color);
+        }
+
+        #theme-toggle {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            padding: 5px;
+        }
+
+        main {
+            padding: 15px;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .section {
+            display: none;
+            animation: fadeIn 0.4s ease-in-out;
+        }
+
+        .section.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .card {
+            background-color: var(--card-bg);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: var(--shadow);
+        }
+
+        h2 {
+            color: var(--primary-color);
+            margin-bottom: 15px;
+            font-size: 1.3rem;
+            border-bottom: 2px solid var(--secondary-color);
+            padding-bottom: 5px;
+        }
+
+        h3 {
+            margin: 15px 0 10px;
+            font-size: 1.1rem;
+            color: var(--primary-color);
+        }
+
+        p, ul {
+            margin-bottom: 15px;
+        }
+
+        ul {
+            padding-left: 20px;
+        }
+
+        li {
+            margin-bottom: 8px;
+        }
+
+        .highlight {
+            background-color: var(--highlight);
+            color: #000;
+            padding: 2px 4px;
+            border-radius: 4px;
+            font-weight: 500;
+        }
+
+        /* Bottom Navigation */
+        nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background-color: var(--nav-bg);
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-around;
+            padding: 10px 0;
+            z-index: 100;
+            overflow-x: auto;
+        }
+
+        nav button {
+            background: none;
+            border: none;
+            color: var(--text-color);
+            font-size: 0.8rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            cursor: pointer;
+            padding: 5px 10px;
+            border-radius: 8px;
+            transition: background 0.2s;
+            min-width: 60px;
+        }
+
+        nav button.active {
+            color: var(--primary-color);
+            background-color: rgba(46, 125, 50, 0.1);
+            font-weight: bold;
+        }
+
+        nav button svg {
+            width: 24px;
+            height: 24px;
+            margin-bottom: 3px;
+            fill: currentColor;
+        }
+
+        /* Interactive Elements */
+        .interactive-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 20px 0;
+            background: var(--bg-color);
+            border-radius: 12px;
+            padding: 15px;
+            border: 1px solid var(--border-color);
+        }
+
+        .svg-wrapper {
+            width: 100%;
+            max-width: 400px;
+            margin-bottom: 15px;
+        }
+
+        svg {
+            width: 100%;
+            height: auto;
+            cursor: pointer;
+        }
+
+        .clickable-part {
+            transition: fill 0.3s, stroke 0.3s;
+        }
+
+        .clickable-part:hover {
+            fill: var(--secondary-color) !important;
+        }
+
+        .info-box {
+            background-color: var(--card-bg);
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid var(--primary-color);
+            width: 100%;
+            min-height: 80px;
+            font-size: 0.95rem;
+        }
+
+        .controls {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        button.btn {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 8px;
+            font-family: 'Noto Sans Sinhala', sans-serif;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: background 0.2s, transform 0.1s;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        button.btn:active {
+            transform: scale(0.95);
+        }
+
+        button.btn.secondary {
+            background-color: transparent;
+            color: var(--primary-color);
+            border: 1px solid var(--primary-color);
+        }
+
+        button.btn:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+            border-color: #ccc;
+            color: #666;
+        }
+
+        /* Simulation specific */
+        #stomata-sim {
+            position: relative;
+            width: 100%;
+            height: 250px;
+            background: #e0f7fa;
+            border-radius: 12px;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .guard-cell {
+            fill: #66bb6a;
+            stroke: #2e7d32;
+            stroke-width: 2;
+            transition: all 1s ease;
+        }
+
+        .pore {
+            fill: #121212;
+            transition: all 1s ease;
+        }
+
+        .particle {
+            transition: all 1s ease;
+        }
+
+        /* Quiz */
+        .quiz-option {
+            display: block;
+            width: 100%;
+            padding: 12px;
+            margin: 8px 0;
+            background-color: var(--bg-color);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            text-align: left;
+            color: var(--text-color);
+            font-family: 'Noto Sans Sinhala', sans-serif;
+            font-size: 1rem;
+            cursor: pointer;
+        }
+
+        .quiz-option.correct {
+            background-color: #c8e6c9;
+            border-color: #2e7d32;
+            color: #1b5e20;
+        }
+
+        .quiz-option.wrong {
+            background-color: #ffcdd2;
+            border-color: #c62828;
+            color: #b71c1c;
+        }
+
+        /* Flashcards */
+        .flashcard-container {
+            perspective: 1000px;
+            margin: 15px 0;
+        }
+
+        .flashcard {
+            width: 100%;
+            height: 150px;
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 0.6s;
+            cursor: pointer;
+        }
+
+        .flashcard.flipped {
+            transform: rotateY(180deg);
+        }
+
+        .flashcard-front, .flashcard-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            background-color: var(--card-bg);
+            border: 2px solid var(--primary-color);
+            border-radius: 12px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            text-align: center;
+            font-size: 1.1rem;
+            box-shadow: var(--shadow);
+        }
+
+        .flashcard-back {
+            transform: rotateY(180deg);
+            background-color: var(--primary-color);
+            color: white;
+            font-size: 0.95rem;
+        }
+
+        /* Progress Bar */
+        .progress-container {
+            width: 100%;
+            background-color: var(--border-color);
+            border-radius: 10px;
+            margin-bottom: 15px;
+            height: 10px;
+        }
+
+        .progress-bar {
+            height: 10px;
+            background-color: var(--primary-color);
+            border-radius: 10px;
+            width: 0%;
+            transition: width 0.3s;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>ශාක ජීව විද්‍යාව</h1>
+        <button id="theme-toggle" aria-label="Toggle Dark Mode">🌙</button>
+    </header>
+
+    <main>
+        <!-- මුල් පිටුව -->
+        <section id="home" class="section active">
+            <div class="card">
+                <h2>සාදරයෙන් පිළිගනිමු!</h2>
+                <p>මෙම අන්තර්ක්‍රියාකාරී ඉගෙනුම් යෙදුම මගින් ඔබේ පෙළපොතේ ඇති <strong>ශාක</strong> පාඩමෙහි අන්තර්ගතයන් සරලව හා පැහැදිලිව ඉගෙන ගත හැක.</p>
+                <p>පහත අංශ ඔස්සේ ගමන් කරමින් ඔබේ දැනුම ගොඩනගා ගන්න.</p>
+                <ul>
+                    <li>පත්‍රයේ අභ්‍යන්තර ව්‍යුහය</li>
+                    <li>සිදුරු විවෘත වීම හා වැසීමේ යාන්ත්‍රණය</li>
+                    <li>ජලය හා ඛනිජ අයන අත්පත් කරගැනීම</li>
+                    <li>දැනුම පරීක්ෂා කිරීම (විභාගය හා ෆ්ලෑෂ් කාඩ්පත්)</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- පත්‍රයේ ව්‍යුහය -->
+        <section id="leaf" class="section">
+            <div class="card">
+                <h2>පත්‍රයක අභ්‍යන්තර ව්‍යුහය</h2>
+                <p>පත්‍රයක කොටස් කිහිපයක් ඇත. පහත රූපයේ ඇති කොටස් මත ක්ලික් කර ඒවායේ කාර්යයන් දැනගන්න.</p>
+                
+                <div class="interactive-container">
+                    <div class="svg-wrapper">
+                        <!-- Interactive Leaf Cross-Section SVG -->
+                        <svg viewBox="0 0 400 300" xmlns="http://www.w3.org/2000/svg">
+                            <!-- Upper Epidermis -->
+                            <rect x="20" y="20" width="360" height="30" class="clickable-part" fill="#c8e6c9" stroke="#333" data-target="upper-epidermis"/>
+                            <text x="200" y="40" text-anchor="middle" font-size="12" fill="#333" pointer-events="none">ඉහළ එපිඩර්මිසය</text>
+                            
+                            <!-- Palisade Mesophyll -->
+                            <rect x="20" y="50" width="360" height="70" class="clickable-part" fill="#a5d6a7" stroke="#333" data-target="palisade"/>
+                            <text x="200" y="90" text-anchor="middle" font-size="12" fill="#333" pointer-events="none">පේශී සෛල (Palisade)</text>
+                            <!-- Palisade cells drawing -->
+                            <rect x="40" y="55" width="20" height="60" fill="#81c784" stroke="#333"/>
+                            <rect x="70" y="55" width="20" height="60" fill="#81c784" stroke="#333"/>
+                            <rect x="100" y="55" width="20" height="60" fill="#81c784" stroke="#333"/>
+                            <rect x="130" y="55" width="20" height="60" fill="#81c784" stroke="#333"/>
+                            <rect x="160" y="55" width="20" height="60" fill="#81c784" stroke="#333"/>
+                            <rect x="190" y="55" width="20" height="60" fill="#81c784" stroke="#333"/>
+                            <rect x="220" y="55" width="20" height="60" fill="#81c784" stroke="#333"/>
+                            <rect x="250" y="55" width="20" height="60" fill="#81c784" stroke="#333"/>
+                            <rect x="280" y="55" width="20" height="60" fill="#81c784" stroke="#333"/>
+                            <rect x="310" y="55" width="20" height="60" fill="#81c784" stroke="#333"/>
+                            <rect x="340" y="55" width="20" height="60" fill="#81c784" stroke="#333"/>
+                            
+                            <!-- Spongy Mesophyll -->
+                            <rect x="20" y="120" width="360" height="80" class="clickable-part" fill="#e8f5e9" stroke="#333" data-target="spongy"/>
+                            <text x="200" y="165" text-anchor="middle" font-size="12" fill="#333" pointer-events="none">ස්පොන්ජි සෛල (Spongy)</text>
+                            <!-- Spongy cells drawing -->
+                            <circle cx="60" cy="140" r="15" fill="#c8e6c9" stroke="#333"/>
+                            <circle cx="100" cy="150" r="15" fill="#c8e6c9" stroke="#333"/>
+                            <circle cx="140" cy="135" r="15" fill="#c8e6c9" stroke="#333"/>
+                            <circle cx="180" cy="155" r="15" fill="#c8e6c9" stroke="#333"/>
+                            <circle cx="220" cy="140" r="15" fill="#c8e6c9" stroke="#333"/>
+                            <circle cx="260" cy="150" r="15" fill="#c8e6c9" stroke="#333"/>
+                            <circle cx="300" cy="135" r="15" fill="#c8e6c9" stroke="#333"/>
+                            <circle cx="340" cy="155" r="15" fill="#c8e6c9" stroke="#333"/>
+                            
+                            <!-- Vascular Bundle -->
+                            <circle cx="200" cy="140" r="25" class="clickable-part" fill="#ffcc80" stroke="#333" data-target="vascular"/>
+                            <text x="200" y="145" text-anchor="middle" font-size="10" fill="#333" pointer-events="none">අභිවාහක</text>
+                            <text x="200" y="155" text-anchor="middle" font-size="10" fill="#333" pointer-events="none">කලාපය</text>
+                            
+                            <!-- Lower Epidermis -->
+                            <rect x="20" y="200" width="360" height="30" class="clickable-part" fill="#c8e6c9" stroke="#333" data-target="lower-epidermis"/>
+                            <text x="200" y="220" text-anchor="middle" font-size="12" fill="#333" pointer-events="none">යටි එපිඩර්මිසය</text>
+
+                            <!-- Stomata -->
+                            <g class="clickable-part" data-target="stomata">
+                                <path d="M 160 230 Q 170 250 160 270" fill="none" stroke="#333" stroke-width="4"/>
+                                <path d="M 180 230 Q 170 250 180 270" fill="none" stroke="#333" stroke-width="4"/>
+                                <text x="170" y="285" text-anchor="middle" font-size="12" fill="#333" pointer-events="none">සිදුරු</text>
+                            </g>
+                            
+                            <!-- Labels with lines (simplified) -->
+                            <line x1="10" y1="35" x2="20" y2="35" stroke="#333" stroke-width="1"/>
+                            <line x1="10" y1="215" x2="20" y2="215" stroke="#333" stroke-width="1"/>
+                        </svg>
+                    </div>
+                    <div class="info-box" id="leaf-info">
+                        කරුණාකර රූපයේ ඇති කොටසක් මත ක්ලික් කරන්න.
+                    </div>
+                </div>
+
+                <h3>පත්‍රයේ පටක</h3>
+                <ul>
+                    <li><strong>ඉහළ එපිඩර්මිසය:</strong> ආරක්ෂිත ආවරණයක් ලෙස ක්‍රියා කරයි. සාමාන්‍යයෙන් කියුටිකල් ස්තරයක් ඇත.</li>
+                    <li><strong>පේශී සෛල (Palisade Mesophyll):</strong> ආලෝකය උරාගැනීමට වැඩි ක්ලෝරොප්ලාස්ට් ප්‍රමාණයක් අඩංගු වේ.</li>
+                    <li><strong>ස්පොන්ජි සෛල (Spongy Mesophyll):</strong> වායු හුවමාරුව සඳහා විශාල අන්තර් සෛලීය අවකාශ ඇත.</li>
+                    <li><strong>අභිවාහක කලාපය:</strong> ජලය, ඛනිජ හා ආහාර ප්‍රවාහනය කරයි (Xylem & Phloem).</li>
+                    <li><strong>සිදුරු (Stomata):</strong> වායු හුවමාරුව සහ වාෂ්පෝත්සර්ජනය සිදුවේ.</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- සිදුරු යාන්ත්‍රණය -->
+        <section id="stomata" class="section">
+            <div class="card">
+                <h2>පුඩිකා විවෘත වීම හා වැසීමේ යාන්ත්‍රණය</h2>
+                <p>සිදුරු විවෘත වීම හා වැසීම <span class="highlight">ආරක්ෂක සෛල</span> (Guard cells) තුළ සිදුවන ජල චලනය මත රඳා පවතී. මෙය <strong>K+ අයන සිද්ධාන්තය</strong> මගින් පැහැදිලි කෙරේ.</p>
+                
+                <div class="interactive-container">
+                    <div id="stomata-sim">
+                        <!-- SVG for Stomata Simulation -->
+                        <svg viewBox="0 0 300 250" id="stomata-svg" xmlns="http://www.w3.org/2000/svg">
+                            <!-- Background -->
+                            <rect width="300" height="250" fill="#e0f7fa"/>
+                            
+                            <!-- Left Guard Cell -->
+                            <path id="left-cell" class="guard-cell" d="M 110 50 Q 60 125 110 200 Q 130 200 130 125 Q 130 50 110 50 Z" />
+                            
+                            <!-- Right Guard Cell -->
+                            <path id="right-cell" class="guard-cell" d="M 190 50 Q 240 125 190 200 Q 170 200 170 125 Q 170 50 190 50 Z" />
+                            
+                            <!-- Stomatal Pore -->
+                            <ellipse id="pore" class="pore" cx="150" cy="125" rx="15" ry="70" />
+                            
+                            <!-- K+ Ions (Red dots) -->
+                            <circle id="k1" class="particle" cx="80" cy="80" r="5" fill="#f44336" opacity="0"/>
+                            <circle id="k2" class="particle" cx="70" cy="125" r="5" fill="#f44336" opacity="0"/>
+                            <circle id="k3" class="particle" cx="80" cy="170" r="5" fill="#f44336" opacity="0"/>
+                            <circle id="k4" class="particle" cx="220" cy="80" r="5" fill="#f44336" opacity="0"/>
+                            <circle id="k5" class="particle" cx="230" cy="125" r="5" fill="#f44336" opacity="0"/>
+                            <circle id="k6" class="particle" cx="220" cy="170" r="5" fill="#f44336" opacity="0"/>
+                            
+                            <!-- Water Molecules (Blue dots) -->
+                            <circle id="w1" class="particle" cx="50" cy="125" r="4" fill="#2196f3" opacity="0"/>
+                            <circle id="w2" class="particle" cx="250" cy="125" r="4" fill="#2196f3" opacity="0"/>
+                            
+                            <!-- Labels -->
+                            <text x="150" y="230" text-anchor="middle" font-size="12" fill="#333" id="sim-status">සිදුරු වැසී ඇත (Flaccid)</text>
+                        </svg>
+                    </div>
+                    
+                    <div class="controls">
+                        <button class="btn" id="sim-open">විවෘත කරන්න (Open)</button>
+                        <button class="btn secondary" id="sim-close">වසන්න (Close)</button>
+                        <button class="btn" id="sim-reset" style="background-color: #f44336;">Reset</button>
+                    </div>
+                    <div class="info-box" id="sim-info" style="margin-top: 15px;">
+                        ආරක්ෂක සෛල තුළට K+ අයන ඇතුළු වීමෙන් ජලය ඇතුළු වී සෛල පිරී (Turgid) යයි. එවිට සිදුරු විවෘත වේ.
+                    </div>
+                </div>
+
+                <h3>යාන්ත්‍රණයේ පියවර</h3>
+                <ol>
+                    <li><strong>ආලෝකය ලැබීම:</strong> ආලෝකය ලැබෙන විට ආරක්ෂක සෛල තුළට K+ අයන ඇතුළු වේ.</li>
+                    <li><strong>ජලය ඇතුළු වීම:</strong> K+ සාන්ද්‍රණය වැඩි වීම නිසා අවට සෛලවලින් ආරක්ෂක සෛල තුළට ජලය ඇතුළු වේ (අධිස්‍රාවණය).</li>
+                    <li><strong>සෛල පිරීම (Turgid):</strong> ජලය ඇතුළු වීමෙන් ආරක්ෂක සෛල ඉදිමී සිදුරු විවෘත වේ.</li>
+                    <li><strong>වැසීම (Flaccid):</strong> අඳුරේදී හෝ ජල හිඟයකදී K+ අයන පිටවී, ජලය ඉවත් වී ආරක්ෂක සෛල හැකිළී සිදුරු වැසේ. මෙයට <strong>ABA (Abscisic Acid)</strong> බලපායි.</li>
+                </ol>
+            </div>
+        </section>
+
+        <!-- ජල අවශෝෂණය -->
+        <section id="absorption" class="section">
+            <div class="card">
+                <h2>ජලය හා ඛනිජ අයන අත්පත් කරගැනීම</h2>
+                <p>ශාකයකට අවශ්‍ය ජලය හා ඛනිජ ලවණ පසෙන් උරාගනු ලබන්නේ මුල් තුළිනි. මෙහිදී ප්‍රධාන වශයෙන් <span class="highlight">මුල් රෝම</span> (Root hairs) ක්‍රියා කරයි.</p>
+                
+                <div class="interactive-container">
+                    <div class="svg-wrapper">
+                        <!-- Root Hair SVG -->
+                        <svg viewBox="0 0 300 200" xmlns="http://www.w3.org/2000/svg">
+                            <!-- Soil Area -->
+                            <rect x="0" y="0" width="300" height="200" fill="#a1887f" opacity="0.3"/>
+                            
+                            <!-- Root Body -->
+                            <rect x="100" y="0" width="100" height="200" fill="#ffcc80" stroke="#333"/>
+                            
+                            <!-- Root Hair -->
+                            <path d="M 100 100 Q 50 100 40 80" fill="none" stroke="#333" stroke-width="3" class="clickable-part" data-target="root-hair"/>
+                            <text x="30" y="70" text-anchor="middle" font-size="10" fill="#333">මුල් රෝම</text>
+                            
+                            <!-- Vascular Tissue (Xylem) -->
+                            <path d="M 140 0 L 140 200" fill="none" stroke="#d32f2f" stroke-width="5" class="clickable-part" data-target="xylem"/>
+                            <text x="160" y="30" font-size="10" fill="#d32f2f">සංග ශාක පටක (Xylem)</text>
+                            
+                            <!-- Water particles -->
+                            <circle cx="60" cy="95" r="3" fill="#2196f3" class="water-particle"/>
+                            <circle cx="80" cy="100" r="3" fill="#2196f3" class="water-particle"/>
+                            <circle cx="100" cy="100" r="3" fill="#2196f3" class="water-particle"/>
+                            <circle cx="130" cy="100" r="3" fill="#2196f3" class="water-particle"/>
+                            
+                            <!-- Arrows showing movement -->
+                            <path d="M 60 90 L 90 100" stroke="#2196f3" stroke-width="2" marker-end="url(#arrow)"/>
+                            <path d="M 110 100 L 140 100" stroke="#2196f3" stroke-width="2" marker-end="url(#arrow)"/>
+                            
+                            <defs>
+                                <marker id="arrow" markerWidth="10" markerHeight="10" refX="0" refY="3" orient="auto">
+                                    <path d="M0,0 L0,6 L9,3 z" fill="#2196f3" />
+                                </marker>
+                            </defs>
+                            
+                            <text x="150" y="180" text-anchor="middle" font-size="12" fill="#333">ජලය හා ඛනිජ ලවණ</text>
+                        </svg>
+                    </div>
+                    <div class="info-box" id="root-info">
+                        මුල් රෝම මගින් පසෙහි ඇති ජලය හා ඛනිජ ලවණ උරාගනී. ඉන්පසු ඒවා සංග ශාක පටක (Xylem) හරහා ශාකයේ ඉහළ කොටස් වෙත ප්‍රවාහනය වේ.
+                    </div>
+                </div>
+                
+                <h3>වැදගත් කරුණු</h3>
+                <ul>
+                    <li>ජලය උරාගැනීම ප්‍රධාන වශයෙන් සිදුවන්නේ <strong>අධිස්‍රාවණය</strong> (Osmosis) මගිනි.</li>
+                    <li>ඛනිජ අයන උරාගැනීම සඳහා ශක්තිය (ATP) අවශ්‍ය විය හැක (Active Transport).</li>
+                    <li>මුල්වල ඇති ජල සාන්ද්‍රණය පසට වඩා අඩු විට ජලය ඇතුළු වේ.</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- විභාගය -->
+        <section id="quiz" class="section">
+            <div class="card">
+                <h2>දැනුම පරීක්ෂා කරන්න</h2>
+                <div class="progress-container">
+                    <div class="progress-bar" id="quiz-progress"></div>
+                </div>
+                <div id="quiz-container">
+                    <!-- Questions will be injected here -->
+                </div>
+                <button class="btn" id="next-question" style="display: none; width: 100%; margin-top: 15px;">ඊළඟ ප්‍රශ්නය</button>
+                <button class="btn" id="restart-quiz" style="display: none; width: 100%; margin-top: 15px;">නැවත අරඹන්න</button>
+            </div>
+        </section>
+
+        <!-- ෆ්ලෑෂ් කාඩ්පත් -->
+        <section id="flashcards" class="section">
+            <div class="card">
+                <h2>මතක තබා ගැනීමට</h2>
+                <p>කාඩ්පත මත ක්ලික් කර පිටුපස ඇති පිළිතුර බලන්න.</p>
+                <div id="flashcard-deck">
+                    <!-- Flashcards injected here -->
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <nav>
+        <button class="active" data-target="home">
+            <svg viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
+            මුල් පිටුව
+        </button>
+        <button data-target="leaf">
+            <svg viewBox="0 0 24 24"><path d="M17 8C8 10 5.9 16.17 3.82 21.34l1.89.66.95-2.3c.48.17.98.3 1.34.3C15 20 19 16 22 9c-3 3-7 4-11 2 3-1 5-4 6-8z"/></svg>
+            පත්‍රය
+        </button>
+        <button data-target="stomata">
+            <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-1-13h2v6h-2zm0 8h2v2h-2z"/></svg>
+            සිදුරු
+        </button>
+        <button data-target="absorption">
+            <svg viewBox="0 0 24 24"><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"/></svg>
+            අවශෝෂණය
+        </button>
+        <button data-target="quiz">
+            <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 17h-2v-2h2v2zm2.07-7.75l-.9.92C13.45 12.9 13 13.5 13 15h-2v-.5c0-1.1.45-2.1 1.17-2.83l1.24-1.26c.37-.36.59-.86.59-1.41 0-1.1-.9-2-2-2s-2 .9-2 2H8c0-2.21 1.79-4 4-4s4 1.79 4 4c0 .88-.36 1.68-.93 2.25z"/></svg>
+            විභාගය
+        </button>
+        <button data-target="flashcards">
+            <svg viewBox="0 0 24 24"><path d="M21 4H3c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h18c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm-10 9H8v2H6v-2H4v-2h2V9h2v2h3v2z"/></svg>
+            කාඩ්පත්
+        </button>
+    </nav>
+
+    <script>
+        // --- Navigation Logic ---
+        const navButtons = document.querySelectorAll('nav button');
+        const sections = document.querySelectorAll('.section');
+
+        navButtons.forEach(btn => {
+            btn.addEventListener('click', () => {
+                // Remove active from all
+                navButtons.forEach(b => b.classList.remove('active'));
+                sections.forEach(s => s.classList.remove('active'));
+                
+                // Add active to clicked
+                btn.classList.add('active');
+                const targetId = btn.getAttribute('data-target');
+                document.getElementById(targetId).classList.add('active');
+                
+                // Scroll to top
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            });
+        });
+
+        // --- Theme Toggle ---
+        const themeToggle = document.getElementById('theme-toggle');
+        const body = document.body;
+
+        themeToggle.addEventListener('click', () => {
+            if (body.getAttribute('data-theme') === 'dark') {
+                body.removeAttribute('data-theme');
+                themeToggle.textContent = '🌙';
+            } else {
+                body.setAttribute('data-theme', 'dark');
+                themeToggle.textContent = '☀️';
+            }
+        });
+
+        // --- Leaf Interaction Logic ---
+        const leafParts = document.querySelectorAll('.clickable-part');
+        const leafInfo = document.getElementById('leaf-info');
+
+        const leafDescriptions = {
+            'upper-epidermis': '<strong>ඉහළ එපිඩර්මිසය:</strong> පත්‍රයේ ඉහළම ස්තරයයි. ආරක්ෂාව සපයයි. මෙහි කියුටිකල් නම් ඉටි ස්තරයක් ඇති අතර එය ජලය අහිමිවීම වළක්වයි.',
+            'palisade': '<strong>පේශී සෛල (Palisade Mesophyll):</strong> තීරු හැඩැති සෛල වලින් සමන්විතයි. ප්‍රභාශ්ලේෂණය සඳහා අවශ්‍ය වන බහුල වශයෙන් ක්ලෝරොප්ලාස්ට් මේවායේ අඩංගු වේ.',
+            'spongy': '<strong>ස්පොන්ජි සෛල (Spongy Mesophyll):</strong> අක්‍රමවත් හැඩැති සෛල වලින් සමන්විතයි. මේවා අතර විශාල වායු අවකාශ ඇති අතර එය වායු හුවමාරුවට උපකාරී වේ.',
+            'vascular': '<strong>අභිවාහක කලාපය:</strong> පත්‍රයේ ඇති නාරටි වල කොටසකි. Xylem මගින් ජලය හා ඛනිජ ලවණද, Phloem මගින් සකස් කළ ආහාරද ප්‍රවාහනය කරයි.',
+            'lower-epidermis': '<strong>යටි එපිඩර්මිසය:</strong> පත්‍රයේ පහළම ස්තරයයි. මෙහි සිදුරු (Stomata) පිහිටා ඇත.',
+            'stomata': '<strong>සිදුරු (Stomata):</strong> ආරක්ෂක සෛල දෙකකින් වටවූ සිදුරකි. වායු හුවමාරුව (CO2 ඇතුළු වීම, O2 පිටවීම) සහ වාෂ්පෝත්සර්ජනය මෙහිදී සිදුවේ.'
+        };
+
+        leafParts.forEach(part => {
+            part.addEventListener('click', (e) => {
+                const target = e.currentTarget.getAttribute('data-target');
+                if (leafDescriptions[target]) {
+                    leafInfo.innerHTML = leafDescriptions[target];
+                    leafInfo.style.transform = 'scale(1.02)';
+                    setTimeout(() => leafInfo.style.transform = 'scale(1)', 200);
+                }
+            });
+        });
+
+        // --- Stomata Simulation Logic ---
+        const simOpenBtn = document.getElementById('sim-open');
+        const simCloseBtn = document.getElementById('sim-close');
+        const simResetBtn = document.getElementById('sim-reset');
+        const simStatus = document.getElementById('sim-status');
+        const simInfo = document.getElementById('sim-info');
+        
+        const leftCell = document.getElementById('left-cell');
+        const rightCell = document.getElementById('right-cell');
+        const pore = document.getElementById('pore');
+        
+        const kIons = document.querySelectorAll('[id^="k"]');
+        const wMolecules = document.querySelectorAll('[id^="w"]');
+
+        function resetSim() {
+            leftCell.setAttribute('d', 'M 110 50 Q 60 125 110 200 Q 130 200 130 125 Q 130 50 110 50 Z');
+            rightCell.setAttribute('d', 'M 190 50 Q 240 125 190 200 Q 170 200 170 125 Q 170 50 190 50 Z');
+            leftCell.style.fill = '#66bb6a';
+            rightCell.style.fill = '#66bb6a';
+            pore.setAttribute('rx', '5'); // Closed
+            simStatus.textContent = 'සිදුරු වැසී ඇත (Flaccid)';
+            simInfo.innerHTML = 'ආරක්ෂක සෛලවලින් ජලය ඉවත් වී හැකිළී ඇත. සිදුරු වැසී ඇත.';
+            
+            kIons.forEach(k => k.setAttribute('opacity', '0'));
+            wMolecules.forEach(w => w.setAttribute('opacity', '0'));
+        }
+
+        function openSim() {
+            // Swell cells
+            leftCell.setAttribute('d', 'M 100 40 Q 40 125 100 210 Q 140 210 130 125 Q 140 40 100 40 Z');
+            rightCell.setAttribute('d', 'M 200 40 Q 260 125 200 210 Q 160 210 170 125 Q 160 40 200 40 Z');
+            leftCell.style.fill = '#4caf50';
+            rightCell.style.fill = '#4caf50';
+            pore.setAttribute('rx', '25'); // Open
+            
+            simStatus.textContent = 'සිදුරු විවෘතයි (Turgid)';
+            simInfo.innerHTML = '<strong>යාන්ත්‍රණය:</strong> ආලෝකය ලැබෙන විට ආරක්ෂක සෛල තුළට K+ අයන ඇතුළු වේ. එවිට ජලය අධිස්‍රාවණයෙන් ඇතුළු වී සෛල ඉදිමී සිදුරු විවෘත වේ.';
+            
+            // Show particles
+            kIons.forEach((k, index) => {
+                k.setAttribute('opacity', '1');
+                // Animate K+ moving inwards
+                k.style.transform = index < 3 ? 'translateX(20px)' : 'translateX(-20px)';
+            });
+            wMolecules.forEach(w => {
+                w.setAttribute('opacity', '1');
+                w.style.transform = 'scale(1.5)';
+            });
+        }
+
+        function closeSim() {
+            // Shrink cells
+            leftCell.setAttribute('d', 'M 110 60 Q 80 125 110 190 Q 120 190 120 125 Q 120 60 110 60 Z');
+            rightCell.setAttribute('d', 'M 190 60 Q 220 125 190 190 Q 180 190 180 125 Q 180 60 190 60 Z');
+            leftCell.style.fill = '#81c784';
+            rightCell.style.fill = '#81c784';
+            pore.setAttribute('rx', '2'); // Closed
+            
+            simStatus.textContent = 'සිදුරු වැසී ඇත (Flaccid)';
+            simInfo.innerHTML = '<strong>යාන්ත්‍රණය:</strong> අඳුරේදී හෝ ජල හිඟයකදී K+ අයන පිටවේ. ජලය ඉවත් වී සෛල හැකිළේ. ABA හෝමෝනය මෙයට බලපායි.';
+            
+            kIons.forEach(k => {
+                k.setAttribute('opacity', '0');
+                k.style.transform = 'translateX(0)';
+            });
+            wMolecules.forEach(w => {
+                w.setAttribute('opacity', '0');
+                w.style.transform = 'scale(1)';
+            });
+        }
+
+        simOpenBtn.addEventListener('click', openSim);
+        simCloseBtn.addEventListener('click', closeSim);
+        simResetBtn.addEventListener('click', resetSim);
+        
+        resetSim(); // Initial state
+
+        // --- Root Interaction Logic ---
+        const rootParts = document.querySelectorAll('#absorption .clickable-part');
+        const rootInfo = document.getElementById('root-info');
+
+        const rootDescriptions = {
+            'root-hair': '<strong>මුල් රෝම:</strong> මුල් එපිඩර්මිසයේ සෛල ඇදී යාමෙන් සෑදේ. පස සමඟ ඇති මතුපිට වර්ගඵලය වැඩි කරයි. ජලය හා ඛනිජ ලවණ උරාගැනීම මෙහිදී සිදුවේ.',
+            'xylem': '<strong>සංග ශාක පටක (Xylem):</strong> මුල්වලින් උරාගන්නා ජලය හා ඛනිජ ලවණ කඳ හරහා පත්‍ර වෙත ප්‍රවාහනය කරයි.'
+        };
+
+        rootParts.forEach(part => {
+            part.addEventListener('click', (e) => {
+                const target = e.currentTarget.getAttribute('data-target');
+                if (rootDescriptions[target]) {
+                    rootInfo.innerHTML = rootDescriptions[target];
+                }
+            });
+        });
+
+        // --- Quiz Logic ---
+        const quizData = [
+            {
+                question: "පත්‍රයේ ඉහළ එපිඩර්මිසයට පහළින් පිහිටා ඇති, ප්‍රභාශ්ලේෂණයට බහුලව දායක වන සෛල වන්නේ?",
+                options: ["ස්පොන්ජි සෛල", "පේශී සෛල (Palisade)", "ආරක්ෂක සෛල", "අභිවාහක සෛල"],
+                answer: 1
+            },
+            {
+                question: "සිදුරු විවෘත වීමට ප්‍රධාන වශයෙන් හේතු වන්නේ කුමන අයනයක් ආරක්ෂක සෛල තුළට ඇතුළු වීමද?",
+                options: ["Na+", "Ca2+", "K+", "Cl-"],
+                answer: 2
+            },
+            {
+                question: "ජල හිඟයක් ඇති විට සිදුරු වැසීම සඳහා බලපාන හෝමෝනය කුමක්ද?",
+                options: ["ඔක්සින් (Auxin)", "ඇබ්සිසික් අම්ලය (ABA)", "ජිබරලින් (Gibberellin)", "සයිටොකයිනින් (Cytokinin)"],
+                answer: 1
+            },
+            {
+                question: "ශාකයක ජලය හා ඛනිජ ලවණ උරාගැනීම සිදුවන්නේ කුමන කොටසකින්ද?",
+                options: ["පත්‍රය", "කඳ", "මුල් රෝම", "මල"],
+                answer: 2
+            },
+            {
+                question: "ආරක්ෂක සෛල ජලය උරාගෙන පිරී තිබියදී (Turgid) පවතින විට සිදුවන්නේ කුමක්ද?",
+                options: ["සිදුරු වැසේ", "සිදුරු විවෘත වේ", "ප්‍රභාශ්ලේෂණය නතර වේ", "වාෂ්පෝත්සර්ජනය නතර වේ"],
+                answer: 1
+            }
+        ];
+
+        let currentQuestion = 0;
+        let score = 0;
+        const quizContainer = document.getElementById('quiz-container');
+        const nextBtn = document.getElementById('next-question');
+        const restartBtn = document.getElementById('restart-quiz');
+        const progressBar = document.getElementById('quiz-progress');
+
+        function loadQuestion() {
+            quizContainer.innerHTML = '';
+            const q = quizData[currentQuestion];
+            
+            const qElement = document.createElement('h3');
+            qElement.textContent = `ප්‍රශ්නය ${currentQuestion + 1}: ${q.question}`;
+            quizContainer.appendChild(qElement);
+
+            q.options.forEach((option, index) => {
+                const btn = document.createElement('button');
+                btn.className = 'quiz-option';
+                btn.textContent = option;
+                btn.addEventListener('click', () => checkAnswer(btn, index, q.answer));
+                quizContainer.appendChild(btn);
+            });
+
+            nextBtn.style.display = 'none';
+            updateProgress();
+        }
+
+        function checkAnswer(selectedBtn, selectedIndex, correctIndex) {
+            // Disable all options
+            const allOptions = quizContainer.querySelectorAll('.quiz-option');
+            allOptions.forEach(btn => btn.disabled = true);
+
+            if (selectedIndex === correctIndex) {
+                selectedBtn.classList.add('correct');
+                score++;
+            } else {
+                selectedBtn.classList.add('wrong');
+                allOptions[correctIndex].classList.add('correct');
+            }
+
+            nextBtn.style.display = 'block';
+        }
+
+        function updateProgress() {
+            const progress = (currentQuestion / quizData.length) * 100;
+            progressBar.style.width = `${progress}%`;
+        }
+
+        nextBtn.addEventListener('click', () => {
+            currentQuestion++;
+            if (currentQuestion < quizData.length) {
+                loadQuestion();
+            } else {
+                showResult();
+            }
+        });
+
+        function showResult() {
+            quizContainer.innerHTML = `
+                <h3>ඔබේ ලකුණු: ${score} / ${quizData.length}</h3>
+                <p>${score === quizData.length ? 'ඉතා හොඳයි! ඔබ සියලු ප්‍රශ්නවලට නිවැරදිව පිළිතුරු දුන්නා.' : 'තවත් වරක් උත්සාහ කරන්න. ඔබට පුළුවන්!'}</p>
+            `;
+            progressBar.style.width = '100%';
+            nextBtn.style.display = 'none';
+            restartBtn.style.display = 'block';
+        }
+
+        restartBtn.addEventListener('click', () => {
+            currentQuestion = 0;
+            score = 0;
+            progressBar.style.width = '0%';
+            restartBtn.style.display = 'none';
+            loadQuestion();
+        });
+
+        loadQuestion(); // Load first question
+
+        // --- Flashcards Logic ---
+        const flashcardsData = [
+            { front: "සිදුරු (Stomata)", back: "පත්‍රවල ඇති, ආරක්ෂක සෛල දෙකකින් වටවූ සිදුරු. වායු හුවමාරුව සහ වාෂ්පෝත්සර්ජනය සිදුවේ." },
+            { front: "පේශී සෛල", back: "පත්‍රයේ ඉහළ කොටසේ ඇති තීරු හැඩැති සෛල. ක්ලෝරොප්ලාස්ට් බහුලව ඇත." },
+            { front: "K+ අයන", back: "ආරක්ෂක සෛල තුළට ඇතුළු වී සිදුරු විවෘත කිරීමට උපකාරී වන අයනය." },
+            { front: "ABA (ඇබ්සිසික් අම්ලය)", back: "ජල හිඟයක් ඇති විට නිපදවෙන හෝමෝනය. සිදුරු වැසීමට හේතු වේ." },
+            { front: "මුල් රෝම", back: "මුල් එපිඩර්මිසයේ සෛල ඇදී යාමෙන් සෑදේ. ජලය හා ඛනිජ ලවණ උරාගනී." }
+        ];
+
+        const flashcardDeck = document.getElementById('flashcard-deck');
+
+        flashcardsData.forEach((data, index) => {
+            const container = document.createElement('div');
+            container.className = 'flashcard-container';
+            
+            const card = document.createElement('div');
+            card.className = 'flashcard';
+            
+            const front = document.createElement('div');
+            front.className = 'flashcard-front';
+            front.textContent = data.front;
+            
+            const back = document.createElement('div');
+            back.className = 'flashcard-back';
+            back.textContent = data.back;
+            
+            card.appendChild(front);
+            card.appendChild(back);
+            container.appendChild(card);
+            
+            card.addEventListener('click', () => {
+                card.classList.toggle('flipped');
+            });
+
+            flashcardDeck.appendChild(container);
+        });
+
+    </script>
+<!-- ========== BIO HUB FLOATING NAV — DO NOT REMOVE ========== -->
+<style>
+.biohub-nav{
+  position:fixed;
+  left:50%;
+  transform:translateX(-50%);
+  bottom:calc(88px + env(safe-area-inset-bottom, 0px));
+  z-index:9999;
+  display:flex;
+  align-items:center;
+  gap:4px;
+  padding:6px;
+  background:rgba(15,40,24,.92);
+  backdrop-filter:blur(14px) saturate(180%);
+  -webkit-backdrop-filter:blur(14px) saturate(180%);
+  border:1px solid rgba(110,231,183,.25);
+  border-radius:999px;
+  box-shadow:0 8px 28px rgba(0,0,0,.35), 0 2px 8px rgba(0,0,0,.2);
+  font-family:'Noto Sans Sinhala',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+  -webkit-tap-highlight-color:transparent;
+}
+.biohub-nav a,
+.biohub-nav span.biohub-btn{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  width:44px;
+  height:44px;
+  border-radius:50%;
+  color:#ecfdf5;
+  background:transparent;
+  border:none;
+  font-size:18px;
+  line-height:1;
+  cursor:pointer;
+  text-decoration:none;
+  transition:background .15s, transform .1s;
+  -webkit-tap-highlight-color:transparent;
+}
+.biohub-nav a:hover{background:rgba(16,185,129,.28);color:#fff}
+.biohub-nav a:active,
+.biohub-nav span.biohub-btn:active{transform:scale(.92)}
+.biohub-nav a.biohub-home{background:rgba(16,185,129,.35);margin:0 2px}
+.biohub-nav a.biohub-home:hover{background:rgba(16,185,129,.55)}
+.biohub-nav .biohub-disabled{
+  opacity:.32;
+  cursor:not-allowed;
+  pointer-events:none;
+}
+@media (max-width:380px){
+  .biohub-nav a,.biohub-nav span.biohub-btn{width:40px;height:40px;font-size:16px}
+}
+@media (max-height:500px){
+  .biohub-nav{bottom:calc(20px + env(safe-area-inset-bottom, 0px))}
+}
+</style>
+<nav class="biohub-nav" aria-label="පාඩම් සංචාලනය">
+  <!-- PREV (see per-file table) -->
+  <a href="3.html" class="biohub-prev" aria-label="පෙර පාඩම" title="පෙර පාඩම">◀</a>
+  <!-- HOME -->
+  <a href="index.html" class="biohub-home" aria-label="මුල් පිටුව" title="මුල් පිටුව">🏠</a>
+  <!-- NEXT (see per-file table) -->
+  <a href="7.,8.html" class="biohub-next" aria-label="ඊළඟ පාඩම" title="ඊළඟ පාඩම">▶</a>
+</nav>
+<!-- ========== /BIO HUB FLOATING NAV ========== -->
+</body>
+</html>

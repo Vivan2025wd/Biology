@@ -1,0 +1,1419 @@
+<!DOCTYPE html>
+<html lang="si">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ශාක තුළ පරිවහනය | අන්තර්ක්‍රියාකාරී ඉගෙනුම් මෙවලම</title>
+<style>
+  :root{
+    --bg:#0c1a14;
+    --surface:#132821;
+    --surface-2:#1b352a;
+    --surface-3:#20402f;
+    --line:rgba(233,241,232,0.09);
+    --text:#eaf1e8;
+    --muted:#8fa799;
+    --muted-2:#6c8478;
+    --water:#4fa3d8;
+    --water-2:#2c7bab;
+    --leaf:#7ab85f;
+    --leaf-2:#5a9645;
+    --amber:#dba053;
+    --coral:#d97a6c;
+    --wood:#a8815a;
+    --radius:10px;
+    --font: "Noto Sans Sinhala","Iskoola Pota","Nirmala UI","Segoe UI",system-ui,sans-serif;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;overflow-x:hidden;width:100%;}
+  body{
+    background:
+      radial-gradient(ellipse at 15% -10%, #163629 0%, transparent 55%),
+      radial-gradient(ellipse at 100% 110%, #0f2a20 0%, transparent 50%),
+      var(--bg);
+    color:var(--text);
+    font-family:var(--font);
+    min-height:100vh;
+    -webkit-font-smoothing:antialiased;
+  }
+  ::selection{background:var(--leaf-2);color:#fff;}
+  a{color:inherit;}
+
+  .app{
+    display:grid;
+    grid-template-columns:250px 1fr;
+    min-height:100vh;
+  }
+
+  /* ---------- Sidebar ---------- */
+  .sidebar{
+    background:linear-gradient(180deg,#0f231b,#0b1a14);
+    border-right:1px solid var(--line);
+    padding:22px 14px;
+    position:sticky;
+    top:0;
+    height:100vh;
+    overflow-y:auto;
+  }
+  .brand{
+    padding:6px 8px 18px 8px;
+    border-bottom:1px solid var(--line);
+    margin-bottom:16px;
+  }
+  .brand .mark{
+    font-size:26px;
+    line-height:1;
+    margin-bottom:6px;
+  }
+  .brand h1{
+    font-size:17px;
+    margin:0 0 3px 0;
+    font-weight:700;
+    letter-spacing:0.2px;
+  }
+  .brand p{
+    margin:0;
+    font-size:12px;
+    color:var(--muted);
+    line-height:1.5;
+  }
+  nav.tabs{display:flex;flex-direction:column;gap:4px;}
+  .tab-btn{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    text-align:right;
+    background:transparent;
+    border:1px solid transparent;
+    color:var(--muted);
+    padding:10px 12px;
+    border-radius:var(--radius);
+    cursor:pointer;
+    font-family:var(--font);
+    font-size:14px;
+    transition:background .15s ease, color .15s ease, border-color .15s ease;
+    width:100%;
+  }
+  .tab-btn .ic{font-size:17px;width:20px;text-align:center;flex-shrink:0;}
+  .tab-btn:hover{background:var(--surface);color:var(--text);}
+  .tab-btn.active{
+    background:var(--surface-2);
+    color:#fff;
+    border-color:var(--line);
+    box-shadow:inset 3px 0 0 var(--leaf);
+  }
+  .sidebar-foot{
+    margin-top:18px;
+    padding-top:14px;
+    border-top:1px solid var(--line);
+    font-size:11px;
+    color:var(--muted-2);
+    line-height:1.6;
+    padding-left:8px;
+  }
+
+  /* ---------- Main ---------- */
+  main{padding:28px 34px 80px 34px; max-width:1080px;}
+  .section{display:none;animation:fadein .3s ease;}
+  .section.active{display:block;}
+  @keyframes fadein{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:translateY(0);}}
+
+  .section-head{margin-bottom:22px;}
+  .eyebrow-row{display:flex;align-items:center;gap:8px;margin-bottom:6px;}
+  .section-head h2{
+    font-size:26px;
+    margin:0 0 8px 0;
+    font-weight:700;
+    letter-spacing:0.2px;
+  }
+  .section-head .lede{
+    color:var(--muted);
+    font-size:14.5px;
+    line-height:1.8;
+    max-width:74ch;
+  }
+
+  .card{
+    background:var(--surface);
+    border:1px solid var(--line);
+    border-radius:var(--radius);
+    padding:20px 22px;
+    margin-bottom:18px;
+  }
+  .card h3{
+    margin:0 0 10px 0;
+    font-size:16px;
+    font-weight:700;
+    color:var(--text);
+    display:flex;
+    align-items:center;
+    gap:8px;
+  }
+  .card h3 .dot{width:7px;height:7px;border-radius:50%;background:var(--leaf);flex-shrink:0;}
+  .card p{font-size:14px;line-height:1.9;color:#cdd9cc;margin:0 0 10px 0;}
+  .card ul{margin:0 0 10px 0;padding-right:20px;font-size:14px;line-height:1.9;color:#cdd9cc;}
+  .card ul li{margin-bottom:4px;}
+  .card .eq{
+    background:var(--surface-3);
+    border:1px solid var(--line);
+    border-radius:8px;
+    padding:12px 16px;
+    font-size:15px;
+    display:inline-block;
+    margin:6px 6px 6px 0;
+    color:var(--water);
+    font-weight:700;
+  }
+  .two-col{display:grid;grid-template-columns:1fr 1fr;gap:18px;}
+  @media (max-width:820px){.two-col{grid-template-columns:1fr;}}
+
+  .tag-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px;}
+  .tag{
+    font-size:12.5px;
+    padding:5px 11px;
+    border-radius:20px;
+    background:var(--surface-2);
+    border:1px solid var(--line);
+    color:var(--muted);
+  }
+
+  /* ---------- Simulation shell ---------- */
+  .sim-shell{
+    background:var(--surface);
+    border:1px solid var(--line);
+    border-radius:var(--radius);
+    padding:20px;
+    margin:18px 0;
+  }
+  .sim-head{display:flex;justify-content:space-between;align-items:flex-start;gap:14px;flex-wrap:wrap;margin-bottom:14px;}
+  .sim-head h3{margin:0;font-size:16px;}
+  .sim-head .sim-desc{font-size:13px;color:var(--muted);max-width:60ch;margin-top:4px;line-height:1.7;}
+  .sim-controls{
+    display:flex;flex-wrap:wrap;gap:10px;align-items:center;
+    background:var(--surface-2);
+    border:1px solid var(--line);
+    border-radius:8px;
+    padding:12px 14px;
+    margin-bottom:14px;
+  }
+  .ctrl-group{display:flex;flex-direction:column;gap:4px;min-width:150px;}
+  .ctrl-group label{font-size:12px;color:var(--muted);display:flex;justify-content:space-between;}
+  .ctrl-group label span.val{color:var(--water);font-weight:700;}
+  input[type=range]{
+    -webkit-appearance:none;
+    width:100%;
+    height:4px;
+    border-radius:2px;
+    background:linear-gradient(90deg,var(--leaf-2),var(--water-2));
+    outline:none;
+  }
+  input[type=range]::-webkit-slider-thumb{
+    -webkit-appearance:none;
+    width:15px;height:15px;border-radius:50%;
+    background:#fff;border:2px solid var(--water);
+    cursor:pointer;
+  }
+  .btn{
+    font-family:var(--font);
+    background:var(--surface-3);
+    color:var(--text);
+    border:1px solid var(--line);
+    padding:8px 15px;
+    border-radius:7px;
+    cursor:pointer;
+    font-size:13px;
+    transition:background .15s;
+  }
+  .btn:hover{background:#2a4c37;}
+  .btn.primary{background:var(--leaf-2);border-color:var(--leaf-2);color:#08160e;font-weight:700;}
+  .btn.primary:hover{background:var(--leaf);}
+  .btn.ghost{background:transparent;}
+  .btn-row{display:flex;gap:8px;flex-wrap:wrap;}
+  .seg{display:flex;border:1px solid var(--line);border-radius:7px;overflow:hidden;}
+  .seg button{
+    font-family:var(--font);
+    background:var(--surface-2);
+    color:var(--muted);
+    border:none;
+    padding:8px 13px;
+    font-size:13px;
+    cursor:pointer;
+    border-left:1px solid var(--line);
+  }
+  .seg button:first-child{border-left:none;}
+  .seg button.active{background:var(--water-2);color:#fff;}
+
+  canvas{
+    display:block;
+    width:100%;
+    max-width:100%;
+    background:linear-gradient(180deg,#0e2119,#0a1712);
+    border-radius:8px;
+    border:1px solid var(--line);
+    touch-action:pan-y;
+  }
+  .sim-shell, .card{max-width:100%;overflow:hidden;}
+
+  .readout{
+    display:flex;gap:10px;flex-wrap:wrap;margin-top:12px;
+  }
+  .readout .box{
+    background:var(--surface-2);
+    border:1px solid var(--line);
+    border-radius:8px;
+    padding:10px 14px;
+    min-width:120px;
+    flex:1;
+  }
+  .readout .box .lbl{font-size:11px;color:var(--muted);margin-bottom:3px;}
+  .readout .box .num{font-size:18px;font-weight:700;}
+  .status-pill{
+    display:inline-block;padding:4px 12px;border-radius:20px;font-size:12.5px;font-weight:700;
+    margin-top:6px;
+  }
+  .legend{display:flex;gap:14px;flex-wrap:wrap;margin-top:10px;font-size:12px;color:var(--muted);}
+  .legend span{display:inline-flex;align-items:center;gap:6px;}
+  .legend i{width:10px;height:10px;border-radius:50%;display:inline-block;}
+
+  /* ---------- Quiz ---------- */
+  .quiz-card{
+    background:var(--surface);
+    border:1px solid var(--line);
+    border-radius:var(--radius);
+    padding:22px;
+    margin-bottom:16px;
+  }
+  .quiz-progress{
+    display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;
+    font-size:13px;color:var(--muted);
+  }
+  .quiz-bar{height:5px;background:var(--surface-3);border-radius:4px;overflow:hidden;margin-bottom:18px;}
+  .quiz-bar-fill{height:100%;background:linear-gradient(90deg,var(--leaf-2),var(--water));width:0%;transition:width .3s;}
+  .qtext{font-size:16px;font-weight:700;margin-bottom:16px;line-height:1.7;}
+  .opt{
+    display:block;width:100%;text-align:right;
+    background:var(--surface-2);
+    border:1px solid var(--line);
+    color:var(--text);
+    padding:12px 16px;
+    border-radius:8px;
+    margin-bottom:9px;
+    cursor:pointer;
+    font-family:var(--font);
+    font-size:14px;
+    transition:border-color .15s, background .15s;
+  }
+  .opt:hover{border-color:var(--water-2);}
+  .opt.correct{background:rgba(122,184,95,0.18);border-color:var(--leaf);}
+  .opt.wrong{background:rgba(217,122,108,0.18);border-color:var(--coral);}
+  .opt.disabled{pointer-events:none;}
+  .explain{
+    margin-top:14px;padding:14px 16px;border-radius:8px;
+    background:var(--surface-3);border:1px solid var(--line);
+    font-size:13.5px;line-height:1.8;color:#d8e3d6;display:none;
+  }
+  .quiz-nav{display:flex;justify-content:space-between;margin-top:18px;}
+  .score-screen{text-align:center;padding:30px 10px;}
+  .score-screen .big{font-size:44px;font-weight:700;color:var(--leaf);}
+
+  footer.credit{
+    text-align:center;color:var(--muted-2);font-size:12px;margin-top:40px;padding-bottom:10px;
+  }
+
+  @media (max-width:880px){
+    .app{grid-template-columns:1fr;}
+    .sidebar{position:relative;height:auto;top:auto;padding:14px 12px;}
+    nav.tabs{flex-direction:row;flex-wrap:wrap;gap:6px;}
+    .tab-btn{width:auto;flex:1 1 auto;justify-content:center;text-align:center;padding:9px 10px;font-size:13px;}
+    .sidebar-foot{display:none;}
+    main{padding:16px;}
+    .section-head h2{font-size:21px;}
+  }
+  @media (max-width:600px){
+    main{padding:12px;}
+    .card, .sim-shell, .quiz-card{padding:14px 14px;}
+    .section-head h2{font-size:19px;}
+    .ctrl-group{min-width:0;flex:1 1 100%;}
+    .sim-controls{flex-direction:column;align-items:stretch;}
+    .seg{width:100%;}
+    .seg button{flex:1;font-size:12px;padding:8px 6px;}
+    .readout .box{min-width:0;flex:1 1 calc(50% - 10px);}
+    .two-col{gap:12px;}
+    .btn-row{width:100%;}
+    .btn-row .btn{flex:1;}
+    .eq{font-size:13.5px;padding:10px 12px;}
+    canvas{touch-action:pan-y;}
+  }
+
+  button:focus-visible, input:focus-visible, .opt:focus-visible{
+    outline:2px solid var(--water);outline-offset:2px;
+  }
+  @media (prefers-reduced-motion: reduce){
+    *{animation-duration:0.001ms !important;}
+  }
+</style>
+</head>
+<body>
+<div class="app">
+
+  <!-- ============ SIDEBAR ============ -->
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="mark">🌿</div>
+      <h1>ශාක තුළ පරිවහනය</h1>
+      <p>අ.පො.ස. (උසස් පෙළ) ජීව විද්‍යාව — අන්තර්ක්‍රියාකාරී විදුහල</p>
+    </div>
+    <nav class="tabs" id="tabNav">
+      <button class="tab-btn active" data-tab="t1"><span class="ic">🧭</span> යාන්ත්‍රණ හැඳින්වීම</button>
+      <button class="tab-btn" data-tab="t2"><span class="ic">💧</span> ජල විභවය</button>
+      <button class="tab-btn" data-tab="t3"><span class="ic">🌱</span> මුල හා අරීය පරිවහනය</button>
+      <button class="tab-btn" data-tab="t4"><span class="ic">🌳</span> ශයිලමය තුළ ආරෝහණය</button>
+      <button class="tab-btn" data-tab="t5"><span class="ic">📝</span> දැනුම පරීක්ෂාව</button>
+    </nav>
+    <div class="sidebar-foot">
+      සම්පත් පොත් අන්තර්ගතය පදනම් කරගෙන සකසන ලද අනුමාන ඉගෙනුම් මෙවලමකි. සමීකරණ හා රූප ස්වයං-ජනිතයි.
+    </div>
+  </aside>
+
+  <!-- ============ MAIN ============ -->
+  <main>
+
+    <!-- ================= TAB 1 : MECHANISMS ================= -->
+    <section class="section active" id="t1">
+      <div class="section-head">
+        <h2>පරිවහන අවශ්‍යතාවය සහ යාන්ත්‍රණ</h2>
+        <p class="lede">ශාකයක ජීවී පටක සියල්ල එකිනෙකට ආසන්නව නොපිහිටන බැවින්, ජලය, ඛනිජ අයන සහ කාබනික ද්‍රව්‍ය එක් ප්‍රදේශයක සිට තවත් ප්‍රදේශයකට ගමන් කළ යුතුය. මෙම ගමන කෙටි දුර (සෛලයේ සිට සෛලයට) හෝ දිගු දුර (මුල සිට කොළයට) විය හැක.</p>
+      </div>
+
+      <div class="tag-row">
+        <span class="tag">කෙටි දුර පරිවහනය</span>
+        <span class="tag">දිගු දුර පරිවහනය</span>
+        <span class="tag">අක්‍රිය පරිවහනය</span>
+        <span class="tag">සක්‍රිය පරිවහනය</span>
+        <span class="tag">තොග ප්‍රවාහය</span>
+      </div>
+
+      <div class="two-col">
+        <div class="card">
+          <h3><span class="dot" style="background:var(--water)"></span> අක්‍රිය පරිවහනය (Passive)</h3>
+          <p>බාහිර ශක්තියක් (ATP) වැයනොකර, සාන්ද්‍රණ අනුක්‍රමය ඔස්සේ (වැඩි සිට අඩු කරා) සිදුවන ස්වයංසිද්ධ චලිතයකි.</p>
+          <ul>
+            <li><b>විසරණය:</b> අණු තමන්ගේ තාප ශක්තිය නිසා අහඹු ලෙස ව්‍යාප්ත වීම.</li>
+            <li><b>ආස්‍රැතිය:</b> අර්ධ පාරගම්‍ය පටලයක් හරහා ජලයේ විසරණය.</li>
+            <li><b>නිපානය:</b> වියළි කොලොයිඩ ද්‍රව්‍ය ජලය අවශෝෂණය කර ඉදිමීම (බීජ පැළවීමේදී).</li>
+            <li><b>පහසු කළ විසරණය:</b> නාල හෝ වාහක ප්‍රෝටීන ඔස්සේ, ATP රහිතව, සාන්ද්‍රණ අනුක්‍රමයටම සිදුවේ.</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h3><span class="dot" style="background:var(--amber)"></span> සක්‍රිය පරිවහනය (Active)</h3>
+          <p>සාන්ද්‍රණ අනුක්‍රමයට එරෙහිව (අඩු සිට වැඩි කරා) ද්‍රව්‍ය ගමන් කරවීම සඳහා ATP ශක්තිය භාවිත කරන වාහක ප්‍රෝටීන මගින් සිදුවේ.</p>
+          <p>මූලික උදාහරණය: මුල් රෝම සෛල මගින් පාංශු ද්‍රාවණයේ සිට K⁺ වැනි ඛනිජ අයන සෛලය තුළට ගෙනඑම — මෙය සෛලය තුළ ජල විභවය අඩුකර, ජලය සඳහා ආස්‍රැතික අනුක්‍රමයක් ද ඇති කරයි.</p>
+          <p style="margin-top:10px;"><b>තොග ප්‍රවාහය</b> (Bulk Flow) පීඩන අනුක්‍රමයක් මගින් මෙහෙයවෙන, දිගු දුර ප්‍රවාහනයට යොදාගන්නා ක්‍රමයකි — උදා: ශයිලමය තුළ ජලය හා ෆ්ලෝයමය තුළ කාබනික ද්‍රව්‍ය ගමන් කිරීම.</p>
+        </div>
+      </div>
+
+      <div class="sim-shell">
+        <div class="sim-head">
+          <div>
+            <h3>අනුකරණය A — පහසු කළ විසරණය සහ සක්‍රිය පරිවහනය</h3>
+            <div class="sim-desc">නාල ප්‍රෝටීනය (Channel) හෝ වාහක ප්‍රෝටීනය (Carrier) තෝරන්න, පසුව අක්‍රිය/සක්‍රිය මාදිලිය මාරු කර අණු චලිතය බලන්න. සක්‍රිය මාදිලියේදී ATP පරිභෝජනය වන අයුරු දැක්වේ.</div>
+          </div>
+        </div>
+        <div class="sim-controls">
+          <div class="ctrl-group">
+            <label>ප්‍රෝටීන වර්ගය</label>
+            <div class="seg" id="segProtein">
+              <button class="active" data-v="channel">නාල ප්‍රෝටීන</button>
+              <button data-v="carrier">වාහක ප්‍රෝටීන</button>
+            </div>
+          </div>
+          <div class="ctrl-group">
+            <label>පරිවහන ආකාරය</label>
+            <div class="seg" id="segMode">
+              <button class="active" data-v="passive">අක්‍රිය (ගරාඩියෙන් පහළට)</button>
+              <button data-v="active">සක්‍රිය (ATP භාවිතයෙන්)</button>
+            </div>
+          </div>
+          <div class="ctrl-group" style="min-width:130px;">
+            <label>අණු ගණන <span class="val" id="simACountVal">14</span></label>
+            <input type="range" id="simACount" min="4" max="26" value="14">
+          </div>
+        </div>
+        <canvas id="canvasA" height="300"></canvas>
+        <div class="legend">
+          <span><i style="background:var(--water)"></i> ද්‍රව්‍ය අණුව</span>
+          <span><i style="background:var(--amber)"></i> ATP ශක්තිය</span>
+          <span><i style="background:#5c7568"></i> පටල ප්‍රෝටීනය</span>
+        </div>
+        <div class="readout">
+          <div class="box"><div class="lbl">දිශාව</div><div class="num" id="simADir">වැඩි→අඩු</div></div>
+          <div class="box"><div class="lbl">ATP භාවිතය</div><div class="num" id="simAATP">නැත</div></div>
+          <div class="box"><div class="lbl">තත්ත්‍වය</div><div class="num" id="simAStatus">ධාවනය වෙමින්</div></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= TAB 2 : WATER POTENTIAL ================= -->
+    <section class="section" id="t2">
+      <div class="section-head">
+        <h2>ජල විභව සංකල්පය (Ψ)</h2>
+        <p class="lede">ජල විභවය යනු දිය කරන ලද ද්‍රව්‍ය සාන්ද්‍රණයෙන් හා පීඩනයෙන් බලපෑමට ලක්වන, ජලයේ ගමන් කිරීමේ ප්‍රවණතාව මනින මිනුමකි. ශුද්ධ ජලයේ Ψ = 0 MPa ලෙස ගනු ලැබේ; ජලය සැමවිටම වැඩි Ψ අගයකින් අඩු Ψ අගයක් වෙතට ගමන් කරයි.</p>
+      </div>
+
+      <div class="card">
+        <h3><span class="dot"></span> මූලික සමීකරණය</h3>
+        <div class="eq">Ψ = Ψs + Ψp</div>
+        <p style="margin-top:8px;">Ψs — ද්‍රාව්‍ය විභවය (solute potential) — සැමවිටම ‍ऋण (−) අගයකි; ද්‍රාව්‍ය සාන්ද්‍රණය වැඩිවත්ම වඩාත් ‍ऋण වේ.<br>
+        Ψp — පීඩන විභවය (pressure potential) — සෛලයක ශූනතා පීඩනය සඳහා ධන (+), ශයිලමයේ ආතතිය සඳහා ‍ऋण (−) විය හැක.</p>
+      </div>
+
+      <div class="sim-shell">
+        <div class="sim-head">
+          <div>
+            <h3>අනුකරණය B — ජල විභව ගණකය සහ සෛල හැසිරීම් දර්ශකය</h3>
+            <div class="sim-desc">සෛලයේ මූලික ද්‍රාව්‍ය විභවය (Ψs) සහ එය ලා ඇති බාහිර ද්‍රාවණයේ ජල විභවය (Ψ බාහිර) සකසන්න, පසුව ධාවනය කර සෛලය ශූනතාවට, ගිලින බවට, හෝ ප්ලාස්මෝලීසයට ලක්වන අයුරු බලන්න.</div>
+          </div>
+        </div>
+        <div class="sim-controls">
+          <div class="ctrl-group">
+            <label>සෛලයේ Ψs (මූලික) <span class="val" id="psiSVal">-0.8</span> MPa</label>
+            <input type="range" id="psiS" min="-2.0" max="-0.2" step="0.1" value="-0.8">
+          </div>
+          <div class="ctrl-group">
+            <label>බාහිර ද්‍රාවණයේ Ψ <span class="val" id="psiExtVal">0.0</span> MPa</label>
+            <input type="range" id="psiExt" min="-2.0" max="0" step="0.1" value="0">
+          </div>
+          <div class="btn-row">
+            <button class="btn primary" id="btnRunB">ධාවනය කරන්න</button>
+            <button class="btn ghost" id="btnResetB">යළි සකසන්න</button>
+          </div>
+        </div>
+        <canvas id="canvasB" height="300"></canvas>
+        <div class="readout">
+          <div class="box"><div class="lbl">Ψs (වර්තමාන)</div><div class="num" id="outPsiS">-0.80</div></div>
+          <div class="box"><div class="lbl">Ψp (වර්තමාන)</div><div class="num" id="outPsiP">0.00</div></div>
+          <div class="box"><div class="lbl">Ψ සෛලය = Ψs+Ψp</div><div class="num" id="outPsiCell">-0.80</div></div>
+          <div class="box"><div class="lbl">සෛල තත්ත්වය</div><div class="num" id="outCellState">ශූනතා (Turgid)</div></div>
+        </div>
+        <div class="legend">
+          <span><i style="background:#5a9645"></i> සෛල බිත්තිය</span>
+          <span><i style="background:#7bc0e0"></i> ප්‍රොටොප්ලාස්මය</span>
+          <span><i style="background:var(--water)"></i> ජල චලිත දිශාව</span>
+        </div>
+      </div>
+
+      <div class="two-col">
+        <div class="card">
+          <h3><span class="dot" style="background:var(--coral)"></span> ප්ලාස්මෝලීසය</h3>
+          <p>සෛලය අධි-ට්ටොනික (ඉතා ‍ऋण Ψ) ද්‍රාවණයක තැබූ විට, ජලය අඛණ්ඩව සෛලයෙන් පිටතට ගමන් කරයි. ප්‍රොටොප්ලාස්මය හැකිලී සෛල බිත්තියෙන් ඉවතට වෙන් වේ. මෙහිදී Ψp = 0 බවට පත් වේ, එනිසා Ψසෛලය = Ψs පමණි.</p>
+        </div>
+        <div class="card">
+          <h3><span class="dot" style="background:var(--leaf)"></span> සම්පූර්ණ ශූනතාව</h3>
+          <p>සෛලය ශුද්ධ ජලයේ (Ψ=0) තැබූ විට, ජලය සෛලය තුළට ඇතුල් වී ප්‍රොටොප්ලාස්මය සෛල බිත්තියට එරෙහිව පීඩනය යෙදීම නිසා Ψp ධන අගයක් දක්වා ඉහළ යයි. අවසානයේ Ψp = −Ψs බැවින් Ψසෛලය = 0 බවට සමතුලිත වේ; ජල ශුද්ධ චලිතය නවතී.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= TAB 3 : RADIAL TRANSPORT ================= -->
+    <section class="section" id="t3">
+      <div class="section-head">
+        <h2>පසෙහි සිට මුලට හා අරීය ජල පරිවහනය</h2>
+        <p class="lede">මුල් රෝම සෛල මගින් K⁺ වැනි අයන සක්‍රියව අවශෝෂණය කිරීමෙන් සෛලය තුළ ද්‍රාව්‍ය සාන්ද්‍රණය ඉහළ නංවා, ජලය ආස්‍රැතික ලෙස සෛලයට ඇද ගැනීම ආරම්භ කරයි. ඉන්පසු එම ජලය මාර්ග තුනකින් එකකින් අරීයව (රේඛීයව) ගමන් කර ශයිලමයට ළඟා වේ.</p>
+      </div>
+
+      <div class="sim-shell">
+        <div class="sim-head">
+          <div>
+            <h3>අනුකරණය C — අරීය පරිවහන මාර්ග ගවේෂකය</h3>
+            <div class="sim-desc">මුල් හරස්කඩක් තුළින් ජල අණුවක ගමන් මග තෝරාගෙන ධාවනය කරන්න. ඇපෝප්ලාස්ට මාර්ගය කැස්පාරි පටිය අබියස නවතින අයුරු බලන්න.</div>
+          </div>
+        </div>
+        <div class="sim-controls">
+          <div class="ctrl-group">
+            <label>මාර්ගය තෝරන්න</label>
+            <div class="seg" id="segRoute">
+              <button class="active" data-v="apoplast">ඇපෝප්ලාස්ට</button>
+              <button data-v="symplast">සිම්ප්ලාස්ට</button>
+              <button data-v="transmembrane">පටල හරහා</button>
+            </div>
+          </div>
+          <div class="btn-row">
+            <button class="btn primary" id="btnRunC">අණුව යවන්න</button>
+            <button class="btn ghost" id="btnClearC">හිස් කරන්න</button>
+          </div>
+        </div>
+        <canvas id="canvasC" height="320"></canvas>
+        <div class="legend">
+          <span><i style="background:var(--water)"></i> ජල අණුව</span>
+          <span><i style="background:#4a3323"></i> කැස්පාරි පටිය (සුබරින්)</span>
+          <span><i style="background:#8fa799"></i> සෛල බිත්ති (ඇපෝප්ලාස්ට මාර්ගය)</span>
+          <span><i style="background:#5a9645"></i> ප්ලාස්මබන්ධ (සිම්ප්ලාස්ට මාර්ගය)</span>
+        </div>
+        <div class="readout">
+          <div class="box"><div class="lbl">වර්තමාන මාර්ගය</div><div class="num" id="outRoute">ඇපෝප්ලාස්ට</div></div>
+          <div class="box"><div class="lbl">තත්ත්වය</div><div class="num" id="outRouteStatus">සූදානම්</div></div>
+        </div>
+      </div>
+
+      <div class="two-col">
+        <div class="card">
+          <h3><span class="dot" style="background:#8fa799"></span> ඇපෝප්ලාස්ට මාර්ගය</h3>
+          <p>ජීවී නොවන සෛල බිත්ති හා අන්තර සෛලීය අවකාශ ඔස්සේ, කිසිදු පටලයක් හරහා නොගොස්, ඉතා ඉක්මනින් ගමන් කරයි. නමුත් අන්තශ්චර්මයේ (එන්ඩෝඩර්මිස්) කැස්පාරි පටිය (සුබරින් තැන්පත් වූ) මගින් මෙම මාර්ගය අවහිර කරයි — එහිදී ජලයට සිම්ප්ලාස්ට මාර්ගයට හැරී යාමට සිදුවේ.</p>
+        </div>
+        <div class="card">
+          <h3><span class="dot" style="background:var(--leaf)"></span> සිම්ප්ලාස්ට හා පටල හරහා මාර්ග</h3>
+          <p><b>සිම්ප්ලාස්ට:</b> සෛල අතර පිහිටි ප්ලාස්මබන්ධ (plasmodesmata) හරහා අඛණ්ඩ සයිටොසෝල ජාලයක් ඔස්සේ ගමන් කරයි — කැස්පාරි පටියෙන් බාධා නොවේ.</p>
+          <p><b>පටල හරහා මාර්ගය:</b> එක් එක් සෛලයේ පටල දෙකක් (ඇතුල්වීම/පිටවීම) හරහා නැවත නැවතත් තරණය කරමින් ගමන් කරයි — වඩාත් සෙමින් සිදුවේ.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= TAB 4 : XYLEM ASCENT ================= -->
+    <section class="section" id="t4">
+      <div class="section-head">
+        <h2>ශයිලමය තුළ රසාදේශ ගමනාගමනය — සංසක්ති-ආතන්ය සිද්ධාන්තය</h2>
+        <p class="lede">කොළවල උත්ස්වේදනය (transpiration) නිසා මධ්‍යපත්‍ර සෛල මතුපිටින් ජලය වාෂ්ප වී, එම ස්ථානවල ‍ऋण පීඩනයක් (ඇදුමක්) ජනිත කරයි. මෙම ඇදුම අඛණ්ඩ ජල කඳක් හරහා මුල දක්වා පැතිර යයි.</p>
+      </div>
+
+      <div class="two-col">
+        <div class="card">
+          <h3><span class="dot" style="background:var(--water)"></span> සංසක්තිය (Cohesion)</h3>
+          <p>ජල අණු අතර හයිඩ්‍රජන් බන්ධන මගින් ඇතිවන අන්‍යෝන්‍ය ආකර්ෂණය. මෙය ජල කඳ නොකැඩී තබා ගැනීමට උපකාරී වේ — විශාල ආතන්‍යයක් යටතේ වුවද.</p>
+        </div>
+        <div class="card">
+          <h3><span class="dot" style="background:var(--wood)"></span> ආසක්තිය (Adhesion)</h3>
+          <p>ජල අණු සහ ශයිලම බිත්තියේ සෙලියුලෝස් අතර ඇතිවන ආකර්ෂණය. මෙය කුඩා ශයිලම නාල තුළින් ජලය ඉහළට ඇදීමට (කේශික ක්‍රියාව) දායක වේ.</p>
+        </div>
+      </div>
+
+      <div class="sim-shell">
+        <div class="sim-head">
+          <div>
+            <h3>අනුකරණය D — ශයිලම ජල කඳ අනුකරණය</h3>
+            <div class="sim-desc">උත්ස්වේදන වේගය සකසා, කොළයේ සිට මුල දක්වා අඛණ්ඩ ජල කඳ ‍ऋण පීඩනය යටතේ ඉහළට ඇදෙන අයුරු බලන්න.</div>
+          </div>
+        </div>
+        <div class="sim-controls">
+          <div class="ctrl-group">
+            <label>උත්ස්වේදන වේගය <span class="val" id="transRateVal">5</span></label>
+            <input type="range" id="transRate" min="1" max="10" value="5">
+          </div>
+          <div class="btn-row">
+            <button class="btn primary" id="btnBreakColumn">ජල කඳ කඩන්න (ප්‍රතික්‍රියාව බලන්න)</button>
+            <button class="btn ghost" id="btnFixColumn">යළි සම්බන්ධ කරන්න</button>
+          </div>
+        </div>
+        <canvas id="canvasD" height="330"></canvas>
+        <div class="readout">
+          <div class="box"><div class="lbl">ආතන්‍ය (Tension)</div><div class="num" id="outTension">මධ්‍යම</div></div>
+          <div class="box"><div class="lbl">ජල කඳ තත්ත්වය</div><div class="num" id="outColumnState">අඛණ්ඩයි</div></div>
+        </div>
+        <div class="legend">
+          <span><i style="background:var(--water)"></i> ජල අණු (සංසක්තිය මගින් සම්බන්ධයි)</span>
+          <span><i style="background:var(--wood)"></i> ශයිලම බිත්තිය</span>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3><span class="dot"></span> අඛණ්ඩ ජල කඳේ වැදගත්කම</h3>
+        <p>ශයිලම නාල මළ, කුහරාකාර සෛල වන අතර ජීවී ශක්තියක් නොයොදාම, තොග ප්‍රවාහය (bulk flow) මගින් ජලය ඉහළට ගමන් කරයි. එනම් සම්පූර්ණ ක්‍රියාවලියම භෞතික බලවේගවලින් — ‍ऋण පීඩනය, සංසක්තිය, ආසක්තිය — මෙහෙයවෙන අක්‍රිය ක්‍රියාවලියකි. ජල කඳේ බුබුළක් (embolism) ඇතිවුවහොත් එම නාලයෙන් ජල ප්‍රවාහනය නතර වේ.</p>
+      </div>
+    </section>
+
+    <!-- ================= TAB 5 : QUIZ ================= -->
+    <section class="section" id="t5">
+      <div class="section-head">
+        <h2>දැනුම පරීක්ෂාව</h2>
+        <p class="lede">ප්‍රශ්න 8කින් සමන්විත වූ, අ.පො.ස. (උසස් පෙළ) ආකෘතියේ බහුවරණ ප්‍රශ්නාවලියකි. එක් එක් පිළිතුරෙන් පසුව පැහැදිලි කිරීමක් ලැබේ.</p>
+      </div>
+      <div id="quizArea"></div>
+    </section>
+
+  </main>
+</div>
+
+<footer class="credit" style="grid-column:1/-1;"></footer>
+
+<script>
+(function(){
+
+/* ===================== TAB SWITCHING ===================== */
+const tabBtns = document.querySelectorAll('.tab-btn');
+const sections = document.querySelectorAll('.section');
+const runningLoops = {}; // tab id -> cancel function
+
+tabBtns.forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    tabBtns.forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    const target = btn.dataset.tab;
+    sections.forEach(s=>s.classList.toggle('active', s.id===target));
+    // pause all sims except relevant one to save CPU
+    Object.keys(runningLoops).forEach(id=>{
+      if(id!==target && runningLoops[id]) runningLoops[id](false);
+    });
+    // the canvas(es) inside the tab being shown were measured at width 0
+    // while hidden (display:none) — drop their cached size so the next
+    // draw() re-measures them correctly now that they're visible
+    const shownSection = document.getElementById(target);
+    if(shownSection){
+      shownSection.querySelectorAll('canvas').forEach(c=>{ delete canvasSizeCache[c.id]; });
+    }
+    if(runningLoops[target]) runningLoops[target](true);
+  });
+});
+
+function segControl(id, onChange){
+  const el = document.getElementById(id);
+  const btns = el.querySelectorAll('button');
+  btns.forEach(b=>{
+    b.addEventListener('click', ()=>{
+      btns.forEach(x=>x.classList.remove('active'));
+      b.classList.add('active');
+      onChange(b.dataset.v);
+    });
+  });
+}
+
+/* Fixed logical (CSS-pixel) heights for each canvas — never read back from
+   canvas.height, since that value gets overwritten with the scaled
+   (device-pixel) size and would compound every frame. */
+const CANVAS_CSS_HEIGHT = { canvasA:300, canvasB:300, canvasC:320, canvasD:330 };
+const canvasSizeCache = {}; // id -> {cssW, ratio}
+
+function dpr(canvas){
+  const cssHeight = CANVAS_CSS_HEIGHT[canvas.id] || 300;
+  // cap the device pixel ratio so very high-DPI phones don't allocate an
+  // oversized backing store (a common cause of mobile canvas crashes)
+  const ratio = Math.min(window.devicePixelRatio || 1, 2);
+  const rect = canvas.getBoundingClientRect();
+  // rect.width is 0 while the tab/section is hidden (display:none); in that
+  // case keep the last known good width instead of collapsing to a tiny/odd size
+  const cached = canvasSizeCache[canvas.id];
+  let cssWidth = rect.width > 0 ? rect.width : (cached ? cached.cssW : 320);
+  cssWidth = Math.max(280, Math.min(cssWidth, 1000));
+
+  const needsResize = !cached || cached.cssW !== cssWidth || cached.ratio !== ratio;
+  if(needsResize){
+    canvas.style.width = '100%';
+    canvas.style.height = cssHeight+'px';
+    canvas.width = Math.round(cssWidth*ratio);
+    canvas.height = Math.round(cssHeight*ratio);
+    canvasSizeCache[canvas.id] = { cssW: cssWidth, ratio };
+  }
+  const ctx = canvas.getContext('2d');
+  ctx.setTransform(ratio,0,0,ratio,0,0);
+  return {ctx, w:cssWidth, h:cssHeight};
+}
+
+// Re-measure canvases when the layout actually changes (resize / orientation
+// change / switching to a tab whose canvas was previously hidden at width 0)
+window.addEventListener('resize', ()=>{
+  Object.keys(canvasSizeCache).forEach(id=>delete canvasSizeCache[id]);
+});
+
+/* =========================================================
+   SIM A — Facilitated diffusion / active transport
+   ========================================================= */
+(function(){
+  const canvas = document.getElementById('canvasA');
+  let proteinType = 'channel';
+  let mode = 'passive';
+  let count = 14;
+  let particles = [];
+  let atpFlashes = [];
+  let raf = null;
+  let active = true;
+
+  document.getElementById('simACount').addEventListener('input', e=>{
+    count = +e.target.value;
+    document.getElementById('simACountVal').textContent = count;
+    initParticles();
+  });
+  segControl('segProtein', v=>{ proteinType=v; updateReadout(); });
+  segControl('segMode', v=>{ mode=v; updateReadout(); });
+
+  function updateReadout(){
+    document.getElementById('simADir').textContent = (mode==='passive') ? 'වැඩි → අඩු' : 'අඩු → වැඩි';
+    document.getElementById('simAATP').textContent = (mode==='active') ? 'ඇත' : 'නැත';
+  }
+
+  function initParticles(){
+    particles = [];
+    for(let i=0;i<count;i++){
+      particles.push({
+        side: Math.random()<0.75 ? 'left':'right',
+        y: 30+Math.random()*240,
+        x: null,
+        state:'idle', // idle, crossing
+        progress:0,
+        speed: 0.006+Math.random()*0.006,
+        offset: Math.random()*1000
+      });
+    }
+  }
+  initParticles();
+
+  function pickCrossingSide(){
+    // passive: mostly left->right (high to low conc, since left has more)
+    // active: mostly right->left (low to high), needs ATP
+    if(mode==='passive') return Math.random()<0.8 ? 'left':'right';
+    return Math.random()<0.8 ? 'right':'left';
+  }
+
+  function step(dt){
+    const {w,h} = {w:canvas.getBoundingClientRect().width||700, h:300};
+    const midX = w/2;
+    particles.forEach(p=>{
+      if(p.state==='idle'){
+        p.t = (p.t||0) + dt;
+        if(p.t > 400+Math.random()*900){
+          p.state='crossing';
+          p.progress=0;
+          p.fromSide = pickCrossingSide();
+          p.y = 30+Math.random()*240;
+          if(mode==='active' && p.fromSide==='right'){
+            atpFlashes.push({x:midX, y:p.y, life:1});
+          }
+        }
+      } else {
+        const spd = proteinType==='channel' ? 0.0026 : 0.0014; // carrier slower (conformational change)
+        p.progress += dt*spd;
+        if(p.progress>=1){
+          p.state='idle'; p.t=0; p.side = p.fromSide==='left' ? 'right':'left';
+        }
+      }
+    });
+    atpFlashes.forEach(f=>f.life -= dt*0.003);
+    atpFlashes = atpFlashes.filter(f=>f.life>0);
+  }
+
+  function draw(){
+    const {ctx,w,h} = dpr(canvas);
+    ctx.clearRect(0,0,w,h);
+    const midX = w/2;
+    // membrane
+    ctx.fillStyle = '#213a2c';
+    ctx.fillRect(midX-9,0,18,h);
+    ctx.strokeStyle='#3a5a45'; ctx.lineWidth=1;
+    for(let y=6;y<h;y+=14){
+      ctx.beginPath();ctx.moveTo(midX-9,y);ctx.lineTo(midX+9,y);ctx.stroke();
+    }
+    // protein
+    ctx.fillStyle = proteinType==='channel' ? '#7c9385' : '#8a9c7a';
+    if(proteinType==='channel'){
+      ctx.fillRect(midX-13, h/2-70, 26, 140);
+      ctx.fillStyle = '#0e2119';
+      ctx.fillRect(midX-4, h/2-66, 8, 132);
+    } else {
+      ctx.beginPath();
+      ctx.ellipse(midX, h/2, 17, 34, 0,0,Math.PI*2);
+      ctx.fill();
+    }
+    // labels
+    ctx.fillStyle='#8fa799'; ctx.font='12px sans-serif'; ctx.textAlign='center';
+    ctx.fillText('වැඩි සාන්ද්‍රණය', midX-140, 20);
+    ctx.fillText('අඩු සාන්ද්‍රණය', midX+140, 20);
+
+    // particles
+    particles.forEach(p=>{
+      let x,y=p.y;
+      if(p.state==='idle'){
+        x = p.side==='left' ? 40+ (p.offset%1)*(midX-80) : midX+40+(p.offset%1)*(midX-80);
+        x = p.side==='left' ? 30+((p.offset+performance.now()*0.02)%(midX-70)) : midX+20+((p.offset+performance.now()*0.02)%(midX-70));
+      } else {
+        const startX = p.fromSide==='left' ? midX-100 : midX+100;
+        const endX = p.fromSide==='left' ? midX+100 : midX-100;
+        x = startX + (endX-startX)*p.progress;
+      }
+      ctx.beginPath();
+      ctx.fillStyle = '#4fa3d8';
+      ctx.arc(x,y,6,0,Math.PI*2);
+      ctx.fill();
+      ctx.strokeStyle='rgba(255,255,255,0.25)';ctx.stroke();
+    });
+
+    // ATP flashes
+    atpFlashes.forEach(f=>{
+      ctx.globalAlpha = Math.max(f.life,0);
+      ctx.fillStyle='#dba053';
+      ctx.font='bold 13px sans-serif';
+      ctx.fillText('ATP', f.x, f.y-14);
+      ctx.globalAlpha=1;
+    });
+  }
+
+  let last=performance.now();
+  function loop(t){
+    const dt = t-last; last=t;
+    if(active){ step(dt); draw(); }
+    raf = requestAnimationFrame(loop);
+  }
+  raf = requestAnimationFrame(loop);
+  runningLoops['t1'] = (on)=>{ active = on; };
+  updateReadout();
+})();
+
+/* =========================================================
+   SIM B — Water potential / cell state
+   ========================================================= */
+(function(){
+  const canvas = document.getElementById('canvasB');
+  let psiS0 = -0.8;
+  let psiExt = 0.0;
+  let V = 1.0; // relative volume
+  let running = false;
+  let active = false;
+
+  const elS = document.getElementById('psiS');
+  const elExt = document.getElementById('psiExt');
+  elS.addEventListener('input', ()=>{
+    psiS0 = +elS.value;
+    document.getElementById('psiSVal').textContent = psiS0.toFixed(1);
+    if(!running) recompute(true);
+  });
+  elExt.addEventListener('input', ()=>{
+    psiExt = +elExt.value;
+    document.getElementById('psiExtVal').textContent = psiExt.toFixed(1);
+  });
+  document.getElementById('btnRunB').addEventListener('click', ()=>{ running = true; });
+  document.getElementById('btnResetB').addEventListener('click', ()=>{
+    V = 1.0; running = false; recompute(true);
+  });
+
+  function currentPsiS(){ return psiS0 / V; } // concentrate/dilute with volume
+  function currentPsiP(){ return V>1 ? (V-1)*5 : 0; }
+
+  function recompute(forceIdle){
+    const ps = currentPsiS();
+    const pp = currentPsiP();
+    const cell = ps+pp;
+    document.getElementById('outPsiS').textContent = ps.toFixed(2);
+    document.getElementById('outPsiP').textContent = pp.toFixed(2);
+    document.getElementById('outPsiCell').textContent = cell.toFixed(2);
+    const stateEl = document.getElementById('outCellState');
+    let label, color;
+    if(V < 0.72){ label='ප්ලාස්මෝලීසය (Plasmolysed)'; color='var(--coral)'; }
+    else if(V < 0.97){ label='ගිලින බව (Flaccid)'; color='var(--amber)'; }
+    else if(V < 1.08){ label='සම්පූර්ණ ශූනතාව (Full Turgor)'; color='var(--leaf)'; }
+    else { label='ශූනතාව (Turgid)'; color='var(--water)'; }
+    stateEl.textContent = label;
+    stateEl.style.color = color;
+    return cell;
+  }
+
+  function step(dt){
+    if(!running) return;
+    const cell = currentPsiS()+currentPsiP();
+    const diff = psiExt - cell; // if positive, water enters (V increases)
+    const rate = 0.00028;
+    V += diff*rate*dt;
+    V = Math.max(0.42, Math.min(1.32, V));
+    recompute();
+    if(Math.abs(diff) < 0.01) running=false;
+  }
+
+  function draw(){
+    const {ctx,w,h} = dpr(canvas);
+    ctx.clearRect(0,0,w,h);
+    const cx=w/2, cy=h/2;
+    const wallR = 95;
+    // cell wall (fixed)
+    ctx.beginPath();
+    ctx.arc(cx,cy,wallR,0,Math.PI*2);
+    ctx.strokeStyle='#5a9645'; ctx.lineWidth=5;
+    ctx.stroke();
+    ctx.strokeStyle='rgba(90,150,69,0.25)'; ctx.lineWidth=12;
+    ctx.stroke();
+
+    // protoplast
+    const shrink = Math.min(V,1);
+    const protoR = wallR * (0.55 + shrink*0.4);
+    const offsetJitter = (V<0.97) ? 6*(0.97-V) : 0;
+    ctx.beginPath();
+    ctx.arc(cx+ (V<0.97? Math.sin(performance.now()*0.001)*offsetJitter*0 :0), cy, protoR,0,Math.PI*2);
+    const grad = ctx.createRadialGradient(cx-20,cy-20,10,cx,cy,protoR);
+    grad.addColorStop(0,'#a9dcf3');
+    grad.addColorStop(1,'#5c9fbf');
+    ctx.fillStyle=grad;
+    ctx.fill();
+    ctx.strokeStyle='#2c7bab'; ctx.lineWidth=2; ctx.stroke();
+
+    // vacuole hint
+    ctx.beginPath();
+    ctx.arc(cx,cy,protoR*0.55,0,Math.PI*2);
+    ctx.strokeStyle='rgba(255,255,255,0.25)';
+    ctx.setLineDash([3,4]);
+    ctx.stroke();
+    ctx.setLineDash([]);
+
+    // arrows indicating water flow
+    const cellPsi = currentPsiS()+currentPsiP();
+    const diff = psiExt - cellPsi;
+    if(Math.abs(diff)>0.02){
+      const inward = diff>0;
+      ctx.strokeStyle = '#4fa3d8';
+      ctx.fillStyle='#4fa3d8';
+      ctx.lineWidth=2;
+      for(let ang=0; ang<Math.PI*2; ang+=Math.PI/3){
+        const r1 = inward ? wallR+22 : wallR-14;
+        const r2 = inward ? wallR+4 : wallR-32;
+        const x1 = cx+Math.cos(ang)*r1, y1=cy+Math.sin(ang)*r1;
+        const x2 = cx+Math.cos(ang)*r2, y2=cy+Math.sin(ang)*r2;
+        ctx.beginPath();ctx.moveTo(x1,y1);ctx.lineTo(x2,y2);ctx.stroke();
+        // arrowhead
+        const ah = Math.atan2(y2-y1,x2-x1);
+        ctx.beginPath();
+        ctx.moveTo(x2,y2);
+        ctx.lineTo(x2-8*Math.cos(ah-0.4), y2-8*Math.sin(ah-0.4));
+        ctx.lineTo(x2-8*Math.cos(ah+0.4), y2-8*Math.sin(ah+0.4));
+        ctx.closePath(); ctx.fill();
+      }
+    }
+
+    ctx.fillStyle='#8fa799'; ctx.font='12px sans-serif'; ctx.textAlign='center';
+    ctx.fillText('බාහිර ද්‍රාවණය Ψ = '+psiExt.toFixed(1)+' MPa', cx, h-14);
+  }
+
+  let last=performance.now();
+  function loop(t){
+    const dt=t-last; last=t;
+    if(active){ step(dt); draw(); }
+    requestAnimationFrame(loop);
+  }
+  requestAnimationFrame(loop);
+  runningLoops['t2']=(on)=>{ active=on; };
+  recompute(true);
+})();
+
+/* =========================================================
+   SIM C — Radial transport routes
+   ========================================================= */
+(function(){
+  const canvas = document.getElementById('canvasC');
+  let route='apoplast';
+  let particle = null;
+  let active = false;
+
+  segControl('segRoute', v=>{
+    route=v;
+    const names = {apoplast:'ඇපෝප්ලාස්ට', symplast:'සිම්ප්ලාස්ට', transmembrane:'පටල හරහා'};
+    document.getElementById('outRoute').textContent = names[v];
+    particle=null;
+    document.getElementById('outRouteStatus').textContent='සූදානම්';
+  });
+  document.getElementById('btnRunC').addEventListener('click', ()=>{
+    particle = {progress:0, redirected:false};
+    document.getElementById('outRouteStatus').textContent='ගමන් කරමින්';
+  });
+  document.getElementById('btnClearC').addEventListener('click', ()=>{
+    particle=null;
+    document.getElementById('outRouteStatus').textContent='සූදානම්';
+  });
+
+  // layout: 4 cell columns (epidermis, cortex x2, endodermis) then stele
+  function layout(w,h){
+    const cellW = (w-60)/5;
+    const cols = [];
+    for(let i=0;i<5;i++) cols.push(40+cellW*i);
+    return {cellW, cols, cy:h/2};
+  }
+
+  function draw(){
+    const {ctx,w,h} = dpr(canvas);
+    ctx.clearRect(0,0,w,h);
+    const {cellW, cols, cy} = layout(w,h);
+    const labels = ['මුල් රෝමය','බාහිකය','බාහිකය','අන්තශ්චර්මය','ස්ටීලය'];
+
+    for(let i=0;i<5;i++){
+      const x = cols[i];
+      const isEndo = i===3;
+      const isStele = i===4;
+      // cell wall block
+      ctx.fillStyle = isStele ? '#182f24' : '#1b352a';
+      ctx.fillRect(x, 60, cellW-8, h-120);
+      ctx.strokeStyle = '#3a5a45';
+      ctx.lineWidth=3;
+      ctx.strokeRect(x,60,cellW-8,h-120);
+
+      // cytoplasm inner region (symplast)
+      if(!isStele){
+        ctx.fillStyle='rgba(122,184,95,0.08)';
+        ctx.fillRect(x+8,68,cellW-24,h-136);
+      }
+      // plasmodesmata dots between this cell and next
+      if(i<4){
+        ctx.fillStyle = '#5a9645';
+        for(let k=0;k<3;k++){
+          ctx.beginPath();
+          ctx.arc(x+cellW-8, 100+k*((h-200)/2), 3.2, 0, Math.PI*2);
+          ctx.fill();
+        }
+      }
+      // Casparian strip on endodermis
+      if(isEndo){
+        ctx.fillStyle = '#4a3323';
+        ctx.fillRect(x+cellW-14, 60, 8, h-120);
+        ctx.fillStyle='#c99b6b'; ctx.font='10px sans-serif'; ctx.textAlign='center';
+        ctx.fillText('කැස්පාරි', x+cellW-10, 52);
+      }
+      ctx.fillStyle='#8fa799'; ctx.font='11px sans-serif'; ctx.textAlign='center';
+      ctx.fillText(labels[i], x+cellW/2-4, h-20);
+    }
+
+    // particle
+    if(particle){
+      const totalCells = 4; // epidermis->cortex->cortex->endodermis, then into stele
+      let x,y;
+      const laneWallY = 90; // apoplast lane near wall/top
+      const laneSymY = cy; // symplast/transmembrane lane middle
+
+      if(route==='apoplast'){
+        // travel along wall boundary until endodermis (col index 3 start), then forced down into symplast lane, cross into stele
+        const preProgress = Math.min(particle.progress, 0.6)/0.6;
+        const p = particle.progress;
+        if(p < 0.6){
+          x = cols[0]+cellW-8 + (cols[3]-(cols[0]+cellW-8))*preProgress;
+          y = laneWallY;
+        } else if(p < 0.8){
+          const pp=(p-0.6)/0.2;
+          x = cols[3]+cellW-10;
+          y = laneWallY + (laneSymY-laneWallY)*pp;
+        } else {
+          const pp=(p-0.8)/0.2;
+          x = cols[3]+cellW-10 + (cols[4]+cellW/2-(cols[3]+cellW-10))*pp;
+          y = laneSymY;
+        }
+      } else if(route==='symplast'){
+        x = cols[0]+20 + (cols[4]+cellW/2-(cols[0]+20))*particle.progress;
+        y = laneSymY;
+      } else { // transmembrane
+        x = cols[0]+20 + (cols[4]+cellW/2-(cols[0]+20))*particle.progress;
+        y = laneSymY + Math.sin(particle.progress*Math.PI*8)*18;
+      }
+
+      ctx.beginPath();
+      ctx.fillStyle='#4fa3d8';
+      ctx.arc(x,y,7,0,Math.PI*2);
+      ctx.fill();
+      ctx.strokeStyle='#fff';ctx.lineWidth=1;ctx.stroke();
+
+      particle.progress += 0.0022*1.6;
+      if(particle.progress>=1){
+        particle.progress=1;
+        document.getElementById('outRouteStatus').textContent='ස්ටීලයට ළඟා විය ✓';
+      }
+    }
+  }
+
+  function loop(){
+    if(active) draw();
+    requestAnimationFrame(loop);
+  }
+  requestAnimationFrame(loop);
+  runningLoops['t3']=(on)=>{ active=on; };
+})();
+
+/* =========================================================
+   SIM D — Xylem ascent (cohesion-tension)
+   ========================================================= */
+(function(){
+  const canvas = document.getElementById('canvasD');
+  let rate = 5;
+  let broken = false;
+  let particles = [];
+  let active = false;
+
+  document.getElementById('transRate').addEventListener('input', e=>{
+    rate = +e.target.value;
+    document.getElementById('transRateVal').textContent = rate;
+    document.getElementById('outTension').textContent = rate>7?'ඉහළ':(rate>3?'මධ්‍යම':'අඩු');
+  });
+  document.getElementById('btnBreakColumn').addEventListener('click', ()=>{
+    broken = true;
+    document.getElementById('outColumnState').textContent = 'කැඩී ඇත — ප්‍රවාහය නතරයි';
+    document.getElementById('outColumnState').style.color='var(--coral)';
+  });
+  document.getElementById('btnFixColumn').addEventListener('click', ()=>{
+    broken = false;
+    document.getElementById('outColumnState').textContent='අඛණ්ඩයි';
+    document.getElementById('outColumnState').style.color='';
+  });
+
+  function initParticles(h){
+    particles = [];
+    const n = 14;
+    for(let i=0;i<n;i++){
+      particles.push({y: h-40 - i*((h-90)/n)});
+    }
+  }
+
+  function step(){
+    const h = 330;
+    if(particles.length===0) initParticles(h);
+    if(broken) return;
+    const speed = rate*0.09;
+    particles.forEach(p=>{ p.y -= speed; });
+    if(particles.length && particles[0].y < 60){
+      particles.shift();
+      particles.push({y: h-42});
+    }
+  }
+
+  function draw(){
+    const {ctx,w,h} = dpr(canvas);
+    ctx.clearRect(0,0,w,h);
+    const cx = w/2;
+    // vessel
+    ctx.fillStyle='#1c2e22';
+    ctx.fillRect(cx-30,40,60,h-80);
+    ctx.strokeStyle='#a8815a'; ctx.lineWidth=4;
+    ctx.strokeRect(cx-30,40,60,h-80);
+    // perforation plates
+    for(let y=70;y<h-50;y+=48){
+      ctx.strokeStyle='rgba(168,129,90,0.4)';
+      ctx.beginPath();ctx.moveTo(cx-30,y);ctx.lineTo(cx+30,y);ctx.stroke();
+    }
+    // leaf top
+    ctx.fillStyle='#2e5a3d';
+    ctx.beginPath();
+    ctx.ellipse(cx,32,46,18,0,0,Math.PI*2);
+    ctx.fill();
+    ctx.fillStyle='#0e2119'; ctx.font='11px sans-serif'; ctx.textAlign='center';
+    ctx.fillText('රන්ධ්‍ර (කොළය)', cx, 36);
+    // root bottom
+    ctx.fillStyle='#4a3323';
+    ctx.beginPath();
+    ctx.ellipse(cx,h-14,40,14,0,0,Math.PI*2);
+    ctx.fill();
+    ctx.fillStyle='#e8dcc8'; ctx.font='11px sans-serif';
+    ctx.fillText('මුල (ජලය ලැබේ)', cx, h-10);
+
+    // water column
+    if(!broken){
+      ctx.strokeStyle='rgba(79,163,216,0.5)';
+      ctx.lineWidth=18;
+      ctx.beginPath();
+      ctx.moveTo(cx,45);
+      ctx.lineTo(cx,h-40);
+      ctx.stroke();
+    } else {
+      const gapY = h/2;
+      ctx.strokeStyle='rgba(79,163,216,0.5)';
+      ctx.lineWidth=18;
+      ctx.beginPath();ctx.moveTo(cx,45);ctx.lineTo(cx,gapY-20);ctx.stroke();
+      ctx.beginPath();ctx.moveTo(cx,gapY+20);ctx.lineTo(cx,h-40);ctx.stroke();
+      ctx.fillStyle='#0e2119';
+      ctx.beginPath();ctx.ellipse(cx,gapY,15,20,0,0,Math.PI*2);ctx.fill();
+      ctx.fillStyle='#cdd9cc';ctx.font='10px sans-serif';
+      ctx.fillText('වායු බුබුළ', cx, gapY+4);
+    }
+    // particles
+    particles.forEach(p=>{
+      ctx.beginPath();
+      ctx.fillStyle='#4fa3d8';
+      ctx.arc(cx, p.y, 6, 0, Math.PI*2);
+      ctx.fill();
+      ctx.strokeStyle='rgba(255,255,255,0.3)';ctx.stroke();
+    });
+  }
+
+  function loop(){
+    if(active){ step(); draw(); }
+    requestAnimationFrame(loop);
+  }
+  requestAnimationFrame(loop);
+  runningLoops['t4']=(on)=>{ active=on; };
+})();
+
+/* =========================================================
+   QUIZ
+   ========================================================= */
+const QUIZ = [
+  {
+    q:"ශුද්ධ ජලයේ ජල විභවය (Ψ) අගය කුමක්ද?",
+    opts:["-1 MPa","0 MPa","+1 MPa","ද්‍රාව්‍ය සාන්ද්‍රණය මත රඳා පවතී"],
+    correct:1,
+    exp:"ශුද්ධ ජලයේ ජල විභවය සම්මතයෙන් 0 MPa ලෙස ගනු ලැබේ; අනෙක් සියලුම අගයන් මින් සංසන්දනය කෙරේ."
+  },
+  {
+    q:"පහසු කළ විසරණයේදී (Facilitated Diffusion) ATP අවශ්‍ය නොවන්නේ මන්ද?",
+    opts:["ප්‍රෝටීන නොමැති බැවින්","චලිතය සාන්ද්‍රණ අනුක්‍රමයටම සිදුවන බැවින්","සෛල පටලය නොමැති බැවින්","අණු ඉතා කුඩා බැවින්"],
+    correct:1,
+    exp:"පහසු කළ විසරණය සාන්ද්‍රණ අනුක්‍රමය ඔස්සේම (වැඩි සිට අඩු කරා) සිදුවන අක්‍රිය ක්‍රියාවලියක් බැවින්, ප්‍රෝටීන පාරගම්‍යතාවය ලබාදුන්නද, ශක්තියක් වැයනොවේ."
+  },
+  {
+    q:"සෛලයක ප්ලාස්මෝලීසය සිදුවන අවස්ථාවේදී පීඩන විභවය (Ψp) අගය කුමක්ද?",
+    opts:["ඉතා ධන අගයක්","ශුන්‍ය (0)","‍ऋण අගයක් සැමවිටම","ද්‍රාව්‍ය විභවයට සමාන"],
+    correct:1,
+    exp:"ප්ලාස්මෝලීසයේදී ප්‍රොටොප්ලාස්මය සෛල බිත්තියෙන් සම්පූර්ණයෙන් වෙන් වන බැවින් බිත්තියට එරෙහි පීඩනයක් ඇති නොවේ; එබැවින් Ψp = 0 වන අතර Ψසෛලය = Ψs පමණි."
+  },
+  {
+    q:"අන්තශ්චර්මයේ කැස්පාරි පටිය ප්‍රධාන වශයෙන් සෑදී ඇත්තේ කුමකින්ද?",
+    opts:["සෙලියුලෝස්","ලිග්නින් පමණක්","සුබරින්","පෙක්ටින්"],
+    correct:2,
+    exp:"කැස්පාරි පටිය ප්‍රධාන වශයෙන් ජල නොගැලපෙන ද්‍රව්‍යයක් වන සුබරින් (suberin) මගින් සෑදෙන අතර, එය ඇපෝප්ලාස්ට මාර්ගය අවහිර කරයි."
+  },
+  {
+    q:"ඇපෝප්ලාස්ට මාර්ගය ඔස්සේ ගමන් කරන ජලයට අන්තශ්චර්මයේදී සිදුවන්නේ කුමක්ද?",
+    opts:["ඍජුවම ස්ටීලයට ඇතුල් වේ","සම්පූර්ණයෙන්ම නවතී","සිම්ප්ලාස්ට හෝ පටල හරහා මාර්ගයට හැරී යාමට සිදුවේ","වාෂ්ප වී යයි"],
+    correct:2,
+    exp:"කැස්පාරි පටිය හේතුවෙන් ඇපෝප්ලාස්ට මාර්ගය අවහිර වන බැවින්, ජලයට එම ස්ථානයේදී සෛල පටලය තරණය කර සිම්ප්ලාස්ට/පටල හරහා මාර්ගයට ඇතුල් වීමට සිදුවේ."
+  },
+  {
+    q:"සංසක්ති-ආතන්ය සිද්ධාන්තයට අනුව, ශයිලමය තුළ ජලය ඉහළට ඇදෙන ප්‍රධාන බලවේගය කුමක්ද?",
+    opts:["මුල් පීඩනය පමණක්","කොළවල උත්ස්වේදනය නිසා ඇතිවන ‍ऋण පීඩනය (ඇදුම)","සෛල ශ්වසනයෙන් නිකුත්වන ශක්තිය","ගුරුත්වාකර්ෂණය"],
+    correct:1,
+    exp:"කොළවල උත්ස්වේදනය නිසා මධ්‍යපත්‍ර සෛල මතුපිටින් ජලය අඛණ්ඩව වාෂ්ප වීම, ශයිලමය තුළ ‍ऋण පීඩනයක් (ඇදුමක්) ජනිත කර, එය සම්පූර්ණ ජල කඳ ඔස්සේ මුල දක්වා පැතිරේ."
+  },
+  {
+    q:"ජල අණු අතර හයිඩ්‍රජන් බන්ධන මගින් ඇතිවන ආකර්ෂණය හඳුන්වන්නේ කුමක් ලෙසද?",
+    opts:["ආසක්තිය","සංසක්තිය","නිපානය","ආස්‍රැතිය"],
+    correct:1,
+    exp:"සංසක්තිය (Cohesion) යනු ජල අණු අතර හයිඩ්‍රජන් බන්ධන මගින් ඇතිවන අන්‍යෝන්‍ය ආකර්ෂණයයි; මෙය ශයිලමය තුළ අඛණ්ඩ ජල කඳක් පවත්වා ගැනීමට උපකාරී වේ."
+  },
+  {
+    q:"මුල් රෝම සෛලයක් ඛනිජ අයන (K⁺) සක්‍රියව අවශෝෂණය කිරීමේ ප්‍රතිඵලයක් ලෙස කුමක් සිදුවේද?",
+    opts:["සෛලයේ Ψs ඉහළ යයි (අඩු ‍ऋण බවට පත්වේ)","සෛලයේ Ψs පහළ බැසී (වඩාත් ‍ऋण වී) ජලය ආස්‍රැතිකව ඇතුල් වීමට හේතු වේ","සෛලයේ ජල විභවයට කිසිදු බලපෑමක් නොවේ","ATP භාවිතය අවශ්‍ය නොවේ"],
+    correct:1,
+    exp:"K⁺ අයන සක්‍රියව සෛලය තුළට ගෙන ඒම, එහි ද්‍රාව්‍ය සාන්ද්‍රණය ඉහළ නංවා Ψs වඩාත් ‍ऋण බවට පත් කරයි; මෙය පාංශු ජලයට වඩා අඩු Ψ අගයක් ඇති කර ජලය ආස්‍රැතිකව සෛලයට ඇදගැනීමට හේතු වේ."
+  }
+];
+
+(function(){
+  const area = document.getElementById('quizArea');
+  let idx = 0;
+  let score = 0;
+  let answered = false;
+
+  function render(){
+    if(idx >= QUIZ.length){ renderScore(); return; }
+    const item = QUIZ[idx];
+    answered = false;
+    area.innerHTML = `
+      <div class="quiz-progress"><span>ප්‍රශ්නය ${idx+1} / ${QUIZ.length}</span><span>ලකුණු: ${score}</span></div>
+      <div class="quiz-bar"><div class="quiz-bar-fill" style="width:${(idx/QUIZ.length)*100}%"></div></div>
+      <div class="quiz-card">
+        <div class="qtext">${item.q}</div>
+        <div id="optWrap"></div>
+        <div class="explain" id="explainBox"></div>
+        <div class="quiz-nav">
+          <button class="btn ghost" id="btnSkip">මඟහරින්න</button>
+          <button class="btn primary" id="btnNext" style="display:none;">ඊළඟ ප්‍රශ්නය →</button>
+        </div>
+      </div>
+    `;
+    const optWrap = document.getElementById('optWrap');
+    item.opts.forEach((opt,i)=>{
+      const b = document.createElement('button');
+      b.className='opt';
+      b.textContent = opt;
+      b.addEventListener('click', ()=>{
+        if(answered) return;
+        answered = true;
+        document.querySelectorAll('.opt').forEach(o=>o.classList.add('disabled'));
+        if(i===item.correct){
+          b.classList.add('correct');
+          score++;
+        } else {
+          b.classList.add('wrong');
+          optWrap.children[item.correct].classList.add('correct');
+        }
+        const ex = document.getElementById('explainBox');
+        ex.style.display='block';
+        ex.textContent = item.exp;
+        document.getElementById('btnNext').style.display='inline-block';
+        document.getElementById('btnSkip').style.display='none';
+      });
+      optWrap.appendChild(b);
+    });
+    document.getElementById('btnSkip').addEventListener('click', ()=>{ idx++; render(); });
+    document.getElementById('btnNext').addEventListener('click', ()=>{ idx++; render(); });
+  }
+
+  function renderScore(){
+    area.innerHTML = `
+      <div class="quiz-card score-screen">
+        <div style="font-size:14px;color:var(--muted);margin-bottom:8px;">ඔබගේ ලකුණු</div>
+        <div class="big">${score} / ${QUIZ.length}</div>
+        <p style="color:var(--muted);margin-top:14px;">${score>=6?'විශිෂ්ටයි! සංකල්ප හොඳින් වැටහී ඇත.':'නැවත පාඩම් සමාලෝචනය කර උත්සාහ කරන්න.'}</p>
+        <button class="btn primary" id="btnRestart" style="margin-top:10px;">යළි උත්සාහ කරන්න</button>
+      </div>
+    `;
+    document.getElementById('btnRestart').addEventListener('click', ()=>{
+      idx=0; score=0; render();
+    });
+  }
+
+  render();
+})();
+
+})();
+</script>
+<!-- ========== BIO HUB FLOATING NAV — DO NOT REMOVE ========== -->
+<style>
+.biohub-nav{
+  position:fixed;
+  left:50%;
+  transform:translateX(-50%);
+  bottom:calc(88px + env(safe-area-inset-bottom, 0px));
+  z-index:9999;
+  display:flex;
+  align-items:center;
+  gap:4px;
+  padding:6px;
+  background:rgba(15,40,24,.92);
+  backdrop-filter:blur(14px) saturate(180%);
+  -webkit-backdrop-filter:blur(14px) saturate(180%);
+  border:1px solid rgba(110,231,183,.25);
+  border-radius:999px;
+  box-shadow:0 8px 28px rgba(0,0,0,.35), 0 2px 8px rgba(0,0,0,.2);
+  font-family:'Noto Sans Sinhala',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+  -webkit-tap-highlight-color:transparent;
+}
+.biohub-nav a,
+.biohub-nav span.biohub-btn{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  width:44px;
+  height:44px;
+  border-radius:50%;
+  color:#ecfdf5;
+  background:transparent;
+  border:none;
+  font-size:18px;
+  line-height:1;
+  cursor:pointer;
+  text-decoration:none;
+  transition:background .15s, transform .1s;
+  -webkit-tap-highlight-color:transparent;
+}
+.biohub-nav a:hover{background:rgba(16,185,129,.28);color:#fff}
+.biohub-nav a:active,
+.biohub-nav span.biohub-btn:active{transform:scale(.92)}
+.biohub-nav a.biohub-home{background:rgba(16,185,129,.35);margin:0 2px}
+.biohub-nav a.biohub-home:hover{background:rgba(16,185,129,.55)}
+.biohub-nav .biohub-disabled{
+  opacity:.32;
+  cursor:not-allowed;
+  pointer-events:none;
+}
+@media (max-width:380px){
+  .biohub-nav a,.biohub-nav span.biohub-btn{width:40px;height:40px;font-size:16px}
+}
+@media (max-height:500px){
+  .biohub-nav{bottom:calc(20px + env(safe-area-inset-bottom, 0px))}
+}
+</style>
+<nav class="biohub-nav" aria-label="පාඩම් සංචාලනය">
+  <!-- PREV (see per-file table) -->
+  <a href="5,6.html" class="biohub-prev" aria-label="පෙර පාඩම" title="පෙර පාඩම">◀</a>
+  <!-- HOME -->
+  <a href="index.html" class="biohub-home" aria-label="මුල් පිටුව" title="මුල් පිටුව">🏠</a>
+  <!-- NEXT (see per-file table) -->
+  <a href="9,10.html" class="biohub-next" aria-label="ඊළඟ පාඩම" title="ඊළඟ පාඩම">▶</a>
+</nav>
+<!-- ========== /BIO HUB FLOATING NAV ========== -->
+</body>
+</html>

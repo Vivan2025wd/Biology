@@ -1,0 +1,963 @@
+<!DOCTYPE html>
+<html lang="si">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>ශාක වර්ධනය හා විකසන ක්‍රියාවලිය | Interactive Biology</title>
+    <style>
+        :root {
+            --bg-color: #f4f7f6;
+            --text-color: #2c3e50;
+            --card-bg: #ffffff;
+            --primary: #2e7d32;
+            --primary-light: #4caf50;
+            --secondary: #1565c0;
+            --accent: #ff8f00;
+            --border: #e0e0e0;
+            --shadow: 0 4px 12px rgba(0,0,0,0.08);
+            --nav-bg: #ffffff;
+            --nav-active: #e8f5e9;
+            --font-sinhala: 'Iskoola Pota', 'Noto Sans Sinhala', 'Nirmala UI', sans-serif;
+        }
+
+        [data-theme="dark"] {
+            --bg-color: #121212;
+            --text-color: #e0e0e0;
+            --card-bg: #1e1e1e;
+            --primary: #66bb6a;
+            --primary-light: #81c784;
+            --secondary: #64b5f6;
+            --accent: #ffb74d;
+            --border: #333333;
+            --shadow: 0 4px 12px rgba(0,0,0,0.3);
+            --nav-bg: #1e1e1e;
+            --nav-active: #2e7d32;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: var(--font-sinhala);
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            transition: background-color 0.3s, color 0.3s;
+            padding-bottom: 75px; /* Space for bottom nav */
+            overflow-x: hidden;
+        }
+
+        /* Top Header */
+        header {
+            background-color: var(--card-bg);
+            padding: 15px 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header-title {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: var(--primary);
+        }
+
+        .theme-toggle {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--text-color);
+            padding: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Main Content */
+        main {
+            padding: 15px;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .view {
+            display: none;
+            animation: fadeIn 0.3s ease-in-out;
+        }
+
+        .view.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Cards */
+        .card {
+            background-color: var(--card-bg);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 15px;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border);
+        }
+
+        .card h2 {
+            font-size: 1.1rem;
+            color: var(--primary);
+            margin-bottom: 10px;
+            border-bottom: 2px solid var(--primary-light);
+            padding-bottom: 5px;
+            display: inline-block;
+        }
+
+        .card h3 {
+            font-size: 1rem;
+            color: var(--secondary);
+            margin-top: 15px;
+            margin-bottom: 5px;
+        }
+
+        .card p, .card li {
+            font-size: 0.95rem;
+            margin-bottom: 8px;
+        }
+
+        .card ul {
+            padding-left: 20px;
+            margin-bottom: 10px;
+        }
+
+        .highlight {
+            background-color: var(--nav-active);
+            padding: 10px;
+            border-radius: 8px;
+            border-left: 4px solid var(--primary);
+            margin: 10px 0;
+            font-weight: 500;
+        }
+
+        /* Bottom Navigation */
+        nav.bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background-color: var(--nav-bg);
+            display: flex;
+            justify-content: space-around;
+            padding: 10px 5px;
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
+            z-index: 100;
+            border-top: 1px solid var(--border);
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background: none;
+            border: none;
+            color: var(--text-color);
+            font-family: var(--font-sinhala);
+            font-size: 0.75rem;
+            padding: 5px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            width: 20%;
+        }
+
+        .nav-item .icon {
+            font-size: 1.3rem;
+            margin-bottom: 2px;
+        }
+
+        .nav-item.active {
+            color: var(--primary);
+            background-color: var(--nav-active);
+            font-weight: bold;
+        }
+
+        /* Buttons */
+        .btn {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 8px;
+            font-family: var(--font-sinhala);
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: background-color 0.2s, transform 0.1s;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+            margin: 5px 0;
+        }
+
+        .btn:active {
+            transform: scale(0.97);
+        }
+
+        .btn-outline {
+            background-color: transparent;
+            color: var(--primary);
+            border: 2px solid var(--primary);
+        }
+
+        .btn-outline:active {
+            background-color: var(--nav-active);
+        }
+
+        /* Simulations */
+        .sim-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 15px 0;
+        }
+
+        .sim-svg-wrapper {
+            width: 100%;
+            max-width: 300px;
+            position: relative;
+            margin: 0 auto;
+            background-color: var(--bg-color);
+            border-radius: 50%;
+            overflow: hidden;
+            border: 2px solid var(--border);
+        }
+
+        .sim-svg {
+            display: block;
+            width: 100%;
+            height: auto;
+        }
+
+        .sim-controls {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .sim-info {
+            text-align: center;
+            margin-top: 10px;
+            font-weight: bold;
+            color: var(--secondary);
+            min-height: 40px;
+        }
+
+        /* Interactive Labels */
+        .label-group {
+            cursor: pointer;
+        }
+        .label-group:hover .layer {
+            opacity: 0.8;
+        }
+        .label-text {
+            font-size: 12px;
+            fill: var(--text-color);
+            font-family: var(--font-sinhala);
+            pointer-events: none;
+            font-weight: bold;
+        }
+
+        /* Quiz */
+        .quiz-question {
+            margin-bottom: 20px;
+        }
+        .quiz-options {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .quiz-option {
+            background-color: var(--bg-color);
+            border: 2px solid var(--border);
+            padding: 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 0.95rem;
+        }
+        .quiz-option:hover {
+            border-color: var(--primary-light);
+        }
+        .quiz-option.correct {
+            background-color: #c8e6c9;
+            border-color: #4caf50;
+            color: #1b5e20;
+        }
+        .quiz-option.wrong {
+            background-color: #ffcdd2;
+            border-color: #f44336;
+            color: #b71c1c;
+        }
+        [data-theme="dark"] .quiz-option.correct {
+            background-color: #1b5e20;
+            color: #a5d6a7;
+        }
+        [data-theme="dark"] .quiz-option.wrong {
+            background-color: #b71c1c;
+            color: #ef9a9a;
+        }
+
+        /* Flashcards */
+        .flashcard-container {
+            perspective: 1000px;
+            width: 100%;
+            height: 200px;
+            margin-bottom: 15px;
+            cursor: pointer;
+        }
+        .flashcard {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            transition: transform 0.6s;
+            transform-style: preserve-3d;
+        }
+        .flashcard.flipped {
+            transform: rotateY(180deg);
+        }
+        .flashcard-front, .flashcard-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            -webkit-backface-visibility: hidden;
+            backface-visibility: hidden;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            text-align: center;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border);
+        }
+        .flashcard-front {
+            background-color: var(--card-bg);
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: var(--primary);
+        }
+        .flashcard-back {
+            background-color: var(--primary);
+            color: white;
+            transform: rotateY(180deg);
+            font-size: 1rem;
+        }
+
+        /* Accordion */
+        .accordion {
+            margin-bottom: 10px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        .accordion-header {
+            background-color: var(--bg-color);
+            padding: 15px;
+            font-weight: bold;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: var(--primary);
+        }
+        .accordion-content {
+            padding: 0 15px;
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-out;
+            background-color: var(--card-bg);
+        }
+        .accordion-content.open {
+            max-height: 1000px; /* Adjust as needed */
+            padding: 15px;
+        }
+
+        /* Progress Bar */
+        .progress-container {
+            width: 100%;
+            background-color: var(--border);
+            border-radius: 10px;
+            margin: 10px 0;
+            height: 10px;
+            overflow: hidden;
+        }
+        .progress-bar {
+            height: 100%;
+            background-color: var(--primary);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+    </style>
+</head>
+<body data-theme="light">
+
+    <header>
+        <div class="header-title">ශාක වර්ධනය හා විකසනය</div>
+        <button class="theme-toggle" id="themeToggle" aria-label="Toggle Theme">🌙</button>
+    </header>
+
+    <main>
+        <!-- HOME VIEW -->
+        <section id="home-view" class="view active">
+            <div class="card">
+                <h2>ආයුබෝවන්! 👋</h2>
+                <p>මෙම අන්තර්ක්‍රියාකාරී පාඩම විවෘත කළ ඔබට සාදරයෙන් පිළිගනිමු. මෙය ඔබගේ පාඩම් පොතේ <strong>ශාක වර්ධනය හා විකසන ක්‍රියාවලිය</strong> පිළිබඳ පාඩම මත පමණක් ගොඩනගා ඇත.</p>
+                <div class="highlight">
+                    ඉගෙනුම් ඉලක්කය: ශාකයක වර්ධනය, ප්‍රාථමික හා ද්විතීයික ව්‍යුහයන් හඳුනා ගැනීම සහ ඒවායේ ක්‍රියාකාරීත්වය තේරුම් ගැනීම.
+                </div>
+            </div>
+            
+            <div class="card">
+                <h2>ඔබේ ප්‍රගතිය</h2>
+                <p>පාඩම් කොටස් හරහා ගමන් කර අවසාන ප්‍රශ්නාවලිය සම්පූර්ණ කරන්න.</p>
+                <div class="progress-container">
+                    <div class="progress-bar" id="progressBar" style="width: 0%;"></div>
+                </div>
+                <p style="text-align: right; font-size: 0.8rem;" id="progressText">0% සම්පූර්ණයි</p>
+            </div>
+
+            <div class="card">
+                <h2>ඉගෙනුම් මාර්ගෝපදේශය</h2>
+                <ul>
+                    <li><strong>පාඩම්:</strong> න්‍යායාත්මක කරුණු කියවා තේරුම් ගන්න.</li>
+                    <li><strong>අන්තර්ක්‍රියාකාරී:</strong> රූප සටහන් සහ ක්‍රියාවලි අතින් අත්හදා බලන්න.</li>
+                    <li><strong>කටපාඩම්:</strong> වැදගත් පද සහ අර්ථ දැක්වීම් මතක තබා ගන්න.</li>
+                    <li><strong>ප්‍රශ්නාවලිය:</strong> ඔබේ දැනුම පරීක්ෂා කර ගන්න.</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- LESSONS VIEW -->
+        <section id="lessons-view" class="view">
+            
+            <div class="card">
+                <h2>1. ශාක වර්ධනය (Plant Growth)</h2>
+                <p>ශාක වර්ධනය යනු ඒක සෛලීය ශාකයක සිට බහු සෛලීය බවට පත්වීමේදී සිදුවන අප්‍රතිවර්තනීය වැඩිවීමකි (Irreversible increase). මෙය ප්‍රධාන ක්‍රියාවලි දෙකකින් සිදුවේ:</p>
+                <ul>
+                    <li><strong>සෛල විභාජනය (Cell Division):</strong> නව සෛල සෑදීම.</li>
+                    <li><strong>සෛල දිගුවීම (Cell Elongation):</strong> සෛල ප්‍රමාණයෙන් වැඩිවීම.</li>
+                </ul>
+            </div>
+
+            <div class="accordion">
+                <div class="accordion-header">
+                    <span>2. ශාක මූල ප්‍රාථමික ව්‍යුහය</span>
+                    <span>▼</span>
+                </div>
+                <div class="accordion-content">
+                    <p>මූලයක් තුළ පටක ස්ථර කිහිපයක් දැකගත හැක. ඒක බීජ පත්‍රී (Monocot) සහ ද්වි බීජ පත්‍රී (Dicot) මූලයන් අතර වෙනස්කම් පවතී.</p>
+                    <h3>පොදු ලක්ෂණ:</h3>
+                    <ul>
+                        <li><strong>අධස්ථරය (Epidermis):</strong> පිටතින් පිහිටි ආවරණය.</li>
+                        <li><strong>බාහිකය (Cortex):</strong> අධස්ථරයට යටින් පිහිටයි.</li>
+                        <li><strong>අන්තස්ථරය (Endodermis):</strong> අභ්‍යන්තර මායිම.</li>
+                        <li><strong>පරිචක්‍රය (Pericycle):</strong> අන්තස්ථරයට ඇතුළතින්.</li>
+                        <li><strong>මධ්‍යස්ථරය (Pith):</strong> මධ්‍යයේ පිහිටයි.</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="accordion">
+                <div class="accordion-header">
+                    <span>3. ශාක කඳ ප්‍රාථමික ව්‍යුහය</span>
+                    <span>▼</span>
+                </div>
+                <div class="accordion-content">
+                    <h3>ද්වි බීජ පත්‍රී කඳ (Dicot Stem)</h3>
+                    <p>පටක පද්ධතිය වළල්ලක් ලෙස පිහිටයි. අධස්ථරය, බාහිකය, අන්තස්ථරය, පරිචක්‍රය, පටක පද්ධතිය (සෛල ලෑලි හා ජීවාටික) සහ මධ්‍යස්ථරය ඇත.</p>
+                    <h3>ඒක බීජ පත්‍රී කඳ (Monocot Stem)</h3>
+                    <p>පටක පද්ධති විසිරී පවතී (Scattered). ප්‍රධාන වශයෙන් අධස්ථරය සහ ප්‍රාථමික බාහිකය ඇත.</p>
+                </div>
+            </div>
+
+            <div class="accordion">
+                <div class="accordion-header">
+                    <span>4. ද්විතීයික වර්ධනය (Secondary Growth)</span>
+                    <span>▼</span>
+                </div>
+                <div class="accordion-content">
+                    <p>පාර්ශ්වික විභාජන (Lateral Meristems) මගින් සිදුවන වර්ධනයයි. මෙහිදී <strong>කොම්බියම් (Cambium)</strong> වැදගත් වේ.</p>
+                    <ul>
+                        <li>කොම්බියම් මගින් ඇතුළතට <strong>සෛල ලෑලි (Xylem)</strong> සහ පිටතට <strong>ප්‍රාථමික ජීවාටික (Phloem)</strong> සාදයි.</li>
+                        <li>මෙය වාර්ෂිකව සිදුවන බැවින් <strong>වාර්ෂික වළලු (Annual Rings)</strong> සෑදේ.</li>
+                        <li><strong>අරටුව (Heartwood):</strong> මුලින් සෑදුනු, ක්‍රියාකාරී නොවන (Dead) සෛල ලෑලි.</li>
+                        <li><strong>එළය (Sapwood):</strong> නව සෛල ලෑලි, ජලය හා ඛනිජ ලවණ රැගෙන යයි.</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <button class="btn" style="width: 100%; margin-top: 15px;" onclick="markLessonComplete()">පාඩම සම්පූර්ණ කළා ✅</button>
+        </section>
+
+        <!-- SIMULATIONS VIEW -->
+        <section id="sim-view" class="view">
+            
+            <div class="card">
+                <h2>අන්තර්ක්‍රියාකාරී සිමියුලේෂන්</h2>
+                <p>රූප සටහන් මත ක්ලික් කර තොරතුරු ලබා ගන්න.</p>
+            </div>
+
+            <!-- Sim 1: Primary Structure -->
+            <div class="card">
+                <h3>1. කඳක ප්‍රාථමික ව්‍යුහය (ද්වි බීජ පත්‍රී)</h3>
+                <div class="sim-container">
+                    <div class="sim-svg-wrapper">
+                        <svg class="sim-svg" viewBox="0 0 200 200" id="stemSim">
+                            <!-- Outer Epidermis -->
+                            <circle cx="100" cy="100" r="90" fill="#a5d6a7" stroke="#2e7d32" stroke-width="2" class="label-group" onclick="showLabel('අධස්ථරය (Epidermis): පිටතින් පිහිටි ආවරණය')" />
+                            <!-- Cortex -->
+                            <circle cx="100" cy="100" r="75" fill="#c8e6c9" stroke="#4caf50" stroke-width="1" class="label-group" onclick="showLabel('බාහිකය (Cortex): ප්‍රධාන වශයෙන් මධ්‍යස්ථර සෛල අඩංගුය')" />
+                            <!-- Vascular Ring -->
+                            <circle cx="100" cy="100" r="50" fill="none" stroke="#1565c0" stroke-width="8" stroke-dasharray="10 5" class="label-group" onclick="showLabel('පටක පද්ධතිය: සෛල ලෑලි (Xylem) සහ ප්‍රාථමික ජීවාටික (Phloem)')" />
+                            <!-- Pith -->
+                            <circle cx="100" cy="100" r="40" fill="#fff9c4" stroke="#fbc02d" stroke-width="1" class="label-group" onclick="showLabel('මධ්‍යස්ථරය (Pith): මධ්‍යයේ පිහිටි සෛල')" />
+                            
+                            <text x="100" y="105" text-anchor="middle" class="label-text" fill="#333">මධ්‍යස්ථරය</text>
+                        </svg>
+                    </div>
+                    <div class="sim-info" id="stemLabel">ඕනෑම ස්ථරයක් මත ක්ලික් කරන්න</div>
+                </div>
+            </div>
+
+            <!-- Sim 2: Secondary Growth Animation -->
+            <div class="card">
+                <h3>2. ද්විතීයික වර්ධනය (Secondary Growth)</h3>
+                <div class="sim-container">
+                    <div class="sim-svg-wrapper" style="border-radius: 10px;">
+                        <svg class="sim-svg" viewBox="0 0 200 200" id="growthSim">
+                            <!-- Initial State -->
+                            <circle cx="100" cy="100" r="70" fill="#c8e6c9" id="phloemLayer" />
+                            <circle cx="100" cy="100" r="60" fill="#fff9c4" id="xylemLayer" />
+                            <circle cx="100" cy="100" r="65" fill="none" stroke="#1565c0" stroke-width="3" id="cambiumRing" />
+                            <text x="100" y="105" text-anchor="middle" font-size="10" fill="#333">මධ්‍යස්ථරය</text>
+                            
+                            <!-- Animated Growth Rings -->
+                            <circle cx="100" cy="100" r="80" fill="none" stroke="#8d6e63" stroke-width="2" id="ring1" opacity="0" />
+                            <circle cx="100" cy="100" r="85" fill="none" stroke="#8d6e63" stroke-width="2" id="ring2" opacity="0" />
+                        </svg>
+                    </div>
+                    <div class="sim-controls">
+                        <button class="btn" id="btnPlayGrowth">▶ ආරම්භ කරන්න</button>
+                        <button class="btn btn-outline" id="btnResetGrowth">↺ නැවත</button>
+                    </div>
+                    <div class="sim-info" id="growthLabel">කොම්බියම් මගින් සෛල ලෑලි සහ ජීවාටික සාදයි</div>
+                </div>
+            </div>
+
+        </section>
+
+        <!-- QUIZ VIEW -->
+        <section id="quiz-view" class="view">
+            <div class="card">
+                <h2>දැනුම පරීක්ෂා කරගන්න</h2>
+                <p>පාඩමේ ඇති කරුණු මත පමණක් පදනම් වූ ප්‍රශ්න.</p>
+                <div id="quizContainer"></div>
+                <button class="btn" id="btnSubmitQuiz" style="width: 100%; margin-top: 15px;">පිළිතුරු යවන්න</button>
+                <div id="quizResult" style="margin-top: 15px; font-weight: bold; text-align: center;"></div>
+            </div>
+        </section>
+
+        <!-- FLASHCARDS VIEW -->
+        <section id="flash-view" class="view">
+            <div class="card">
+                <h2>වැදගත් පද සහ අර්ථ දැක්වීම්</h2>
+                <p>කාඩ්පත මත ක්ලික් කර පිළිතුර බලන්න.</p>
+            </div>
+            <div id="flashcardContainer">
+                <!-- Flashcards injected via JS -->
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Navigation -->
+    <nav class="bottom-nav">
+        <button class="nav-item active" data-target="home-view">
+            <span class="icon">🏠</span>
+            <span>මුල් පිටුව</span>
+        </button>
+        <button class="nav-item" data-target="lessons-view">
+            <span class="icon">📖</span>
+            <span>පාඩම්</span>
+        </button>
+        <button class="nav-item" data-target="sim-view">
+            <span class="icon">🔬</span>
+            <span>සිමියුලේෂන්</span>
+        </button>
+        <button class="nav-item" data-target="quiz-view">
+            <span class="icon">📝</span>
+            <span>ප්‍රශ්නාවලිය</span>
+        </button>
+        <button class="nav-item" data-target="flash-view">
+            <span class="icon">💡</span>
+            <span>කටපාඩම්</span>
+        </button>
+    </nav>
+
+    <script>
+        // --- Theme Toggle ---
+        const themeToggle = document.getElementById('themeToggle');
+        const body = document.body;
+        
+        themeToggle.addEventListener('click', () => {
+            if (body.getAttribute('data-theme') === 'light') {
+                body.setAttribute('data-theme', 'dark');
+                themeToggle.textContent = '☀️';
+            } else {
+                body.setAttribute('data-theme', 'light');
+                themeToggle.textContent = '🌙';
+            }
+        });
+
+        // --- Navigation Logic ---
+        const navItems = document.querySelectorAll('.nav-item');
+        const views = document.querySelectorAll('.view');
+
+        navItems.forEach(item => {
+            item.addEventListener('click', () => {
+                // Remove active class from all nav items and views
+                navItems.forEach(nav => nav.classList.remove('active'));
+                views.forEach(view => view.classList.remove('active'));
+                
+                // Add active class to clicked nav item and corresponding view
+                item.classList.add('active');
+                const targetId = item.getAttribute('data-target');
+                document.getElementById(targetId).classList.add('active');
+                
+                // Scroll to top
+                window.scrollTo(0, 0);
+            });
+        });
+
+        // --- Accordion Logic ---
+        const accordions = document.querySelectorAll('.accordion-header');
+        accordions.forEach(acc => {
+            acc.addEventListener('click', () => {
+                const content = acc.nextElementSibling;
+                content.classList.toggle('open');
+                acc.querySelector('span:last-child').textContent = 
+                    content.classList.contains('open') ? '▲' : '▼';
+            });
+        });
+
+        // --- Progress Tracker ---
+        let progress = 0;
+        function markLessonComplete() {
+            if (progress < 100) {
+                progress = 100;
+                document.getElementById('progressBar').style.width = '100%';
+                document.getElementById('progressText').textContent = '100% සම්පූර්ණයි';
+                alert('පාඩම සාර්ථකව සම්පූර්ණ කරන ලදී! 🎉');
+            }
+        }
+
+        // --- Simulation 1: Stem Label Interaction ---
+        function showLabel(text) {
+            const labelDiv = document.getElementById('stemLabel');
+            labelDiv.textContent = text;
+            labelDiv.style.color = 'var(--primary)';
+            labelDiv.style.fontWeight = 'bold';
+        }
+
+        // --- Simulation 2: Secondary Growth Animation ---
+        const btnPlayGrowth = document.getElementById('btnPlayGrowth');
+        const btnResetGrowth = document.getElementById('btnResetGrowth');
+        const growthLabel = document.getElementById('growthLabel');
+        const ring1 = document.getElementById('ring1');
+        const ring2 = document.getElementById('ring2');
+        const cambiumRing = document.getElementById('cambiumRing');
+        
+        let isAnimating = false;
+        let animTimeout;
+
+        btnPlayGrowth.addEventListener('click', () => {
+            if (isAnimating) return;
+            isAnimating = true;
+            btnPlayGrowth.textContent = '⏳ සිදුවෙමින්...';
+            growthLabel.textContent = 'කොම්බියම් සෛල විභාජනය වේ...';
+            
+            // Step 1
+            setTimeout(() => {
+                growthLabel.textContent = 'ඇතුළතට නව සෛල ලෑලි (Xylem) එකතු වේ...';
+                ring1.setAttribute('opacity', '1');
+                ring1.style.transition = 'all 1s ease';
+            }, 1000);
+
+            // Step 2
+            setTimeout(() => {
+                growthLabel.textContent = 'පිටතට නව ප්‍රාථමික ජීවාටික (Phloem) එකතු වේ...';
+                ring2.setAttribute('opacity', '1');
+                ring2.style.transition = 'all 1s ease';
+            }, 2500);
+
+            // Step 3
+            setTimeout(() => {
+                growthLabel.textContent = 'මෙයින් වාර්ෂික වළලු (Annual Rings) සෑදේ.';
+                btnPlayGrowth.textContent = '✅ අවසන්';
+                isAnimating = false;
+            }, 4000);
+        });
+
+        btnResetGrowth.addEventListener('click', () => {
+            clearTimeout(animTimeout);
+            isAnimating = false;
+            btnPlayGrowth.textContent = '▶ ආරම්භ කරන්න';
+            growthLabel.textContent = 'කොම්බියම් මගින් සෛල ලෑලි සහ ජීවාටික සාදයි';
+            ring1.setAttribute('opacity', '0');
+            ring2.setAttribute('opacity', '0');
+        });
+
+        // --- Quiz Data (Based strictly on textbook text) ---
+        const quizData = [
+            {
+                question: "ශාක වර්ධනය යනු කුමක්ද?",
+                options: [
+                    "සෛල විභාජනය පමණක් සිදුවීම",
+                    "අප්‍රතිවර්තනීය වැඩිවීමක් (Irreversible increase)",
+                    "සෛල මිය යාම",
+                    "පත්‍ර කොළ පැහැයට හැරීම"
+                ],
+                answer: 1
+            },
+            {
+                question: "ද්වි බීජ පත්‍රී කඳක ප්‍රාථමික ව්‍යුහයේ පටක පද්ධතිය පිහිටන්නේ කෙසේද?",
+                options: [
+                    "විසිරී පවතී",
+                    "වළල්ලක් ලෙස",
+                    "මධ්‍යස්ථරයේ පමණක්",
+                    "අධස්ථරයේ පමණක්"
+                ],
+                answer: 1
+            },
+            {
+                question: "ද්විතීයික වර්ධනයේදී කොම්බියම් මගින් ඇතුළතට සාදනු ලබන්නේ කුමක්ද?",
+                options: [
+                    "ප්‍රාථමික ජීවාටික (Phloem)",
+                    "පොත්ත (Bark)",
+                    "සෛල ලෑලි (Xylem)",
+                    "මධ්‍යස්ථරය (Pith)"
+                ],
+                answer: 2
+            },
+            {
+                question: "'අරටුව' (Heartwood) යනු කුමක්ද?",
+                options: [
+                    "ජලය රැගෙන යන නව සෛල",
+                    "මුලින් සෑදුනු ක්‍රියාකාරී නොවන සෛල ලෑලි",
+                    "ප්‍රාථමික ජීවාටික පටකය",
+                    "පිටත පොත්ත"
+                ],
+                answer: 1
+            }
+        ];
+
+        const quizContainer = document.getElementById('quizContainer');
+        const btnSubmitQuiz = document.getElementById('btnSubmitQuiz');
+        const quizResult = document.getElementById('quizResult');
+
+        // Render Quiz
+        quizData.forEach((q, index) => {
+            const qDiv = document.createElement('div');
+            qDiv.classList.add('quiz-question');
+            
+            const qTitle = document.createElement('p');
+            qTitle.innerHTML = `<strong>${index + 1}. ${q.question}</strong>`;
+            qDiv.appendChild(qTitle);
+
+            const optDiv = document.createElement('div');
+            optDiv.classList.add('quiz-options');
+
+            q.options.forEach((opt, optIndex) => {
+                const optBtn = document.createElement('div');
+                optBtn.classList.add('quiz-option');
+                optBtn.textContent = opt;
+                optBtn.addEventListener('click', () => {
+                    // Remove selected from siblings
+                    const siblings = optDiv.querySelectorAll('.quiz-option');
+                    siblings.forEach(s => s.style.borderColor = 'var(--border)');
+                    // Highlight selected
+                    optBtn.style.borderColor = 'var(--secondary)';
+                    optBtn.dataset.selected = optIndex;
+                });
+                optDiv.appendChild(optBtn);
+            });
+
+            qDiv.appendChild(optDiv);
+            quizContainer.appendChild(qDiv);
+        });
+
+        // Submit Quiz
+        btnSubmitQuiz.addEventListener('click', () => {
+            let score = 0;
+            let allAnswered = true;
+            
+            const questions = quizContainer.querySelectorAll('.quiz-question');
+            questions.forEach((qDiv, index) => {
+                const selected = qDiv.querySelector('.quiz-option[data-selected]');
+                const options = qDiv.querySelectorAll('.quiz-option');
+                
+                if (!selected) {
+                    allAnswered = false;
+                } else {
+                    const selectedValue = parseInt(selected.dataset.selected);
+                    if (selectedValue === quizData[index].answer) {
+                        score++;
+                        selected.classList.add('correct');
+                    } else {
+                        selected.classList.add('wrong');
+                        // Highlight correct answer
+                        options[quizData[index].answer].classList.add('correct');
+                    }
+                }
+            });
+
+            if (!allAnswered) {
+                quizResult.textContent = "කරුණාකර සියලුම ප්‍රශ්නවලට පිළිතුරු සපයන්න.";
+                quizResult.style.color = "var(--accent)";
+                return;
+            }
+
+            quizResult.textContent = `ඔබ ලබාගත් ලකුණු: ${score} / ${quizData.length}`;
+            quizResult.style.color = score === quizData.length ? "var(--primary)" : "var(--secondary)";
+            
+            // Increase progress
+            if (progress < 50) {
+                progress = 50;
+                document.getElementById('progressBar').style.width = '50%';
+                document.getElementById('progressText').textContent = '50% සම්පූර්ණයි';
+            }
+            
+            btnSubmitQuiz.disabled = true;
+            btnSubmitQuiz.textContent = "සම්පූර්ණයි";
+        });
+
+
+        // --- Flashcards Data ---
+        const flashcardData = [
+            { front: "සෛල විභාජනය", back: "නව සෛල සෑදීමේ ක්‍රියාවලියයි. ශාක වර්ධනයට හේතු වේ." },
+            { front: "කොම්බියම් (Cambium)", back: "ද්විතීයික වර්ධනයට හේතු වන පාර්ශ්වික විභාජනයකි. ඇතුළතට සෛල ලෑලි ද පිටතට ජීවාටික ද සාදයි." },
+            { front: "අරටුව (Heartwood)", back: "මුලින් සෑදුනු, ක්‍රියාකාරී නොවන (Dead) සෛල ලෑලි වලින් සැදුම්ලත් කොටසයි." },
+            { front: "එළය (Sapwood)", back: "නව සෛල ලෑලි වලින් සැදුම්ලත් අතර, ජලය හා ඛනිජ ලවණ රැගෙන යාම සිදු කරයි." },
+            { front: "වාර්ෂික වළලු", back: "වසරක් තුළ වර්ධනය වූ සෛල ලෑලි ස්තරයකි. මේවා මගින් ගසේ වයස ගණන් කළ හැක." }
+        ];
+
+        const flashcardContainer = document.getElementById('flashcardContainer');
+
+        // Render Flashcards
+        flashcardData.forEach(card => {
+            const cardDiv = document.createElement('div');
+            cardDiv.classList.add('flashcard-container');
+            
+            const cardInner = document.createElement('div');
+            cardInner.classList.add('flashcard');
+
+            const front = document.createElement('div');
+            front.classList.add('flashcard-front');
+            front.textContent = card.front;
+
+            const back = document.createElement('div');
+            back.classList.add('flashcard-back');
+            back.textContent = card.back;
+
+            cardInner.appendChild(front);
+            cardInner.appendChild(back);
+            cardDiv.appendChild(cardInner);
+            
+            // Click to flip
+            cardDiv.addEventListener('click', () => {
+                cardInner.classList.toggle('flipped');
+            });
+
+            flashcardContainer.appendChild(cardDiv);
+        });
+
+    </script>
+<!-- ========== BIO HUB FLOATING NAV — DO NOT REMOVE ========== -->
+<style>
+.biohub-nav{
+  position:fixed;
+  left:50%;
+  transform:translateX(-50%);
+  bottom:calc(88px + env(safe-area-inset-bottom, 0px));
+  z-index:9999;
+  display:flex;
+  align-items:center;
+  gap:4px;
+  padding:6px;
+  background:rgba(15,40,24,.92);
+  backdrop-filter:blur(14px) saturate(180%);
+  -webkit-backdrop-filter:blur(14px) saturate(180%);
+  border:1px solid rgba(110,231,183,.25);
+  border-radius:999px;
+  box-shadow:0 8px 28px rgba(0,0,0,.35), 0 2px 8px rgba(0,0,0,.2);
+  font-family:'Noto Sans Sinhala',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+  -webkit-tap-highlight-color:transparent;
+}
+.biohub-nav a,
+.biohub-nav span.biohub-btn{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  width:44px;
+  height:44px;
+  border-radius:50%;
+  color:#ecfdf5;
+  background:transparent;
+  border:none;
+  font-size:18px;
+  line-height:1;
+  cursor:pointer;
+  text-decoration:none;
+  transition:background .15s, transform .1s;
+  -webkit-tap-highlight-color:transparent;
+}
+.biohub-nav a:hover{background:rgba(16,185,129,.28);color:#fff}
+.biohub-nav a:active,
+.biohub-nav span.biohub-btn:active{transform:scale(.92)}
+.biohub-nav a.biohub-home{background:rgba(16,185,129,.35);margin:0 2px}
+.biohub-nav a.biohub-home:hover{background:rgba(16,185,129,.55)}
+.biohub-nav .biohub-disabled{
+  opacity:.32;
+  cursor:not-allowed;
+  pointer-events:none;
+}
+@media (max-width:380px){
+  .biohub-nav a,.biohub-nav span.biohub-btn{width:40px;height:40px;font-size:16px}
+}
+@media (max-height:500px){
+  .biohub-nav{bottom:calc(20px + env(safe-area-inset-bottom, 0px))}
+}
+</style>
+<nav class="biohub-nav" aria-label="පාඩම් සංචාලනය">
+  <!-- PREV (see per-file table) -->
+  <a href="2.html" class="biohub-prev" aria-label="පෙර පාඩම" title="පෙර පාඩම">◀</a>
+  <!-- HOME -->
+  <a href="index.html" class="biohub-home" aria-label="මුල් පිටුව" title="මුල් පිටුව">🏠</a>
+  <!-- NEXT (see per-file table) -->
+  <a href="5,6.html" class="biohub-next" aria-label="ඊළඟ පාඩම" title="ඊළඟ පාඩම">▶</a>
+</nav>
+<!-- ========== /BIO HUB FLOATING NAV ========== -->
+</body>
+</html>

@@ -1,0 +1,953 @@
+<!DOCTYPE html>
+<html lang="si">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>ශාක ජීව විද්‍යාව - අන්තර්ක්‍රියාකාරී ඉගෙනුම් යෙදුම</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Sinhala:wght@400;500;700&display=swap');
+
+        :root {
+            --primary: #2e7d32;
+            --primary-light: #4caf50;
+            --primary-dark: #1b5e20;
+            --bg-color: #f1f8e9;
+            --card-bg: #ffffff;
+            --text-main: #333333;
+            --text-muted: #666666;
+            --border-color: #c8e6c9;
+            --nav-bg: #ffffff;
+            --nav-active: #2e7d32;
+            --nav-inactive: #9e9e9e;
+            --danger: #d32f2f;
+            --warning: #f57c00;
+            --font-family: 'Noto Sans Sinhala', sans-serif;
+        }
+
+        [data-theme="dark"] {
+            --primary: #81c784;
+            --primary-light: #a5d6a7;
+            --primary-dark: #388e3c;
+            --bg-color: #121212;
+            --card-bg: #1e1e1e;
+            --text-main: #e0e0e0;
+            --text-muted: #aaaaaa;
+            --border-color: #333333;
+            --nav-bg: #1e1e1e;
+            --nav-active: #81c784;
+            --nav-inactive: #757575;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: var(--font-family);
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            line-height: 1.6;
+            padding-bottom: 70px; /* Space for bottom nav */
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        header {
+            background-color: var(--primary);
+            color: white;
+            padding: 15px;
+            text-align: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        header h1 {
+            font-size: 1.2rem;
+            font-weight: 700;
+        }
+
+        .theme-toggle {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+            padding: 5px;
+        }
+
+        main {
+            padding: 15px;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .section {
+            display: none;
+            animation: fadeIn 0.3s ease-in-out;
+        }
+
+        .section.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Typography */
+        h2 {
+            font-size: 1.3rem;
+            color: var(--primary-dark);
+            margin-bottom: 15px;
+            border-bottom: 2px solid var(--primary-light);
+            padding-bottom: 5px;
+        }
+
+        h3 {
+            font-size: 1.1rem;
+            color: var(--primary);
+            margin-top: 15px;
+            margin-bottom: 10px;
+        }
+
+        p {
+            margin-bottom: 10px;
+            font-size: 0.95rem;
+        }
+
+        ul {
+            margin-left: 20px;
+            margin-bottom: 15px;
+            font-size: 0.95rem;
+        }
+
+        li {
+            margin-bottom: 5px;
+        }
+
+        /* Cards */
+        .card {
+            background-color: var(--card-bg);
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            border: 1px solid var(--border-color);
+        }
+
+        .card h4 {
+            color: var(--primary-dark);
+            margin-bottom: 8px;
+            font-size: 1rem;
+        }
+
+        [data-theme="dark"] .card h4 {
+            color: var(--primary-light);
+        }
+
+        /* Tables */
+        .table-container {
+            overflow-x: auto;
+            margin-bottom: 15px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9rem;
+            background-color: var(--card-bg);
+        }
+
+        th, td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        th {
+            background-color: var(--primary-light);
+            color: white;
+            font-weight: 500;
+        }
+
+        [data-theme="dark"] th {
+            background-color: var(--primary-dark);
+        }
+
+        /* Interactive Simulations */
+        .sim-container {
+            background-color: var(--card-bg);
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            text-align: center;
+        }
+
+        .sim-canvas {
+            width: 100%;
+            height: 200px;
+            background-color: #e0f7fa;
+            border-radius: 8px;
+            position: relative;
+            overflow: hidden;
+            margin-bottom: 15px;
+            display: flex;
+            justify-content: center;
+            align-items: flex-end;
+        }
+
+        [data-theme="dark"] .sim-canvas {
+            background-color: #263238;
+        }
+
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        button {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 20px;
+            font-family: var(--font-family);
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        button:active {
+            background-color: var(--primary-dark);
+        }
+
+        button:disabled {
+            background-color: var(--nav-inactive);
+            cursor: not-allowed;
+        }
+
+        /* Specific Sim: Phototropism */
+        #photo-sim .sun {
+            position: absolute;
+            top: 10px;
+            left: 50%;
+            width: 30px;
+            height: 30px;
+            background-color: #ffeb3b;
+            border-radius: 50%;
+            box-shadow: 0 0 15px #ffeb3b;
+            transition: left 0.3s ease;
+        }
+        
+        #photo-sim .plant {
+            position: relative;
+            bottom: 0;
+            width: 10px;
+            height: 80px;
+            background-color: #4caf50;
+            border-radius: 5px 5px 0 0;
+            transform-origin: bottom center;
+            transition: transform 0.5s ease;
+        }
+
+        #photo-sim .leaf {
+            position: absolute;
+            width: 30px;
+            height: 15px;
+            background-color: #81c784;
+            border-radius: 50% 0 50% 0;
+        }
+
+        #photo-sim .leaf.left { left: -25px; top: 20px; transform: rotate(-30deg); }
+        #photo-sim .leaf.right { right: -25px; top: 40px; transform: rotate(210deg); }
+
+        /* Specific Sim: Mimosa */
+        #mimosa-sim .leaf-group {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            transition: transform 0.3s ease;
+        }
+        
+        #mimosa-sim .leaflet {
+            width: 40px;
+            height: 10px;
+            background-color: #81c784;
+            border-radius: 5px;
+            margin: 2px 0;
+            transition: transform 0.3s ease, opacity 0.3s;
+            transform-origin: center;
+        }
+
+        #mimosa-sim.touched .leaflet {
+            transform: scaleY(0.3) translateY(10px);
+            opacity: 0.7;
+        }
+
+        /* Flashcard */
+        .flashcard-container {
+            perspective: 1000px;
+            margin-bottom: 15px;
+            cursor: pointer;
+        }
+
+        .flashcard {
+            width: 100%;
+            height: 150px;
+            position: relative;
+            transition: transform 0.6s;
+            transform-style: preserve-3d;
+        }
+
+        .flashcard.flipped {
+            transform: rotateY(180deg);
+        }
+
+        .flashcard-front, .flashcard-back {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            backface-visibility: hidden;
+            border-radius: 12px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            text-align: center;
+            font-size: 1.1rem;
+            font-weight: bold;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+
+        .flashcard-front {
+            background-color: var(--primary-light);
+            color: white;
+        }
+
+        .flashcard-back {
+            background-color: var(--card-bg);
+            color: var(--text-main);
+            transform: rotateY(180deg);
+            border: 2px solid var(--primary-light);
+            font-size: 0.95rem;
+            font-weight: normal;
+        }
+
+        /* Quiz */
+        .quiz-question {
+            font-weight: bold;
+            margin-bottom: 15px;
+            font-size: 1rem;
+        }
+
+        .quiz-options {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .quiz-option {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            padding: 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .quiz-option:hover {
+            background-color: var(--bg-color);
+        }
+
+        .quiz-option.selected {
+            border-color: var(--primary);
+            background-color: var(--primary-light);
+            color: white;
+        }
+
+        .quiz-option.correct {
+            background-color: #4caf50;
+            color: white;
+            border-color: #4caf50;
+        }
+
+        .quiz-option.wrong {
+            background-color: #f44336;
+            color: white;
+            border-color: #f44336;
+        }
+
+        .quiz-feedback {
+            margin-top: 15px;
+            font-weight: bold;
+            display: none;
+        }
+
+        /* Bottom Navigation */
+        nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background-color: var(--nav-bg);
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-around;
+            padding: 10px 0;
+            z-index: 1000;
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: var(--nav-inactive);
+            text-decoration: none;
+            font-size: 0.75rem;
+            cursor: pointer;
+            transition: color 0.3s;
+            width: 25%;
+        }
+
+        .nav-item.active {
+            color: var(--nav-active);
+        }
+
+        .nav-icon {
+            font-size: 1.2rem;
+            margin-bottom: 4px;
+        }
+
+        /* Accordion for Plant Protection */
+        .accordion {
+            background-color: var(--card-bg);
+            color: var(--text-main);
+            cursor: pointer;
+            padding: 15px;
+            width: 100%;
+            border: none;
+            text-align: left;
+            outline: none;
+            font-size: 1rem;
+            font-weight: 500;
+            transition: 0.4s;
+            border-radius: 8px;
+            margin-bottom: 5px;
+            border: 1px solid var(--border-color);
+        }
+
+        .accordion.active, .accordion:hover {
+            background-color: var(--primary-light);
+            color: white;
+        }
+
+        .panel {
+            padding: 0 15px;
+            background-color: var(--card-bg);
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.2s ease-out;
+            border-radius: 0 0 8px 8px;
+            margin-bottom: 10px;
+        }
+
+        .panel p, .panel ul {
+            margin-top: 10px;
+            margin-bottom: 10px;
+        }
+
+        .highlight {
+            background-color: #fff9c4;
+            padding: 2px 4px;
+            border-radius: 4px;
+            color: #333;
+        }
+        
+        [data-theme="dark"] .highlight {
+            background-color: #524c00;
+            color: #fff9c4;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>ශාක ජීව විද්‍යාව</h1>
+        <button class="theme-toggle" id="themeToggle" aria-label="Toggle Dark Mode">🌙</button>
+    </header>
+
+    <main>
+        <!-- MODULES SECTION -->
+        <section id="modules" class="section active">
+            <h2>අභිසාරී හා ඈබීරී උත්තේජනවලට ශාක දක්වන ප්‍රතිචාර</h2>
+            
+            <div class="card">
+                <h4>අභිසාරී උත්තේජන සඳහා ශාක දක්වන ප්‍රතිචාර</h4>
+                <p>උත්තේජනයට මුහුණලා හෝ උත්තේජනයෙන් ඈත් වෙමින් සිදුවන වර්ධන චලනයන් <span class="highlight">අභිසාරී චලන</span> ලෙස හැඳින්වේ.</p>
+                <ul>
+                    <li>උත්තේජනයට හේතුවන ප්‍රදේශයට ශාකයේ කොටස් වර්ධනය වීම හෝ අඩුවීම මගින් මෙය සිදුවේ.</li>
+                    <li>උත්තේජනය දෙසට ඇති වර්ධනය <span class="highlight">ධන අභිසාරී</span> ලෙසද, උත්තේජනයෙන් ඈත්ව ඇති වර්ධනය <span class="highlight">ඍණ අභිසාරී</span> ලෙසද හැඳින්වේ.</li>
+                </ul>
+            </div>
+
+            <div class="card">
+                <h4>ප්‍රධාන අභිසාරී චලන වර්ග</h4>
+                <ul>
+                    <li><strong>ප්‍රකාශ අභිසාරීතාවය (Phototropism):</strong> කඳ ආලෝකය දෙසට (ධන), මුල් ආලෝකයෙන් ඈත්ව (ඍණ).</li>
+                    <li><strong>ගුරුත්වාකර්ෂණය (Geotropism):</strong> මුල් පහළට (ධන), කඳ ඉහළට (ඍණ).</li>
+                    <li><strong>ජල අභිසාරීතාවය (Hydrotropism):</strong> මුල් ජලය ඇති දිශාවට (ධන).</li>
+                    <li><strong>රසායන අභිසාරීතාවය (Chemotropism):</strong> පරාග නළ නික්මීම.</li>
+                    <li><strong>ස්පර්ශ අභිසාරීතාවය (Thigmotropism):</strong> වැල් ආධාරකයක් වටා ගැටෙමින් වර්ධනය වීම.</li>
+                </ul>
+            </div>
+
+            <h2>අනියත උත්තේජන සඳහා ශාක දක්වන ප්‍රතිචාර</h2>
+            <div class="card">
+                <h4>නිස්ථිතික චලන (Nastic Movements)</h4>
+                <p>උත්තේජනයේ දිශාව අදාළ නොවන චලනයන්ය.</p>
+                <ul>
+                    <li><strong>ස්පර්ශ නිස්ථිතික (Seismonastic):</strong> මීමෝසා පුඩිකා ගැහෙන ගස (Mimosa pudica). ස්පර්ශයට පත්‍ර ගැස්සීම.</li>
+                    <li><strong>නිශා නිස්ථිතික (Nyctinastic):</strong> දිවා/රාත්‍රී චක්‍රය අනුව පත්‍ර වැසීම/විවෘත වීම.</li>
+                </ul>
+            </div>
+
+            <h2>ශාක වර්ධක ද්‍රව්‍ය / හෝමෝන</h2>
+            <div class="card">
+                <p>අඩු සාන්ද්‍රණයේ පවා ක්‍රියාකාරී වන අතර, වර්ධනය වේගවත් කිරීම හෝ මන්දගාමී කිරීම කළ හැක.</p>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>හෝමෝනය</th>
+                                <th>කාර්යය</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>ඕක්සින් (Auxin)</td>
+                                <td>කඳ දික්වීම, පාර්ශ්වික වර්ධනය, ඵල විකසනය, අපුෂ්ප ප්‍රජනනය, ප්‍රභාසංශ්ලේෂණය, ගුරුත්වාකර්ෂණය, පත්‍ර වැටීම වැළැක්වීම.</td>
+                            </tr>
+                            <tr>
+                                <td>ජිබරලින් (Gibberellin)</td>
+                                <td>කඳ දික්වීම, පරාග නළ වර්ධනය, ඵල වර්ධනය, බීජ විකසනය හා ප්‍රරෝහණය, ලිංග නිර්ණය (ගැහැණු මල්).</td>
+                            </tr>
+                            <tr>
+                                <td>සයිටොකයිනින් (Cytokinin)</td>
+                                <td>සෛල විභාජනය හා වර්ධනය, අග්‍රස්ථ ප්‍රමුඛතාවය, ප්‍රෝටීන් සංශ්ලේෂණය, බීජ ප්‍රරෝහණය, පත්‍ර වයසට යාම ප්‍රමාද කිරීම.</td>
+                            </tr>
+                            <tr>
+                                <td>ඇබ්සිසික් අම්ලය (Abscisic acid)</td>
+                                <td>වර්ධනය නිෂේධනය, ආතති වලට ඔරොත්තු දීම (නියඟය, ලවණතාව), බීජ ප්‍රරෝහණය නිෂේධනය, පත්‍ර වැටීම, වායු සිදුරු වැසීම.</td>
+                            </tr>
+                            <tr>
+                                <td>එතිලීන් (Ethylene)</td>
+                                <td>ඵල ඉදීම, පත්‍ර කහ වීම හා වැටීම, මුල් වර්ධනය (අඩු), පැති අංකුර වර්ධනය, අන්තර් ජාලාකාර වර්ධනය.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <h2>ශාක උත්තේජන හා ආරක්ෂණය</h2>
+            <div class="card">
+                <h4>ශාක උත්තේජන</h4>
+                <p><strong>අජෛව (Abiotic):</strong> ආලෝකය, ගුරුත්වය, ජලය, ස්පර්ශය.</p>
+                <p><strong>ජෛව (Biotic):</strong> රෝගකාරක, පළිබෝධක.</p>
+            </div>
+
+            <div class="card">
+                <h4>ශාක ආරක්ෂණය (Plant Protection)</h4>
+                <button class="accordion">කායික ආරක්ෂණ (Physical)</button>
+                <div class="panel">
+                    <ul>
+                        <li>තුලන, බට්ට, ඉටි, රෝම, කටු.</li>
+                    </ul>
+                </div>
+                <button class="accordion">රසායනික ආරක්ෂණ (Chemical)</button>
+                <div class="panel">
+                    <ul>
+                        <li>ඇල්කලොයිඩ, ටැනින්, ලැටෙක්ස්, අත්‍යාවශ්‍ය තෙල්, රෙසින්.</li>
+                    </ul>
+                </div>
+                <button class="accordion">පරිවර්තන ආරක්ෂණ ක්‍රම</button>
+                <div class="panel">
+                    <ul>
+                        <li>විෂ සහිත රසායන, අප්‍රසන්න රස/ගන්ධය.</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- SIMULATIONS SECTION -->
+        <section id="simulations" class="section">
+            <h2>අන්තර්ක්‍රියාකාරී අත්හදා බැලීම්</h2>
+
+            <!-- Simulation 1: Phototropism -->
+            <div class="sim-container" id="photo-sim">
+                <h3>ප්‍රකාශ අභිසාරීතාවය (Phototropism)</h3>
+                <p style="font-size: 0.85rem; color: var(--text-muted);">ආලෝකයේ දිශාව වෙනස් කර කඳ වර්ධනය වන ආකාරය බලන්න.</p>
+                <div class="sim-canvas" id="photoCanvas">
+                    <div class="sun" id="sun"></div>
+                    <div class="plant" id="plant">
+                        <div class="leaf left"></div>
+                        <div class="leaf right"></div>
+                    </div>
+                </div>
+                <div class="controls">
+                    <button onclick="moveLight('left')">ආලෝකය වමට</button>
+                    <button onclick="moveLight('center')">මැදට</button>
+                    <button onclick="moveLight('right')">ආලෝකය දකුණට</button>
+                </div>
+            </div>
+
+            <!-- Simulation 2: Mimosa -->
+            <div class="sim-container" id="mimosa-sim">
+                <h3>ස්පර්ශ නිස්ථිතික චලන (Seismonastic)</h3>
+                <p style="font-size: 0.85rem; color: var(--text-muted);">මීමෝසා ශාකය ස්පර්ශ කළ විට සිදුවන දෙය අත්හදා බලන්න.</p>
+                <div class="sim-canvas" style="align-items: center;">
+                    <div class="leaf-group" id="mimosaLeaves">
+                        <div class="leaflet"></div>
+                        <div class="leaflet"></div>
+                        <div class="leaflet"></div>
+                        <div class="leaflet"></div>
+                        <div class="leaflet"></div>
+                    </div>
+                </div>
+                <div class="controls">
+                    <button id="touchBtn" onclick="touchMimosa()">ස්පර්ශ කරන්න</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- FLASHCARDS SECTION -->
+        <section id="flashcards" class="section">
+            <h2>මතක තබා ගැනීමට කාඩ්පත්</h2>
+            <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 15px;">පිළිතුර බැලීමට කාඩ්පත මත ක්ලික් කරන්න.</p>
+            
+            <div class="flashcard-container" onclick="this.querySelector('.flashcard').classList.toggle('flipped')">
+                <div class="flashcard">
+                    <div class="flashcard-front">ප්‍රකාශ අභිසාරීතාවය යනු?</div>
+                    <div class="flashcard-back">ආලෝකය උත්තේජනයට ශාකය දක්වන ප්‍රතිචාරය. කඳ ආලෝකය දෙසට (ධන), මුල් ආලෝකයෙන් ඈත්ව (ඍණ) වර්ධනය වීම.</div>
+                </div>
+            </div>
+
+            <div class="flashcard-container" onclick="this.querySelector('.flashcard').classList.toggle('flipped')">
+                <div class="flashcard">
+                    <div class="flashcard-front">ඕක්සින් (Auxin) හි ප්‍රධාන කාර්යයක්?</div>
+                    <div class="flashcard-back">කඳ දික්වීම, පාර්ශ්වික වර්ධනය, ඵල විකසනය සහ පත්‍ර වැටීම වැළැක්වීම.</div>
+                </div>
+            </div>
+
+            <div class="flashcard-container" onclick="this.querySelector('.flashcard').classList.toggle('flipped')">
+                <div class="flashcard">
+                    <div class="flashcard-front">මීමෝසා පුඩිකා ගැහෙන ගස (Mimosa pudica) දක්වන්නේ කුමන චලනයක්ද?</div>
+                    <div class="flashcard-back">ස්පර්ශ නිස්ථිතික චලන (Seismonastic movement). උත්තේජනයේ දිශාව අදාළ නොවේ.</div>
+                </div>
+            </div>
+
+            <div class="flashcard-container" onclick="this.querySelector('.flashcard').classList.toggle('flipped')">
+                <div class="flashcard">
+                    <div class="flashcard-front">ඇබ්සිසික් අම්ලයේ (Abscisic acid) කාර්යය?</div>
+                    <div class="flashcard-back">වර්ධනය නිෂේධනය, ආතති වලට ඔරොත්තු දීම, බීජ ප්‍රරෝහණය නිෂේධනය, වායු සිදුරු වැසීම.</div>
+                </div>
+            </div>
+
+            <div class="flashcard-container" onclick="this.querySelector('.flashcard').classList.toggle('flipped')">
+                <div class="flashcard">
+                    <div class="flashcard-front">ශාක ආරක්ෂණය සඳහා භාවිතා කරන රසායනික ද්‍රව්‍ය මොනවාද?</div>
+                    <div class="flashcard-back">ඇල්කලොයිඩ, ටැනින්, ලැටෙක්ස්, අත්‍යාවශ්‍ය තෙල්, රෙසින්.</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- QUIZ SECTION -->
+        <section id="quiz" class="section">
+            <h2>දැනුම පරීක්ෂාව</h2>
+            <div id="quizContainer">
+                <!-- Questions injected by JS -->
+            </div>
+            <button id="nextBtn" onclick="nextQuestion()" style="width: 100%; margin-top: 15px;" disabled>ඊළඟ ප්‍රශ්නය</button>
+            <div id="quizResult" style="display: none; text-align: center; margin-top: 20px;">
+                <h3>ඔබගේ ලකුණු: <span id="score"></span> / <span id="totalQ"></span></h3>
+                <button onclick="restartQuiz()" style="margin-top: 10px;">නැවත උත්සාහ කරන්න</button>
+            </div>
+        </section>
+    </main>
+
+    <!-- BOTTOM NAVIGATION -->
+    <nav>
+        <a class="nav-item active" onclick="switchTab('modules')">
+            <span class="nav-icon">📚</span>
+            <span>පාඩම</span>
+        </a>
+        <a class="nav-item" onclick="switchTab('simulations')">
+            <span class="nav-icon">🔬</span>
+            <span>අත්හදා බැලීම්</span>
+        </a>
+        <a class="nav-item" onclick="switchTab('flashcards')">
+            <span class="nav-icon">🗂️</span>
+            <span>කාඩ්පත්</span>
+        </a>
+        <a class="nav-item" onclick="switchTab('quiz')">
+            <span class="nav-icon">📝</span>
+            <span>ප්‍රශ්න</span>
+        </a>
+    </nav>
+
+    <script>
+        // --- Navigation Logic ---
+        function switchTab(tabId) {
+            // Hide all sections
+            document.querySelectorAll('.section').forEach(sec => sec.classList.remove('active'));
+            // Remove active from nav
+            document.querySelectorAll('.nav-item').forEach(nav => nav.classList.remove('active'));
+            
+            // Show selected
+            document.getElementById(tabId).classList.add('active');
+            event.currentTarget.classList.add('active');
+            
+            // Scroll to top
+            window.scrollTo(0, 0);
+        }
+
+        // --- Theme Toggle ---
+        const themeToggle = document.getElementById('themeToggle');
+        themeToggle.addEventListener('click', () => {
+            const body = document.body;
+            if (body.getAttribute('data-theme') === 'dark') {
+                body.removeAttribute('data-theme');
+                themeToggle.textContent = '🌙';
+            } else {
+                body.setAttribute('data-theme', 'dark');
+                themeToggle.textContent = '☀️';
+            }
+        });
+
+        // --- Accordion Logic ---
+        const accordions = document.getElementsByClassName("accordion");
+        for (let i = 0; i < accordions.length; i++) {
+            accordions[i].addEventListener("click", function() {
+                this.classList.toggle("active");
+                const panel = this.nextElementSibling;
+                if (panel.style.maxHeight) {
+                    panel.style.maxHeight = null;
+                } else {
+                    panel.style.maxHeight = panel.scrollHeight + "px";
+                }
+            });
+        }
+
+        // --- Simulation 1: Phototropism ---
+        const sun = document.getElementById('sun');
+        const plant = document.getElementById('plant');
+
+        function moveLight(direction) {
+            if (direction === 'left') {
+                sun.style.left = '10%';
+                plant.style.transform = 'rotate(-20deg)';
+            } else if (direction === 'right') {
+                sun.style.left = '80%';
+                plant.style.transform = 'rotate(20deg)';
+            } else {
+                sun.style.left = 'calc(50% - 15px)';
+                plant.style.transform = 'rotate(0deg)';
+            }
+        }
+
+        // --- Simulation 2: Mimosa ---
+        const mimosaSim = document.getElementById('mimosa-sim');
+        const touchBtn = document.getElementById('touchBtn');
+
+        function touchMimosa() {
+            mimosaSim.classList.add('touched');
+            touchBtn.textContent = 'නැවත වර්ධනය වේ...';
+            touchBtn.disabled = true;
+            
+            setTimeout(() => {
+                mimosaSim.classList.remove('touched');
+                touchBtn.textContent = 'ස්පර්ශ කරන්න';
+                touchBtn.disabled = false;
+            }, 3000);
+        }
+
+        // --- Quiz Logic ---
+        const quizData = [
+            {
+                q: "ආලෝකය උත්තේජනයට ශාක මුල් දක්වන ප්‍රතිචාරය කුමක්ද?",
+                options: ["ධන ප්‍රකාශ අභිසාරීතාවය", "ඍණ ප්‍රකාශ අභිසාරීතාවය", "ධන ගුරුත්වාකර්ෂණය", "ස්පර්ශ නිස්ථිතික චලනය"],
+                ans: 1 // index 1 is correct
+            },
+            {
+                q: "මීමෝසා පුඩිකා ගැහෙන ගස (Mimosa pudica) හි පත්‍ර ගැස්සීම කුමන චලනයක්ද?",
+                options: ["ප්‍රකාශ අභිසාරීතාවය", "නිශා නිස්ථිතික", "ස්පර්ශ නිස්ථිතික", "රසායන අභිසාරීතාවය"],
+                ans: 2
+            },
+            {
+                q: "පහත සඳහන් කුමන හෝමෝනයක් ඵල ඉදීමට හේතු වේද?",
+                options: ["ඕක්සින්", "සයිටොකයිනින්", "එතිලීන්", "ජිබරලින්"],
+                ans: 2
+            },
+            {
+                q: "වර්ධනය නිෂේධනය කිරීම, බීජ ප්‍රරෝහණය නිෂේධනය කිරීම සහ වායු සිදුරු වැසීම සිදුකරන හෝමෝනය කුමක්ද?",
+                options: ["ඇබ්සිසික් අම්ලය", "ඕක්සින්", "සයිටොකයිනින්", "ජිබරලින්"],
+                ans: 0
+            },
+            {
+                q: "ශාකවල රසායනික ආරක්ෂණය සඳහා උදාහරණයක් නොවන්නේ පහත සඳහන් කුමක්ද?",
+                options: ["ටැනින්", "ලැටෙක්ස්", "කටු", "ඇල්කලොයිඩ"],
+                ans: 2 // කටු is physical protection
+            }
+        ];
+
+        let currentQ = 0;
+        let score = 0;
+        let selectedOption = null;
+
+        function loadQuestion() {
+            const container = document.getElementById('quizContainer');
+            const qData = quizData[currentQ];
+            container.innerHTML = `
+                <div class="card">
+                    <div class="quiz-question">${currentQ + 1}. ${qData.q}</div>
+                    <div class="quiz-options">
+                        ${qData.options.map((opt, index) => 
+                            `<div class="quiz-option" onclick="selectOption(this, ${index})">${opt}</div>`
+                        ).join('')}
+                    </div>
+                </div>
+            `;
+            selectedOption = null;
+            document.getElementById('nextBtn').disabled = true;
+            document.getElementById('quizResult').style.display = 'none';
+        }
+
+        function selectOption(element, index) {
+            if (selectedOption !== null) return; // Prevent multiple answers
+            
+            selectedOption = index;
+            const options = document.querySelectorAll('.quiz-option');
+            const correctAns = quizData[currentQ].ans;
+            
+            options.forEach((opt, i) => {
+                if (i === correctAns) {
+                    opt.classList.add('correct');
+                } else if (i === index) {
+                    opt.classList.add('wrong');
+                }
+            });
+
+            if (index === correctAns) {
+                score++;
+            }
+            
+            document.getElementById('nextBtn').disabled = false;
+        }
+
+        function nextQuestion() {
+            currentQ++;
+            if (currentQ < quizData.length) {
+                loadQuestion();
+            } else {
+                showResult();
+            }
+        }
+
+        function showResult() {
+            document.getElementById('quizContainer').innerHTML = '';
+            document.getElementById('nextBtn').style.display = 'none';
+            document.getElementById('quizResult').style.display = 'block';
+            document.getElementById('score').textContent = score;
+            document.getElementById('totalQ').textContent = quizData.length;
+        }
+
+        function restartQuiz() {
+            currentQ = 0;
+            score = 0;
+            document.getElementById('nextBtn').style.display = 'block';
+            loadQuestion();
+        }
+
+        // Initialize Quiz
+        loadQuestion();
+
+    </script>
+<!-- ========== BIO HUB FLOATING NAV — DO NOT REMOVE ========== -->
+<style>
+.biohub-nav{
+  position:fixed;
+  left:50%;
+  transform:translateX(-50%);
+  bottom:calc(88px + env(safe-area-inset-bottom, 0px));
+  z-index:9999;
+  display:flex;
+  align-items:center;
+  gap:4px;
+  padding:6px;
+  background:rgba(15,40,24,.92);
+  backdrop-filter:blur(14px) saturate(180%);
+  -webkit-backdrop-filter:blur(14px) saturate(180%);
+  border:1px solid rgba(110,231,183,.25);
+  border-radius:999px;
+  box-shadow:0 8px 28px rgba(0,0,0,.35), 0 2px 8px rgba(0,0,0,.2);
+  font-family:'Noto Sans Sinhala',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+  -webkit-tap-highlight-color:transparent;
+}
+.biohub-nav a,
+.biohub-nav span.biohub-btn{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  width:44px;
+  height:44px;
+  border-radius:50%;
+  color:#ecfdf5;
+  background:transparent;
+  border:none;
+  font-size:18px;
+  line-height:1;
+  cursor:pointer;
+  text-decoration:none;
+  transition:background .15s, transform .1s;
+  -webkit-tap-highlight-color:transparent;
+}
+.biohub-nav a:hover{background:rgba(16,185,129,.28);color:#fff}
+.biohub-nav a:active,
+.biohub-nav span.biohub-btn:active{transform:scale(.92)}
+.biohub-nav a.biohub-home{background:rgba(16,185,129,.35);margin:0 2px}
+.biohub-nav a.biohub-home:hover{background:rgba(16,185,129,.55)}
+.biohub-nav .biohub-disabled{
+  opacity:.32;
+  cursor:not-allowed;
+  pointer-events:none;
+}
+@media (max-width:380px){
+  .biohub-nav a,.biohub-nav span.biohub-btn{width:40px;height:40px;font-size:16px}
+}
+@media (max-height:500px){
+  .biohub-nav{bottom:calc(20px + env(safe-area-inset-bottom, 0px))}
+}
+</style>
+<nav class="biohub-nav" aria-label="පාඩම් සංචාලනය">
+  <!-- PREV (see per-file table) -->
+  <a href="12.html" class="biohub-prev" aria-label="පෙර පාඩම" title="පෙර පාඩම">◀</a>
+  <!-- HOME -->
+  <a href="index.html" class="biohub-home" aria-label="මුල් පිටුව" title="මුල් පිටුව">🏠</a>
+  <!-- NEXT (see per-file table) -->
+  <span class="biohub-btn biohub-next biohub-disabled" aria-label="ඊළඟ පාඩමක් නැත" title="ඊළඟ පාඩමක් නැත">▶</span>
+</nav>
+<!-- ========== /BIO HUB FLOATING NAV ========== -->
+</body>
+</html>

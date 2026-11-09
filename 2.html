@@ -1,0 +1,1062 @@
+<!DOCTYPE html>
+<html lang="si">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>ශාක පටක පද්ධති සහ පටක — අන්තර්ක්‍රියාකාරී පුනරීක්ෂණය</title>
+<style>
+:root{
+  --paper:#F5F0E1;
+  --paper-2:#EFE7D2;
+  --ink:#1E2A1D;
+  --ink-soft:#4B5A45;
+  --forest:#2E5233;
+  --forest-dk:#1D3822;
+  --rust:#A6522B;
+  --rust-lt:#D89A6E;
+  --xylem:#2A6E8C;
+  --xylem-lt:#9FCBDB;
+  --phloem:#B4863A;
+  --phloem-lt:#E7CE9C;
+  --line:#D3C4A0;
+  --mark:#E9D98F;
+  --white:#FFFDF7;
+  --radius:6px;
+  --shadow:0 2px 10px rgba(30,42,29,.10);
+}
+*{box-sizing:border-box;}
+html{scroll-behavior:smooth; -webkit-text-size-adjust:100%; text-size-adjust:100%;}
+body{
+  margin:0;
+  background:var(--paper);
+  color:var(--ink);
+  font-family:"Iskoola Pota","Nirmala UI","Noto Sans Sinhala","Yaldevi","Abhaya Libre",sans-serif;
+  line-height:1.65;
+  font-size:16px;
+  -webkit-tap-highlight-color:transparent;
+  overflow-x:hidden;
+}
+img,svg{max-width:100%;}
+button{touch-action:manipulation;}
+/* Hover-only affordances: only apply on devices that truly support hover, so taps don't get stuck in a hover state */
+@media (hover:hover) and (pointer:fine){
+  .hero-target:hover .ht-fill{filter:brightness(1.15);}
+  .tab-btn:hover{color:var(--forest-dk);}
+  .chip:hover{border-color:var(--forest);}
+  .quiz-opt:hover{border-color:var(--forest);}
+}
+h1,h2,h3,h4{font-weight:800;margin:0;color:var(--forest-dk);}
+p{margin:0 0 .6em;}
+ul{margin:0;padding-right:1.1em;padding-left:0;}
+li{margin-bottom:.35em;}
+button{font-family:inherit;cursor:pointer;}
+::selection{background:var(--mark);}
+
+/* Tooltip */
+#tooltip{
+  position:fixed;
+  max-width:240px;
+  background:var(--ink);
+  color:var(--white);
+  padding:9px 12px;
+  border-radius:5px;
+  font-size:.82rem;
+  line-height:1.5;
+  pointer-events:none;
+  opacity:0;
+  transform:translateY(4px);
+  transition:opacity .12s ease, transform .12s ease;
+  z-index:999;
+  box-shadow:0 6px 18px rgba(0,0,0,.25);
+}
+#tooltip.show{opacity:1;transform:translateY(0);}
+#tooltip:after{
+  content:"";
+  position:absolute;
+  bottom:-6px;
+  right:16px;
+  border:6px solid transparent;
+  border-top-color:var(--ink);
+}
+
+/* Hotspots */
+.hotspot{
+  fill:var(--rust);
+  stroke:var(--white);
+  stroke-width:1.5;
+  cursor:pointer;
+  transform-origin:center;
+  transform-box:fill-box;
+  animation:pulse 2.4s ease-in-out infinite;
+}
+.hotspot:hover, .hotspot.active{fill:var(--forest);}
+@keyframes pulse{
+  0%,100%{transform:scale(1);opacity:1;}
+  50%{transform:scale(1.35);opacity:.55;}
+}
+@media (prefers-reduced-motion: reduce){
+  .hotspot{animation:none;}
+  html{scroll-behavior:auto;}
+}
+
+/* Hero */
+.hero{
+  background:linear-gradient(180deg,var(--forest-dk),var(--forest) 70%);
+  color:var(--paper);
+  padding:38px 20px 30px;
+}
+.hero-inner{
+  max-width:1080px;
+  margin:0 auto;
+  display:grid;
+  grid-template-columns:1.1fr .9fr;
+  gap:28px;
+  align-items:center;
+}
+@media (max-width:820px){.hero-inner{grid-template-columns:1fr;}}
+.eyebrow{
+  display:inline-block;
+  font-size:.78rem;
+  color:var(--rust-lt);
+  border-right:3px solid var(--rust-lt);
+  padding-right:10px;
+  margin-bottom:10px;
+  letter-spacing:.02em;
+}
+.hero h1{
+  font-size:clamp(1.7rem,3.2vw,2.5rem);
+  color:var(--white);
+  margin-bottom:10px;
+}
+.hero p.lead{color:var(--paper-2);font-size:1rem;max-width:46ch;}
+.hero-svg-wrap{
+  background:radial-gradient(circle at 50% 45%,rgba(255,255,255,.08),transparent 70%);
+  border-radius:10px;
+  padding:6px;
+}
+.hero-svg-wrap svg{width:100%;height:auto;display:block;}
+.hero-hint{font-size:.78rem;color:var(--paper-2);margin-top:8px;opacity:.85;}
+.hero-target{cursor:pointer;}
+
+/* Tabs */
+.tabs{
+  position:sticky;top:0;z-index:50;
+  background:var(--paper);
+  border-bottom:1px solid var(--line);
+  display:flex;
+  overflow-x:auto;
+  -webkit-overflow-scrolling:touch;
+  scrollbar-width:thin;
+  gap:2px;
+  padding:0 12px;
+  padding-top:env(safe-area-inset-top);
+}
+.tab-btn{
+  background:transparent;
+  border:none;
+  padding:14px 16px;
+  min-height:48px;
+  font-size:.95rem;
+  color:var(--ink-soft);
+  border-bottom:3px solid transparent;
+  white-space:nowrap;
+  font-weight:600;
+  flex:0 0 auto;
+}
+.tab-btn .en{display:block;font-size:.68rem;color:var(--ink-soft);opacity:.6;font-weight:400;margin-top:1px;}
+.tab-btn.active{color:var(--forest-dk);border-bottom-color:var(--rust);}
+
+/* Layout */
+main{max-width:1080px;margin:0 auto;padding:34px 20px 60px;}
+.panel{display:none;}
+.panel.active{display:block;animation:fadein .35s ease;}
+@keyframes fadein{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:translateY(0);}}
+
+.section-head{margin-bottom:22px;border-right:3px solid var(--forest);padding-right:14px;}
+.section-head h2{font-size:1.5rem;}
+.section-head .en{color:var(--ink-soft);font-size:.85rem;}
+.section-head p{color:var(--ink-soft);margin-top:6px;max-width:70ch;}
+
+.card-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
+  gap:18px;
+  margin-bottom:30px;
+}
+.card{
+  background:var(--white);
+  border:1px solid var(--line);
+  border-radius:var(--radius);
+  padding:16px 16px 18px;
+  box-shadow:var(--shadow);
+}
+.card h3{font-size:1.05rem;margin-bottom:2px;}
+.card h3 .en{display:block;font-size:.72rem;font-weight:400;color:var(--ink-soft);margin-top:2px;}
+.card .figure{background:var(--paper-2);border-radius:5px;margin:10px 0;padding:6px;}
+.card .figure svg{width:100%;height:auto;display:block;}
+.card ul{font-size:.9rem;color:var(--ink);}
+.card .fn{
+  margin-top:10px;
+  background:var(--paper-2);
+  border-right:3px solid var(--rust);
+  padding:8px 10px;
+  font-size:.85rem;
+  border-radius:3px;
+}
+.card .fn b{color:var(--rust);}
+
+/* Matrix */
+.matrix-wrap{
+  background:var(--white);
+  border:1px solid var(--line);
+  border-radius:var(--radius);
+  padding:18px;
+  box-shadow:var(--shadow);
+  margin-bottom:30px;
+  overflow-x:auto;
+}
+.matrix-wrap h3{margin-bottom:4px;}
+.matrix-wrap .en{color:var(--ink-soft);font-size:.8rem;margin-bottom:12px;display:block;}
+.chip-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px;}
+.chip{
+  border:1px solid var(--line);
+  background:var(--paper-2);
+  border-radius:20px;
+  padding:10px 16px;
+  min-height:40px;
+  font-size:.85rem;
+  color:var(--ink-soft);
+  transition:background .15s, color .15s, border-color .15s;
+}
+.chip.active{background:var(--forest);color:var(--white);border-color:var(--forest);}
+table.matrix{width:100%;border-collapse:collapse;font-size:.88rem;min-width:560px;}
+table.matrix th, table.matrix td{
+  text-align:right;
+  padding:10px 12px;
+  border-bottom:1px solid var(--line);
+}
+table.matrix th{color:var(--forest-dk);font-weight:700;background:var(--paper-2);}
+table.matrix tr td:first-child{font-weight:700;color:var(--forest-dk);}
+table.matrix tbody tr{transition:opacity .2s;}
+table.matrix tbody tr.dim{opacity:.35;}
+table.matrix tbody tr.hl{background:var(--mark);}
+
+/* Simulation */
+.sim-wrap{
+  background:var(--white);
+  border:1px solid var(--line);
+  border-radius:var(--radius);
+  padding:18px;
+  box-shadow:var(--shadow);
+  margin-bottom:30px;
+}
+.sim-head{display:flex;justify-content:space-between;align-items:stretch;flex-wrap:wrap;gap:10px;margin-bottom:14px;}
+.sim-head > div:first-child{flex:1 1 100%;}
+@media (min-width:520px){.sim-head > div:first-child{flex:1 1 auto;} .sim-toggle{width:auto;}}
+.sim-toggle{display:flex;border:1px solid var(--line);border-radius:20px;overflow:hidden;width:100%;}
+.sim-toggle button{
+  background:var(--white);border:none;padding:11px 16px;min-height:44px;flex:1;
+  font-size:.85rem;font-weight:700;color:var(--ink-soft);
+}
+.sim-toggle button.active.xy{background:var(--xylem);color:var(--white);}
+.sim-toggle button.active.ph{background:var(--phloem);color:var(--white);}
+.sim-panel{display:none;}
+.sim-panel.active{display:block;}
+.sim-svg-wrap{background:var(--paper-2);border-radius:5px;padding:10px;}
+.sim-svg-wrap svg{width:100%;height:auto;display:block;max-height:420px;}
+.sim-note{font-size:.85rem;color:var(--ink-soft);margin-top:10px;border-right:3px solid var(--xylem);padding-right:10px;}
+.sim-panel.ph .sim-note{border-color:var(--phloem);}
+
+/* Quiz */
+.quiz-card{
+  background:var(--white);border:1px solid var(--line);border-radius:var(--radius);
+  padding:22px;box-shadow:var(--shadow);max-width:640px;margin:0 auto;
+}
+.quiz-progress{font-size:.8rem;color:var(--ink-soft);margin-bottom:8px;}
+.quiz-bar{height:5px;background:var(--paper-2);border-radius:3px;overflow:hidden;margin-bottom:18px;}
+.quiz-bar-fill{height:100%;background:var(--rust);width:0%;transition:width .25s;}
+.quiz-q{font-size:1.08rem;font-weight:700;margin-bottom:16px;}
+.quiz-options{display:flex;flex-direction:column;gap:9px;margin-bottom:14px;}
+.quiz-opt{
+  text-align:right;border:1px solid var(--line);background:var(--paper);
+  padding:13px 14px;min-height:46px;border-radius:5px;font-size:.94rem;color:var(--ink);
+  width:100%;
+}
+.quiz-opt.correct{background:#DDEBD9;border-color:var(--forest);color:var(--forest-dk);font-weight:700;}
+.quiz-opt.incorrect{background:#F3DCD3;border-color:var(--rust);color:var(--rust);font-weight:700;}
+.quiz-opt[disabled]{cursor:default;}
+.quiz-feedback{font-size:.87rem;background:var(--paper-2);padding:10px 12px;border-radius:5px;margin-bottom:14px;display:none;}
+.quiz-feedback.show{display:block;}
+.quiz-nav{display:flex;justify-content:flex-start;}
+.quiz-next{
+  background:var(--forest);color:var(--white);border:none;padding:10px 22px;
+  border-radius:5px;font-size:.9rem;font-weight:700;display:none;
+}
+.quiz-next.show{display:inline-block;}
+.quiz-result{display:none;text-align:center;}
+.quiz-result.show{display:block;}
+.quiz-result .score{font-size:2.4rem;font-weight:800;color:var(--forest-dk);margin:6px 0;}
+.quiz-retry{
+  margin-top:14px;background:var(--rust);color:var(--white);border:none;
+  padding:10px 22px;border-radius:5px;font-weight:700;
+}
+
+footer{
+  text-align:center;font-size:.78rem;color:var(--ink-soft);
+  padding:24px 20px calc(40px + env(safe-area-inset-bottom));border-top:1px solid var(--line);
+}
+
+/* ===== Mobile optimization ===== */
+@media (max-width:600px){
+  body{font-size:15px;}
+  .hero{padding:22px 14px 20px;}
+  .eyebrow{font-size:.7rem;padding-right:8px;}
+  .hero h1{font-size:1.5rem;line-height:1.3;}
+  .hero p.lead{font-size:.92rem;}
+  .hero-svg-wrap{max-width:240px;margin:0 auto;}
+  main{padding:20px 14px 44px;}
+  .tabs{padding:0 8px;}
+  .tab-btn{padding:12px 10px;font-size:.82rem;}
+  .tab-btn .en{font-size:.62rem;}
+  .section-head{padding-right:10px;}
+  .section-head h2{font-size:1.25rem;}
+  .card-grid{grid-template-columns:1fr;gap:14px;}
+  .card{padding:14px 14px 16px;}
+  .matrix-wrap,.sim-wrap{padding:14px;}
+  .chip{padding:9px 13px;font-size:.8rem;}
+  table.matrix{font-size:.82rem;}
+  table.matrix th, table.matrix td{padding:9px 8px;}
+  .quiz-card{padding:16px;}
+  .quiz-q{font-size:1rem;}
+  .quiz-opt{font-size:.9rem;}
+  .quiz-next, .quiz-retry{width:100%;}
+}
+@media (max-width:360px){
+  .hero h1{font-size:1.3rem;}
+  .card h3{font-size:.98rem;}
+}
+</style>
+</head>
+<body>
+
+<div id="tooltip"></div>
+
+<!-- ===================== HERO ===================== -->
+<header class="hero">
+  <div class="hero-inner">
+    <div>
+      <span class="eyebrow">G.C.E. A/L ජීව විද්‍යාව · පිළිතුරු නිබන්ධනය</span>
+      <h1>ශාක පටක පද්ධති සහ පටක</h1>
+      <p class="lead">චර්මීය, පූරක සහ සනාල යන පටක පද්ධති තුනම එක තැනකින් — අන්තර්ක්‍රියාකාරී රූප, සංසන්දන වගු සහ අභ්‍යාස සමඟ.</p>
+      <p class="hero-hint">➜ පහත ව්‍යාසාර්ධ රූපයේ කොටසක් ස්පර්ශ කර ඍජුවම එම පටක පද්ධතියට යන්න</p>
+    </div>
+    <div class="hero-svg-wrap">
+      <svg viewBox="0 0 320 320" xmlns="http://www.w3.org/2000/svg">
+        <g class="hero-target" data-goto="epidermal">
+          <circle class="ht-fill" cx="160" cy="160" r="140" fill="none" stroke="#EFE0BE" stroke-width="14"/>
+        </g>
+        <g class="hero-target" data-goto="ground">
+          <circle class="ht-fill" cx="160" cy="160" r="130" fill="#E7DFC2"/>
+        </g>
+        <g class="hero-target" data-goto="vascular">
+          <g id="heroBundles"></g>
+        </g>
+        <circle cx="160" cy="160" r="38" fill="#DCD3AE"/>
+        <text x="160" y="164" text-anchor="middle" font-size="11" fill="#4B5A45" font-family="inherit">මජ්ජාව</text>
+      </svg>
+    </div>
+  </div>
+</header>
+
+<!-- ===================== TABS ===================== -->
+<nav class="tabs" id="tabs">
+  <button class="tab-btn active" data-panel="epidermal">චර්මීය පටක<span class="en">Epidermal</span></button>
+  <button class="tab-btn" data-panel="ground">පූරක පටක<span class="en">Ground Tissue</span></button>
+  <button class="tab-btn" data-panel="vascular">සනාල පටක<span class="en">Vascular</span></button>
+  <button class="tab-btn" data-panel="quiz">ස්වයං-ඇගයීම<span class="en">Quiz</span></button>
+</nav>
+
+<main>
+
+<!-- ===================== PANEL 1: EPIDERMAL ===================== -->
+<section id="epidermal" class="panel active">
+  <div class="section-head">
+    <h2>චර්මීය පටක පද්ධතිය</h2>
+    <span class="en">Epidermal Tissue System</span>
+    <p>ශාකයේ බාහිර වශයෙන් වැසී පවතින, එක ස්තරයක ඝන පැකිත සෛල වලින් සමන්විත ආරක්ෂක පටකයයි. යාන්ත්‍රික හානියෙන් හා ක්ෂුද්‍රජීවී ආක්‍රමණයෙන් ආරක්ෂාව, ජල හානිය පාලනය සහ වායු හුවමාරුව මෙහි ප්‍රධාන කාර්යයන් වේ.</p>
+  </div>
+
+  <div class="card-grid">
+    <!-- Stoma / Guard cells -->
+    <div class="card">
+      <h3>පාලක සෛල හා රන්ධ්‍ර<span class="en">Guard Cells &amp; Stomata</span></h3>
+      <div class="figure">
+        <svg viewBox="0 0 260 160" xmlns="http://www.w3.org/2000/svg">
+          <rect x="0" y="0" width="260" height="160" fill="none"/>
+          <!-- epidermal cells background -->
+          <path d="M0 30 L60 20 L120 34 L180 18 L260 28 L260 0 L0 0 Z" fill="#EFE0BE"/>
+          <path d="M0 30 L60 20 L120 34 L180 18 L260 28" fill="none" stroke="#C9B888" stroke-width="1.5"/>
+          <!-- two guard cells forming pore -->
+          <ellipse cx="105" cy="95" rx="46" ry="24" fill="none" stroke="#2E5233" stroke-width="0"/>
+          <path d="M60 95 C80 68, 130 68, 150 95 C130 108, 80 108, 60 95 Z" fill="#BFD9C4" stroke="var(--forest)" stroke-width="2"/>
+          <path d="M60 95 C80 122, 130 122, 150 95" fill="none" stroke="var(--forest)" stroke-width="0"/>
+          <path d="M62 96 C80 78, 130 78, 148 96 C130 100, 80 100, 62 96 Z" fill="#DCEBDE" stroke="var(--forest)" stroke-width="1.5"/>
+          <path d="M62 94 C80 112, 130 112, 148 94 C130 90, 80 90, 62 94 Z" fill="#DCEBDE" stroke="var(--forest)" stroke-width="1.5"/>
+          <ellipse cx="105" cy="94" rx="10" ry="5" fill="#F5F0E1" stroke="#8a7a4a" stroke-width="1"/>
+          <circle class="hotspot" data-tip="පාලක සෛල: වකුගඩු හැඩැති, ක්ලෝරොප්ලාස්ට් සහිත සජීවී සෛල දෙකකි. ඒවායේ ප්‍රසාරණය හා හැකිලීම මගින් රන්ධ්‍රයේ විවෘත වීම පාලනය කරයි." cx="70" cy="82" r="5"/>
+          <circle class="hotspot" data-tip="රන්ධ්‍රය (stoma): වායු හුවමාරුව (CO₂/O₂) හා ජලවාෂ්ප පිටවීම (ට්‍රාන්ස්පිරේෂන්) සිදුවන විවරය." cx="105" cy="94" r="5"/>
+          <circle class="hotspot" data-tip="උපචර්මය (Cuticle): මේද ද්‍රව්‍ය වලින් සැදුණු තට්ටුවක් වන අතර, එය අනවශ්‍ය ජල හානිය අවම කරයි." cx="30" cy="10" r="5"/>
+        </svg>
+      </div>
+      <ul>
+        <li>සාමාන්‍ය චර්මීය සෛල අතර විසිරී ඇති, වකුගඩු හැඩැති, ක්ලෝරොප්ලාස්ට් සහිත සජීවී සෛල දෙකකි.</li>
+        <li>ප්‍රසාරණය/හැකිලීම මගින් රන්ධ්‍රයේ විවර ප්‍රමාණය පාලනය කරයි.</li>
+      </ul>
+      <div class="fn"><b>කාර්යය:</b> වායු හුවමාරුව (ප්‍රභාසංශ්ලේෂණය සඳහා CO₂) සහ ට්‍රාන්ස්පිරේෂන් පාලනය.</div>
+    </div>
+
+    <!-- Trichomes -->
+    <div class="card">
+      <h3>රෝම (ත්‍රිකෝම)<span class="en">Trichomes</span></h3>
+      <div class="figure">
+        <svg viewBox="0 0 260 160" xmlns="http://www.w3.org/2000/svg">
+          <path d="M0 130 L60 122 L120 132 L180 120 L260 128 L260 160 L0 160 Z" fill="#EFE0BE" stroke="#C9B888" stroke-width="1.5"/>
+          <path d="M70 122 C64 90, 76 60, 66 30" fill="none" stroke="var(--rust)" stroke-width="6" stroke-linecap="round"/>
+          <path d="M140 128 C150 100, 132 78, 148 46" fill="none" stroke="var(--rust)" stroke-width="6" stroke-linecap="round"/>
+          <path d="M205 124 C198 96, 214 74, 200 40" fill="none" stroke="var(--rust)" stroke-width="6" stroke-linecap="round"/>
+          <circle class="hotspot" data-tip="ත්‍රිකෝම: චර්මීය සෛලවලින් වර්ධනය වන රෝම. ට්‍රාන්ස්පිරේෂන් අවම කිරීම, අධික ආලෝකය පරාවර්තනය කිරීම හා සතුන්ගෙන් ආරක්ෂාව සපයයි." cx="66" cy="30" r="5"/>
+          <circle class="hotspot" data-tip="සමහර ග්‍රන්ථිමය රෝම, ශාකයට හානිකර හෝ අප්‍රසන්න රසායනික ද්‍රව්‍ය නිපදවා ශාකයාහාරීන්ගෙන් ආරක්ෂාව සපයයි." cx="200" cy="40" r="5"/>
+        </svg>
+      </div>
+      <ul>
+        <li>එක සෛලීය හෝ බහුසෛලීය, ශාඛිත හෝ අශාඛිත විය හැක.</li>
+        <li>ග්‍රන්ථිමය රෝම විශේෂිත රසායනික ද්‍රව්‍ය මුදාහරියි.</li>
+      </ul>
+      <div class="fn"><b>කාර්යය:</b> ට්‍රාන්ස්පිරේෂන් අවම කිරීම, ආලෝකය පරාවර්තනය, ශාකයාහාරීන්ගෙන් ආරක්ෂාව.</div>
+    </div>
+
+    <!-- Root hairs -->
+    <div class="card">
+      <h3>මූලරෝම<span class="en">Root Hairs</span></h3>
+      <div class="figure">
+        <svg viewBox="0 0 260 160" xmlns="http://www.w3.org/2000/svg">
+          <rect x="0" y="0" width="260" height="40" fill="#EFE0BE" stroke="#C9B888"/>
+          <path d="M40 40 C36 70, 20 90, 24 130" fill="none" stroke="var(--forest)" stroke-width="4" stroke-linecap="round"/>
+          <path d="M100 40 C104 76, 118 100, 104 140" fill="none" stroke="var(--forest)" stroke-width="4" stroke-linecap="round"/>
+          <path d="M170 40 C174 66, 156 92, 168 132" fill="none" stroke="var(--forest)" stroke-width="4" stroke-linecap="round"/>
+          <path d="M220 40 C224 70, 236 96, 222 136" fill="none" stroke="var(--forest)" stroke-width="4" stroke-linecap="round"/>
+          <circle class="hotspot" data-tip="මූලරෝම: මූල චර්මීය සෛලයක බාහිර බිත්තියේ දිගාවීමකි (එකම සෛලයේ දිගුවක්). ජලය හා ඛනිජ ලවණ අවශෝෂණය සඳහා පෘෂ්ඨ වර්ගඵලය විශාල ලෙස වැඩි කරයි." cx="104" cy="140" r="5"/>
+        </svg>
+      </div>
+      <ul>
+        <li>මූල චර්මීය සෛලයක නිර්මාණය වූ, තුනී බිත්ති සහිත එක සෛලීය දිගුවකි.</li>
+        <li>මූලාග්‍ර ආසන්නයේ රාශියක් ඇති අතර, කෙටි කාලීන ආයුෂ ඇත.</li>
+      </ul>
+      <div class="fn"><b>කාර්යය:</b> ජලය සහ ඛනිජ ලවණ අවශෝෂණය සඳහා පෘෂ්ඨ වර්ගඵලය සැලකිය යුතු ලෙස වර්ධනය කිරීම.</div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== PANEL 2: GROUND TISSUE ===================== -->
+<section id="ground" class="panel">
+  <div class="section-head">
+    <h2>පූරක පටක පද්ධතිය</h2>
+    <span class="en">Ground Tissue System</span>
+    <p>චර්මීය පටකය හා සනාල පටකය අතර පිරවුමක් ලෙස පවතින, ප්‍රභාසංශ්ලේෂණය, ආහාර/ජල සංචිතය හා ව්‍යූහාත්මක ආධාරය සපයන පටකයයි. සෛල වර්ග තුනකින් සමන්විතයි — මෘදුස්තර, ස්ථූලකෝණාස්තර හා දෘඪස්තර.</p>
+  </div>
+
+  <div class="card-grid">
+    <!-- Parenchyma -->
+    <div class="card">
+      <h3>මෘදුස්තර සෛල<span class="en">Parenchyma</span></h3>
+      <div class="figure">
+        <svg viewBox="0 0 260 150" xmlns="http://www.w3.org/2000/svg">
+          <g fill="#EAF1E4" stroke="var(--forest)" stroke-width="2">
+            <polygon points="60,20 100,15 118,45 96,72 55,68 40,42"/>
+            <polygon points="118,45 156,38 176,66 152,94 112,88 96,72"/>
+            <polygon points="55,68 96,72 112,88 90,118 48,112 34,90"/>
+            <polygon points="176,66 214,58 232,88 208,116 168,110 152,94"/>
+            <polygon points="112,88 152,94 168,110 146,138 104,132 90,118"/>
+          </g>
+          <circle cx="80" cy="42" r="14" fill="#D9E8D2" stroke="var(--forest)" stroke-width="1"/>
+          <circle cx="140" cy="66" r="16" fill="#D9E8D2" stroke="var(--forest)" stroke-width="1"/>
+          <circle cx="70" cy="90" r="12" fill="#D9E8D2" stroke="var(--forest)" stroke-width="1"/>
+          <circle class="hotspot" data-tip="ප්‍රාථමික සෛල බිත්තිය පමණක් — තුනී, සමාන ලෙස ඝන වූ බිත්තියකි. ලිග්නින් රහිතයි." cx="118" cy="45" r="5"/>
+          <circle class="hotspot" data-tip="විශාල මධ්‍යම රික්තිකාව — කාන්දමය පීඩනය පවත්වා සෛලයට තදබව (turgor) ලබාදෙයි." cx="140" cy="66" r="5"/>
+        </svg>
+      </div>
+      <ul>
+        <li>ප්‍රාථමික සෛල බිත්තියක් පමණක් ඇති, පරිණත අවධියේදීත් සජීවී සෛල.</li>
+        <li>විවිධාකාර හැඩ, විශාල මධ්‍යම රික්තිකාවක් සහිතයි.</li>
+      </ul>
+      <div class="fn"><b>කාර්යය:</b> ප්‍රභාසංශ්ලේෂණය, ආහාර/ජල සංචිතය, තුවාල අවස්ථාවේ පටක ප්‍රතිනිර්මාණය.</div>
+    </div>
+
+    <!-- Collenchyma -->
+    <div class="card">
+      <h3>ස්ථූලකෝණාස්තර සෛල<span class="en">Collenchyma</span></h3>
+      <div class="figure">
+        <svg viewBox="0 0 260 150" xmlns="http://www.w3.org/2000/svg">
+          <g fill="#F2EAD6" stroke="var(--rust)" stroke-width="3">
+            <polygon points="55,18 100,14 122,50 92,84 48,78 32,44"/>
+            <polygon points="122,50 168,42 192,76 158,108 116,100 92,84"/>
+            <polygon points="48,78 92,84 116,100 88,134 44,128 26,100"/>
+            <polygon points="192,76 234,66 254,100 220,132 174,124 158,108"/>
+          </g>
+          <path d="M55,18 L100,14" stroke="var(--rust)" stroke-width="7" stroke-linecap="round"/>
+          <path d="M122,50 L168,42" stroke="var(--rust)" stroke-width="7" stroke-linecap="round"/>
+          <path d="M192,76 L234,66" stroke="var(--rust)" stroke-width="7" stroke-linecap="round"/>
+          <circle class="hotspot" data-tip="කෙළවර (කෝණ) වල අසමාන ලෙස ඝන වූ ප්‍රාථමික සෛල බිත්තිය — ලිග්නින් රහිත, නම්‍යශීලීයි." cx="100" cy="14" r="5"/>
+          <circle class="hotspot" data-tip="පරිණත අවධියේදීත් සජීවී සෛල — වර්ධනය වන කඳන් හා පත්‍ර දඬු වලට නම්‍යශීලී ආධාරයක් සපයයි." cx="150" cy="75" r="5"/>
+        </svg>
+      </div>
+      <ul>
+        <li>මෘදුස්තර සෛලවලට වඩා සනකමින් යුත් ප්‍රාථමික සෛල බිත්ති; බිත්ති අසමාකාරව ඝන වී ඇත.</li>
+        <li>සාමාන්‍යයෙන් දිගැටි සෛල; පරිණත අවධියේදීත් සජීවීයි.</li>
+      </ul>
+      <div class="fn"><b>කාර්යය:</b> වර්ධනයට අවහිර නොවන, නම්‍යශීලී යාන්ත්‍රික ආධාරය (කඳන් අග්‍ර, පත්‍ර දඬු).</div>
+    </div>
+
+    <!-- Sclerenchyma -->
+    <div class="card">
+      <h3>දෘඪස්තර සෛල<span class="en">Sclerenchyma</span></h3>
+      <div class="figure">
+        <svg viewBox="0 0 260 150" xmlns="http://www.w3.org/2000/svg">
+          <!-- sclereids -->
+          <g fill="#E7D9C4" stroke="var(--forest-dk)" stroke-width="2.5">
+            <path d="M50 40 C70 20,95 25,90 50 C110 55,110 80,90 85 C95 105,70 112,55 95 C35 100,25 78,42 68 C25 58,32 40,50 40 Z"/>
+          </g>
+          <!-- fibers -->
+          <rect x="140" y="30" width="16" height="95" rx="7" fill="#DCC9A8" stroke="var(--forest-dk)" stroke-width="2.5"/>
+          <rect x="168" y="24" width="14" height="107" rx="7" fill="#DCC9A8" stroke="var(--forest-dk)" stroke-width="2.5"/>
+          <rect x="194" y="34" width="15" height="90" rx="7" fill="#DCC9A8" stroke="var(--forest-dk)" stroke-width="2.5"/>
+          <circle class="hotspot" data-tip="උපල සෛල: කෙටි, අක්‍රමවත් හැඩැති, ඝන ලෙස ලිග්නින්භූත ද්විතීයික බිත්තියක් සහිත අජීවී සෛල. උදා: පෙයාර්ස් ගෙඩියේ මාංසලයේ." cx="60" cy="65" r="5"/>
+          <circle class="hotspot" data-tip="තන්තු: දිගැටි, තුනී අග්‍ර සහිත, ඝන ලෙස ලිග්නින්භූත ද්විතීයික බිත්තියක් සහිත අජීවී සෛල. උදා: පොල් කෙදි, හණ." cx="174" cy="70" r="5"/>
+          <circle class="hotspot" data-tip="ලිග්නින් සහිත ද්විතීයික සෛල බිත්තිය — ප්‍රාථමික බිත්තියට අභ්‍යන්තරව තැන්පත් වී, බිත්තිය දැඩි කරයි." cx="200" cy="45" r="5"/>
+        </svg>
+      </div>
+      <ul>
+        <li>ලිග්නින් සමඟ ද්විතීයික සෛල බිත්ති ඝනවී ඇති, පරිණත අවධියේදී අජීවී සෛල.</li>
+        <li>වර්ග දෙකකි — <b>උපල සෛල</b> (කෙටි, අක්‍රමවත්) සහ <b>තන්තු</b> (දිගැටි, තුනී අග්‍ර).</li>
+      </ul>
+      <div class="fn"><b>කාර්යය:</b> වර්ධනය සම්පූර්ණ වූ ශාක කොටස්වලට යාන්ත්‍රික ශක්තිය හා ස්ථිර ආධාරය ලබාදීම.</div>
+    </div>
+  </div>
+
+  <!-- Comparison matrix -->
+  <div class="matrix-wrap">
+    <h3>සෛල සංසන්දන වගුව</h3>
+    <span class="en">Interactive Cell Comparison Matrix — සසඳා බැලීමට පහත ටැග් ස්පර්ශ කරන්න</span>
+    <div class="chip-row" id="matrixChips">
+      <button class="chip active" data-row="parenchyma">මෘදුස්තර</button>
+      <button class="chip active" data-row="collenchyma">ස්ථූලකෝණාස්තර</button>
+      <button class="chip active" data-row="sclerenchyma">දෘඪස්තර</button>
+    </div>
+    <table class="matrix" id="matrixTable">
+      <thead>
+        <tr><th>සෛල වර්ගය</th><th>සජීවී / අජීවී</th><th>සෛල බිත්තිය</th><th>ලිග්නිභවනය</th><th>ප්‍රධාන කාර්යය</th></tr>
+      </thead>
+      <tbody>
+        <tr data-row="parenchyma"><td>මෘදුස්තර</td><td>සජීවී</td><td>ප්‍රාථමික (තුනී)</td><td>නැත</td><td>ප්‍රභාසංශ්ලේෂණය / සංචිතය</td></tr>
+        <tr data-row="collenchyma"><td>ස්ථූලකෝණාස්තර</td><td>සජීවී</td><td>ප්‍රාථමික (අසමාකාර ඝන)</td><td>නැත</td><td>නම්‍යශීලී ආධාරය</td></tr>
+        <tr data-row="sclerenchyma"><td>දෘඪස්තර</td><td>අජීවී (පරිණත)</td><td>ද්විතීයික (ඝන)</td><td>ඇත</td><td>ස්ථිර යාන්ත්‍රික ශක්තිය</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ===================== PANEL 3: VASCULAR ===================== -->
+<section id="vascular" class="panel">
+  <div class="section-head">
+    <h2>සනාල පටක පද්ධතිය</h2>
+    <span class="en">Vascular Tissue System</span>
+    <p>ශයිලමය සහ ෆ්ලෝයමය යන පටක දෙකින් සමන්විත, ශාකය පුරා ජලය, ඛනිජ ලවණ හා ප්‍රභාසංශ්ලේෂණික ආහාර ප්‍රවාහනය කරන පටක පද්ධතියයි.</p>
+  </div>
+
+  <div class="card-grid">
+    <div class="card">
+      <h3>ශයිලම පටකය<span class="en">Xylem Tissue</span></h3>
+      <div class="figure">
+        <svg viewBox="0 0 260 150" xmlns="http://www.w3.org/2000/svg">
+          <rect x="30" y="10" width="60" height="34" fill="#CFE3EC" stroke="var(--xylem)" stroke-width="3"/>
+          <line x1="30" y1="44" x2="90" y2="44" stroke="var(--xylem)" stroke-width="3" stroke-dasharray="4 3"/>
+          <rect x="30" y="48" width="60" height="34" fill="#CFE3EC" stroke="var(--xylem)" stroke-width="3"/>
+          <line x1="30" y1="82" x2="90" y2="82" stroke="var(--xylem)" stroke-width="3" stroke-dasharray="4 3"/>
+          <rect x="30" y="86" width="60" height="34" fill="#CFE3EC" stroke="var(--xylem)" stroke-width="3"/>
+          <rect x="150" y="10" width="16" height="120" rx="6" fill="#DCEAF0" stroke="var(--xylem)" stroke-width="2.5"/>
+          <ellipse cx="158" cy="40" rx="4" ry="7" fill="none" stroke="var(--xylem)" stroke-width="1.4"/>
+          <ellipse cx="158" cy="70" rx="4" ry="7" fill="none" stroke="var(--xylem)" stroke-width="1.4"/>
+          <ellipse cx="158" cy="100" rx="4" ry="7" fill="none" stroke="var(--xylem)" stroke-width="1.4"/>
+          <rect x="190" y="14" width="16" height="112" rx="6" fill="#DCEAF0" stroke="var(--xylem)" stroke-width="2.5"/>
+          <ellipse cx="198" cy="44" rx="4" ry="7" fill="none" stroke="var(--xylem)" stroke-width="1.4"/>
+          <ellipse cx="198" cy="74" rx="4" ry="7" fill="none" stroke="var(--xylem)" stroke-width="1.4"/>
+          <circle class="hotspot" data-tip="සිද්‍ර තලය (Perforation plate): වාහිනී ඒකක එකිනෙකට හමුවන තැන ඇති විවරය. එය මගින් අඛණ්ඩ නලයක් සෑදේ." cx="60" cy="44" r="5"/>
+          <circle class="hotspot" data-tip="වාහිනී ඒකක: පළල් හා කෙටි; සිද්‍ර තල මගින් සම්බන්ධ වී අඛණ්ඩ නලයක් සාදයි." cx="60" cy="27" r="5"/>
+          <circle class="hotspot" data-tip="වාහකාභ: දිගැටි, තුනී අග්‍ර සහිත තනි සෛල; කූ (pits) හරහා අසල් සෛල අතර ජලය ගමන් කරයි." cx="158" cy="55" r="5"/>
+        </svg>
+      </div>
+      <ul>
+        <li><b>වාහිනී ඒකක</b> — පළල්, කෙටි, සිද්‍ර තල මගින් සම්බන්ධ අඛණ්ඩ නාල.</li>
+        <li><b>වාහකාභ</b> — දිගැටි, තුනී අග්‍ර සහිත, කූ හරහා ජලය ගමන් කරවයි.</li>
+      </ul>
+      <div class="fn"><b>කාර්යය:</b> ජලය හා ඛනිජ ලවණ ඉහළට ප්‍රවාහනය; ලිග්නින්භූත බිත්ති මගින් ආතතිය යටතේ නාල කඩාවැටීම වළක්වා ව්‍යූහාත්මක ආධාරයද සපයයි.</div>
+    </div>
+
+    <div class="card">
+      <h3>ෆ්ලෝයම පටකය<span class="en">Phloem Tissue</span></h3>
+      <div class="figure">
+        <svg viewBox="0 0 260 150" xmlns="http://www.w3.org/2000/svg">
+          <rect x="40" y="10" width="46" height="30" fill="#F1E3C4" stroke="var(--phloem)" stroke-width="3"/>
+          <line x1="40" y1="40" x2="86" y2="40" stroke="var(--phloem)" stroke-width="3"/>
+          <line x1="50" y1="40" x2="50" y2="36" stroke="var(--phloem)" stroke-width="2"/>
+          <line x1="63" y1="40" x2="63" y2="36" stroke="var(--phloem)" stroke-width="2"/>
+          <line x1="76" y1="40" x2="76" y2="36" stroke="var(--phloem)" stroke-width="2"/>
+          <rect x="40" y="44" width="46" height="30" fill="#F1E3C4" stroke="var(--phloem)" stroke-width="3"/>
+          <line x1="40" y1="74" x2="86" y2="74" stroke="var(--phloem)" stroke-width="3"/>
+          <rect x="40" y="78" width="46" height="30" fill="#F1E3C4" stroke="var(--phloem)" stroke-width="3"/>
+          <circle cx="110" cy="57" r="16" fill="#F7EFD8" stroke="var(--phloem)" stroke-width="2.5"/>
+          <circle cx="110" cy="57" r="5" fill="var(--phloem-lt)" stroke="var(--phloem)" stroke-width="1"/>
+          <line x1="94" y1="57" x2="86" y2="57" stroke="var(--phloem)" stroke-width="2" stroke-dasharray="2 2"/>
+          <circle class="hotspot" data-tip="පෙනේර තලය (Sieve plate): පෙනේර නළ ඒකක අතර ඇති ඡිද්‍ර සහිත බිත්තිය. ආහාර ද්‍රව්‍ය එහරහා ගමන් කරයි." cx="63" cy="40" r="5"/>
+          <circle class="hotspot" data-tip="පෙනේර නළ ඒකකය: සජීවී නමුත් න්‍යෂ්ටිය හා රයිබොසෝම නොමැති සෛල; ආහාර ද්‍රව්‍ය ප්‍රවාහනය කරයි." cx="63" cy="57" r="5"/>
+          <circle class="hotspot" data-tip="සහචර සෛල: න්‍යෂ්ටිය සහිත සජීවී සෛල; ප්ලාස්ම බන්ධ හරහා පෙනේර නළ ඒකකයේ පරිවෘත්තීය ක්‍රියාකාරකම් සඳහා සහාය වේ." cx="110" cy="57" r="5"/>
+        </svg>
+      </div>
+      <ul>
+        <li><b>පෙනේර නළ ඒකක</b> — සජීවී නමුත් න්‍යෂ්ටිය/රයිබොසෝම නොමැති; පෙනේර තල මගින් සම්බන්ධයි.</li>
+        <li><b>සහචර සෛල</b> — න්‍යෂ්ටිය සහිත; ප්ලාස්ම බන්ධ හරහා පෙනේර නළ ඒකකයට සහාය දෙයි.</li>
+      </ul>
+      <div class="fn"><b>කාර්යය:</b> ප්‍රභාසංශ්ලේෂණික ආහාර ද්‍රව්‍ය (සීනි) ප්‍රභවයේ සිට ගෝචරය දක්වා ද්වි-දිශානුගතව ප්‍රවාහනය.</div>
+    </div>
+  </div>
+
+  <!-- Transport simulation -->
+  <div class="sim-wrap">
+    <div class="sim-head">
+      <div>
+        <h3>ප්‍රවාහන අනුකරණය</h3>
+        <span class="en">Xylem vs Phloem Transport Simulation</span>
+      </div>
+      <div class="sim-toggle" id="simToggle">
+        <button class="active xy" data-sim="xy">ශයිලම ජල ප්‍රවාහනය</button>
+        <button class="ph" data-sim="ph">ෆ්ලෝයම ආහාර ප්‍රවාහනය</button>
+      </div>
+    </div>
+
+    <div class="sim-panel xy active" id="simXy">
+      <div class="sim-svg-wrap">
+        <svg viewBox="0 0 260 200" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <path id="xyPath" d="M130 190 L130 10"/>
+          </defs>
+          <rect x="112" y="8" width="36" height="184" rx="10" fill="#E4F0F5" stroke="var(--xylem)" stroke-width="3"/>
+          <line x1="112" y1="55" x2="148" y2="55" stroke="var(--xylem)" stroke-width="2" stroke-dasharray="3 3"/>
+          <line x1="112" y1="100" x2="148" y2="100" stroke="var(--xylem)" stroke-width="2" stroke-dasharray="3 3"/>
+          <line x1="112" y1="145" x2="148" y2="145" stroke="var(--xylem)" stroke-width="2" stroke-dasharray="3 3"/>
+          <path d="M120 8 l10 -14 l10 14" fill="none" stroke="var(--forest)" stroke-width="3" stroke-linecap="round"/>
+          <text x="130" y="-2" text-anchor="middle" font-size="11" fill="var(--forest)"></text>
+          <text x="130" y="22" text-anchor="middle" font-size="9" fill="var(--ink-soft)">පත්‍රවලින් ජල වාෂ්පීකරණය</text>
+          <text x="130" y="196" text-anchor="middle" font-size="9" fill="var(--ink-soft)">මූලයෙන් ජලය ඇතුල්වීම</text>
+          <circle r="5" fill="var(--xylem)"><animateMotion dur="2.6s" repeatCount="indefinite" keyPoints="1;0" keyTimes="0;1" calcMode="linear"><mpath href="#xyPath"/></animateMotion></circle>
+          <circle r="5" fill="var(--xylem)"><animateMotion dur="2.6s" begin="0.9s" repeatCount="indefinite" keyPoints="1;0" keyTimes="0;1" calcMode="linear"><mpath href="#xyPath"/></animateMotion></circle>
+          <circle r="5" fill="var(--xylem)"><animateMotion dur="2.6s" begin="1.8s" repeatCount="indefinite" keyPoints="1;0" keyTimes="0;1" calcMode="linear"><mpath href="#xyPath"/></animateMotion></circle>
+        </svg>
+      </div>
+      <p class="sim-note">පත්‍රවල ට්‍රාන්ස්පිරේෂන් මගින් ඇතිවන <b>ඍණ පීඩනය (ආතතිය)</b> නිසා ජලය මූලයේ සිට එකදිශානුගතව (upward) නොකැඩී ඉහළට ඇදී යයි — ට්‍රාන්ස්පිරේෂන්-කාන්දමය-ඇදීම් න්‍යාය (Transpiration-Cohesion-Tension theory).</p>
+    </div>
+
+    <div class="sim-panel ph" id="simPh">
+      <div class="sim-svg-wrap">
+        <svg viewBox="0 0 260 200" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <path id="phPath" d="M130 12 L130 188"/>
+          </defs>
+          <rect x="112" y="8" width="36" height="184" rx="10" fill="#FBF2DD" stroke="var(--phloem)" stroke-width="3"/>
+          <line x1="112" y1="55" x2="148" y2="55" stroke="var(--phloem)" stroke-width="2"/>
+          <line x1="112" y1="110" x2="148" y2="110" stroke="var(--phloem)" stroke-width="2"/>
+          <line x1="112" y1="160" x2="148" y2="160" stroke="var(--phloem)" stroke-width="2"/>
+          <circle cx="90" cy="80" r="13" fill="#FCF6E4" stroke="var(--phloem)" stroke-width="2"/>
+          <circle cx="90" cy="80" r="4" fill="var(--phloem-lt)"/>
+          <line x1="103" y1="80" x2="112" y2="80" stroke="var(--phloem)" stroke-width="2" stroke-dasharray="2 2"/>
+          <text x="130" y="6" text-anchor="middle" font-size="9" fill="var(--ink-soft)">ප්‍රභවය (පත්‍රය) — සීනි පැටවීම</text>
+          <text x="130" y="199" text-anchor="middle" font-size="9" fill="var(--ink-soft)">ගෝචරය (මූලය/ගෙඩිය) — සීනි බැහැරවීම</text>
+          <circle r="5" fill="var(--phloem)"><animateMotion dur="3s" repeatCount="indefinite"><mpath href="#phPath"/></animateMotion></circle>
+          <circle r="5" fill="var(--phloem)"><animateMotion dur="3s" begin="1s" repeatCount="indefinite"><mpath href="#phPath"/></animateMotion></circle>
+          <circle r="5" fill="var(--phloem)"><animateMotion dur="3s" begin="2s" repeatCount="indefinite"><mpath href="#phPath"/></animateMotion></circle>
+          <circle r="3.5" fill="var(--phloem-lt)"><animateMotion dur="1.2s" begin="0.2s" repeatCount="indefinite" path="M90 80 L124 80"/></circle>
+        </svg>
+      </div>
+      <p class="sim-note">සහචර සෛල ක්‍රියාකාරීව සීනි <b>ප්‍රභවයේදී (source)</b> පෙනේර නළයට පටවයි (loading); පසුව එය පෙනේර තල හරහා <b>ගෝචරය (sink)</b> දෙසට කාන්දමය පීඩන අනුගමනය කරමින් ගමන් කරයි — ශයිලමට වඩා මන්දගාමී හා අවශ්‍යතාවය අනුව දිශානුගත වේ.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== PANEL 4: QUIZ ===================== -->
+<section id="quiz" class="panel">
+  <div class="section-head">
+    <h2>ස්වයං-ඇගයීම</h2>
+    <span class="en">Self-Assessment Quiz</span>
+    <p>ප්‍රායෝගික හඳුනාගැනීමේ හැකියාව පරීක්ෂා කිරීම සඳහා ප්‍රශ්න 5ක්.</p>
+  </div>
+
+  <div class="quiz-card">
+    <div id="quizActive">
+      <div class="quiz-progress" id="quizProgress">ප්‍රශ්නය 1 / 5</div>
+      <div class="quiz-bar"><div class="quiz-bar-fill" id="quizBarFill"></div></div>
+      <div class="quiz-q" id="quizQ"></div>
+      <div class="quiz-options" id="quizOpts"></div>
+      <div class="quiz-feedback" id="quizFeedback"></div>
+      <div class="quiz-nav"><button class="quiz-next" id="quizNext">ඊළඟ ප්‍රශ්නය →</button></div>
+    </div>
+    <div class="quiz-result" id="quizResult">
+      <h3>ඔබගේ ප්‍රතිඵලය</h3>
+      <div class="score" id="quizScore">0 / 5</div>
+      <p id="quizVerdict"></p>
+      <button class="quiz-retry" id="quizRetry">නැවත උත්සාහ කරන්න</button>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  © ශාක පටක පද්ධති — G.C.E. A/L ජීව විද්‍යා පුනරීක්ෂණ මෙවලම. සම්පූර්ණයෙන්ම ඔෆ්ලයින් භාවිතය සඳහා.
+</footer>
+
+<script>
+(function(){
+  "use strict";
+
+  /* ---------- Tabs ---------- */
+  var tabBtns = document.querySelectorAll('.tab-btn');
+  var panels = document.querySelectorAll('.panel');
+  function activatePanel(id){
+    panels.forEach(function(p){ p.classList.toggle('active', p.id === id); });
+    tabBtns.forEach(function(b){ b.classList.toggle('active', b.dataset.panel === id); });
+  }
+  tabBtns.forEach(function(btn){
+    btn.addEventListener('click', function(){
+      activatePanel(btn.dataset.panel);
+      window.scrollTo({top:0, behavior:'smooth'});
+    });
+  });
+  document.querySelectorAll('.hero-target').forEach(function(el){
+    el.addEventListener('click', function(){
+      var target = el.getAttribute('data-goto');
+      activatePanel(target);
+      document.getElementById('tabs').scrollIntoView({behavior:'smooth', block:'start'});
+    });
+  });
+
+  /* Build hero vascular bundle ring */
+  var bundlesGroup = document.getElementById('heroBundles');
+  var bCount = 10, bRadius = 95;
+  for(var i=0;i<bCount;i++){
+    var ang = (i / bCount) * Math.PI * 2;
+    var cx = 160 + Math.cos(ang) * bRadius;
+    var cy = 160 + Math.sin(ang) * bRadius;
+    var ns = "http://www.w3.org/2000/svg";
+    var g = document.createElementNS(ns,"circle");
+    g.setAttribute("cx", cx); g.setAttribute("cy", cy); g.setAttribute("r", 9);
+    g.setAttribute("fill", "#2A6E8C"); g.setAttribute("opacity","0.85");
+    bundlesGroup.appendChild(g);
+    var g2 = document.createElementNS(ns,"circle");
+    g2.setAttribute("cx", cx + 6); g2.setAttribute("cy", cy + 6); g2.setAttribute("r", 6);
+    g2.setAttribute("fill", "#B4863A"); g2.setAttribute("opacity","0.9");
+    bundlesGroup.appendChild(g2);
+  }
+
+  /* ---------- Tooltip system ---------- */
+  var tooltip = document.getElementById('tooltip');
+  var activeHotspot = null;
+
+  function showTip(el, x, y){
+    tooltip.textContent = el.getAttribute('data-tip');
+    tooltip.classList.add('show');
+    positionTip(x, y);
+  }
+  function positionTip(x, y){
+    var pad = 14;
+    var rect = tooltip.getBoundingClientRect();
+    var vw = window.innerWidth, vh = window.innerHeight;
+    var left = x + pad, top = y + pad;
+    if(left + rect.width > vw - 8) left = x - rect.width - pad;
+    if(top + rect.height > vh - 8) top = y - rect.height - pad;
+    tooltip.style.left = Math.max(8,left) + 'px';
+    tooltip.style.top = Math.max(8,top) + 'px';
+  }
+  function hideTip(){
+    tooltip.classList.remove('show');
+    if(activeHotspot) activeHotspot.classList.remove('active');
+    activeHotspot = null;
+  }
+
+  /* Bind hover/tap behaviour. "el" is the element receiving the event,
+     "visualEl" is the dot that should get the highlighted/active look and supplies the tooltip text. */
+  function bindHotspot(el, visualEl){
+    el.addEventListener('mouseenter', function(e){
+      visualEl.classList.add('active');
+      showTip(visualEl, e.clientX, e.clientY);
+    });
+    el.addEventListener('mousemove', function(e){
+      if(tooltip.classList.contains('show')) positionTip(e.clientX, e.clientY);
+    });
+    el.addEventListener('mouseleave', function(){
+      visualEl.classList.remove('active');
+      hideTip();
+    });
+    el.addEventListener('click', function(e){
+      e.stopPropagation();
+      if(activeHotspot === visualEl){ hideTip(); return; }
+      if(activeHotspot) activeHotspot.classList.remove('active');
+      activeHotspot = visualEl;
+      visualEl.classList.add('active');
+      var r = el.getBoundingClientRect();
+      showTip(visualEl, r.left + r.width/2, r.top + r.height/2);
+    });
+  }
+
+  /* Enlarge the tappable area of each hotspot dot (important on touch screens)
+     by inserting a matching transparent circle underneath, roughly double the radius,
+     and route its events to the visible dot on top. */
+  var ns = "http://www.w3.org/2000/svg";
+  document.querySelectorAll('.hotspot').forEach(function(hs){
+    var r = parseFloat(hs.getAttribute('r')) || 5;
+    var hit = document.createElementNS(ns, 'circle');
+    hit.setAttribute('cx', hs.getAttribute('cx'));
+    hit.setAttribute('cy', hs.getAttribute('cy'));
+    hit.setAttribute('r', r + 8);
+    hit.setAttribute('fill', 'transparent');
+    hit.setAttribute('class', 'hotspot-hit');
+    hit.style.cursor = 'pointer';
+    hs.parentNode.insertBefore(hit, hs);
+    bindHotspot(hit, hs);
+    bindHotspot(hs, hs);
+  });
+
+  document.body.addEventListener('click', function(){ hideTip(); });
+
+  /* ---------- Comparison matrix chips ---------- */
+  var chips = document.querySelectorAll('#matrixChips .chip');
+  var rows = document.querySelectorAll('#matrixTable tbody tr');
+  function refreshMatrix(){
+    var activeRows = Array.prototype.filter.call(chips, function(c){return c.classList.contains('active');})
+                          .map(function(c){return c.dataset.row;});
+    var anyActive = activeRows.length > 0 && activeRows.length < chips.length;
+    rows.forEach(function(r){
+      var on = activeRows.indexOf(r.dataset.row) !== -1;
+      r.classList.toggle('dim', anyActive && !on);
+      r.classList.toggle('hl', anyActive && on);
+    });
+  }
+  chips.forEach(function(chip){
+    chip.addEventListener('click', function(){
+      var activeCount = document.querySelectorAll('#matrixChips .chip.active').length;
+      if(chip.classList.contains('active') && activeCount === 1){
+        chips.forEach(function(c){ c.classList.add('active'); });
+      } else {
+        chip.classList.toggle('active');
+        if(document.querySelectorAll('#matrixChips .chip.active').length === 0){
+          chips.forEach(function(c){ c.classList.add('active'); });
+        }
+      }
+      refreshMatrix();
+    });
+  });
+
+  /* ---------- Xylem / Phloem simulation toggle ---------- */
+  var simBtns = document.querySelectorAll('#simToggle button');
+  var simXy = document.getElementById('simXy');
+  var simPh = document.getElementById('simPh');
+  simBtns.forEach(function(btn){
+    btn.addEventListener('click', function(){
+      simBtns.forEach(function(b){ b.classList.remove('active'); });
+      btn.classList.add('active');
+      var mode = btn.dataset.sim;
+      simXy.classList.toggle('active', mode === 'xy');
+      simPh.classList.toggle('active', mode === 'ph');
+    });
+  });
+
+  /* ---------- Quiz ---------- */
+  var QUESTIONS = [
+    {
+      q: "සෛල බිත්තිය ලිග්නින් මගින් ඝනවී ඇති අතර, පරිණත අවධියේදී අජීවී වන පූරක පටක සෛල වර්ගය කුමක්ද?",
+      opts: ["මෘදුස්තර සෛල", "ස්ථූලකෝණාස්තර සෛල", "දෘඪස්තර සෛල", "පාලක සෛල"],
+      answer: 2,
+      explain: "දෘඪස්තර සෛලවල ද්විතීයික සෛල බිත්තිය ලිග්නින් සමඟ ඝනවී ඇති අතර, පරිණත වූ පසු ඒවා අජීවී වේ."
+    },
+    {
+      q: "රන්ධ්‍රයක විවෘත වීම හා වැසී යාම සෘජුවම පාලනය කරන්නේ කුමන සෛල මගින්ද?",
+      opts: ["සහචර සෛල", "පාලක සෛල", "මූලරෝම", "සහායක සෛල"],
+      answer: 1,
+      explain: "පාලක සෛලවල ප්‍රසාරණය හා හැකිලීම මගින් රන්ධ්‍රයේ විවරය පාලනය වේ, එමගින් වායු හුවමාරුව හා ට්‍රාන්ස්පිරේෂන් පාලනය කෙරේ."
+    },
+    {
+      q: "සිද්‍ර තල (perforation plates) මගින් එකිනෙකට සම්බන්ධ වී අඛණ්ඩ නාලයක් සාදන ශයිලම සෛලය කුමක්ද?",
+      opts: ["වාහකාභ (Tracheids)", "වාහිනී ඒකක (Vessel elements)", "පෙනේර නළ ඒකක", "සහචර සෛල"],
+      answer: 1,
+      explain: "වාහිනී ඒකක පළල් හා කෙටි වන අතර, ඒවායේ අන්ත බිත්ති ඉවත් වී සිද්‍ර තල සෑදෙයි — එමගින් අඛණ්ඩ ජල නාලයක් සෑදේ. වාහකාභ තනි සෛල ලෙසින්ම කූ හරහා ජලය ගමන් කරවයි."
+    },
+    {
+      q: "සජීවී වුවත් න්‍යෂ්ටිය හා රයිබොසෝම නොමැති, පෙනේර තල හරහා එකිනෙකට සම්බන්ධ ෆ්ලෝයම සෛල වර්ගය කුමක්ද?",
+      opts: ["සහචර සෛල", "පෙනේර නළ ඒකක", "වාහිනී ඒකක", "උපල සෛල"],
+      answer: 1,
+      explain: "පෙනේර නළ ඒකක සජීවී වුවත් න්‍යෂ්ටිය හා රයිබොසෝම නොමැති බැවින්, ඒවායේ පරිවෘත්තීය ක්‍රියාකාරකම් සඳහා ප්ලාස්ම බන්ධ හරහා සම්බන්ධ සහචර සෛල අවශ්‍ය වේ."
+    },
+    {
+      q: "ප්‍රභාසංශ්ලේෂණය, ආහාර/ජල සංචිතය හා තුවාල අවස්ථාවේ පටක ප්‍රතිනිර්මාණය සිදුකරන, ප්‍රාථමික සෛල බිත්තියක් පමණක් ඇති සජීවී සෛල වර්ගය කුමක්ද?",
+      opts: ["දෘඪස්තර සෛල", "වාහකාභ", "මෘදුස්තර සෛල", "ස්ථූලකෝණාස්තර සෛල"],
+      answer: 2,
+      explain: "මෘදුස්තර සෛලවල තුනී ප්‍රාථමික බිත්තියක් හා විශාල මධ්‍යම රික්තිකාවක් ඇති අතර, ප්‍රභාසංශ්ලේෂණය, සංචිතය සහ පටක ප්‍රතිනිර්මාණය සඳහා දායක වේ."
+    }
+  ];
+
+  var qIndex = 0, score = 0, answered = false;
+  var quizQEl = document.getElementById('quizQ');
+  var quizOptsEl = document.getElementById('quizOpts');
+  var quizFeedbackEl = document.getElementById('quizFeedback');
+  var quizNextBtn = document.getElementById('quizNext');
+  var quizProgressEl = document.getElementById('quizProgress');
+  var quizBarFill = document.getElementById('quizBarFill');
+  var quizActiveEl = document.getElementById('quizActive');
+  var quizResultEl = document.getElementById('quizResult');
+  var quizScoreEl = document.getElementById('quizScore');
+  var quizVerdictEl = document.getElementById('quizVerdict');
+  var quizRetryBtn = document.getElementById('quizRetry');
+
+  function renderQuestion(){
+    answered = false;
+    var item = QUESTIONS[qIndex];
+    quizProgressEl.textContent = 'ප්‍රශ්නය ' + (qIndex+1) + ' / ' + QUESTIONS.length;
+    quizBarFill.style.width = (((qIndex) / QUESTIONS.length) * 100) + '%';
+    quizQEl.textContent = item.q;
+    quizOptsEl.innerHTML = '';
+    quizFeedbackEl.classList.remove('show');
+    quizFeedbackEl.textContent = '';
+    quizNextBtn.classList.remove('show');
+    item.opts.forEach(function(optText, i){
+      var b = document.createElement('button');
+      b.className = 'quiz-opt';
+      b.textContent = optText;
+      b.addEventListener('click', function(){ selectOption(i, b); });
+      quizOptsEl.appendChild(b);
+    });
+  }
+
+  function selectOption(i, btnEl){
+    if(answered) return;
+    answered = true;
+    var item = QUESTIONS[qIndex];
+    var allBtns = quizOptsEl.querySelectorAll('.quiz-opt');
+    allBtns.forEach(function(b, idx){
+      b.setAttribute('disabled','true');
+      if(idx === item.answer) b.classList.add('correct');
+      if(idx === i && i !== item.answer) b.classList.add('incorrect');
+    });
+    if(i === item.answer) score++;
+    quizFeedbackEl.textContent = item.explain;
+    quizFeedbackEl.classList.add('show');
+    quizNextBtn.classList.add('show');
+    quizNextBtn.textContent = (qIndex === QUESTIONS.length - 1) ? 'ප්‍රතිඵලය බලන්න →' : 'ඊළඟ ප්‍රශ්නය →';
+  }
+
+  quizNextBtn.addEventListener('click', function(){
+    qIndex++;
+    if(qIndex >= QUESTIONS.length){
+      showResult();
+    } else {
+      renderQuestion();
+    }
+  });
+
+  function showResult(){
+    quizBarFill.style.width = '100%';
+    quizActiveEl.style.display = 'none';
+    quizResultEl.classList.add('show');
+    quizScoreEl.textContent = score + ' / ' + QUESTIONS.length;
+    var verdict;
+    if(score === QUESTIONS.length) verdict = 'විශිෂ්ටයි! සියලුම පටක වර්ග ඔබට හොඳින් හඳුනාගත හැක.';
+    else if(score >= 3) verdict = 'හොඳයි! තව ටිකක් පුනරීක්ෂණය කළහොත් සම්පූර්ණ ලකුණු ලබාගත හැක.';
+    else verdict = 'නැවත එක් වරක් පටක පිටු කියවා, ප්‍රශ්නවලට උත්තර දෙන්න.';
+    quizVerdictEl.textContent = verdict;
+  }
+
+  quizRetryBtn.addEventListener('click', function(){
+    qIndex = 0; score = 0;
+    quizResultEl.classList.remove('show');
+    quizActiveEl.style.display = '';
+    renderQuestion();
+  });
+
+  renderQuestion();
+
+})();
+</script>
+<!-- ========== BIO HUB FLOATING NAV — DO NOT REMOVE ========== -->
+<style>
+.biohub-nav{
+  position:fixed;
+  left:50%;
+  transform:translateX(-50%);
+  bottom:calc(88px + env(safe-area-inset-bottom, 0px));
+  z-index:9999;
+  display:flex;
+  align-items:center;
+  gap:4px;
+  padding:6px;
+  background:rgba(15,40,24,.92);
+  backdrop-filter:blur(14px) saturate(180%);
+  -webkit-backdrop-filter:blur(14px) saturate(180%);
+  border:1px solid rgba(110,231,183,.25);
+  border-radius:999px;
+  box-shadow:0 8px 28px rgba(0,0,0,.35), 0 2px 8px rgba(0,0,0,.2);
+  font-family:'Noto Sans Sinhala',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+  -webkit-tap-highlight-color:transparent;
+}
+.biohub-nav a,
+.biohub-nav span.biohub-btn{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  width:44px;
+  height:44px;
+  border-radius:50%;
+  color:#ecfdf5;
+  background:transparent;
+  border:none;
+  font-size:18px;
+  line-height:1;
+  cursor:pointer;
+  text-decoration:none;
+  transition:background .15s, transform .1s;
+  -webkit-tap-highlight-color:transparent;
+}
+.biohub-nav a:hover{background:rgba(16,185,129,.28);color:#fff}
+.biohub-nav a:active,
+.biohub-nav span.biohub-btn:active{transform:scale(.92)}
+.biohub-nav a.biohub-home{background:rgba(16,185,129,.35);margin:0 2px}
+.biohub-nav a.biohub-home:hover{background:rgba(16,185,129,.55)}
+.biohub-nav .biohub-disabled{
+  opacity:.32;
+  cursor:not-allowed;
+  pointer-events:none;
+}
+@media (max-width:380px){
+  .biohub-nav a,.biohub-nav span.biohub-btn{width:40px;height:40px;font-size:16px}
+}
+@media (max-height:500px){
+  .biohub-nav{bottom:calc(20px + env(safe-area-inset-bottom, 0px))}
+}
+</style>
+<nav class="biohub-nav" aria-label="පාඩම් සංචාලනය">
+  <!-- PREV (see per-file table) -->
+  <a href="1.html" class="biohub-prev" aria-label="පෙර පාඩම" title="පෙර පාඩම">◀</a>
+  <!-- HOME -->
+  <a href="index.html" class="biohub-home" aria-label="මුල් පිටුව" title="මුල් පිටුව">🏠</a>
+  <!-- NEXT (see per-file table) -->
+  <a href="3.html" class="biohub-next" aria-label="ඊළඟ පාඩම" title="ඊළඟ පාඩම">▶</a>
+</nav>
+<!-- ========== /BIO HUB FLOATING NAV ========== -->
+</body>
+</html>

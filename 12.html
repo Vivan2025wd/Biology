@@ -1,0 +1,1060 @@
+<!DOCTYPE html>
+<html lang="si">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>ජීව විද්‍යාව - ශාක (පුෂ්ප, පරාගණය, සංසේචනය, බීජ)</title>
+    <style>
+        :root {
+            --bg-color: #f4f7f6;
+            --text-color: #2c3e50;
+            --primary: #27ae60;
+            --primary-light: #2ecc71;
+            --secondary: #ecf0f1;
+            --card-bg: #ffffff;
+            --border: #e0e6ed;
+            --nav-bg: #ffffff;
+            --shadow: 0 4px 6px rgba(0,0,0,0.05);
+            --font-si: 'Iskoola Pota', 'Noto Sans Sinhala', sans-serif;
+        }
+
+        [data-theme="dark"] {
+            --bg-color: #1a202c;
+            --text-color: #e2e8f0;
+            --primary: #2ecc71;
+            --primary-light: #27ae60;
+            --secondary: #2d3748;
+            --card-bg: #2d3748;
+            --border: #4a5568;
+            --nav-bg: #1a202c;
+            --shadow: 0 4px 6px rgba(0,0,0,0.3);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: var(--font-si);
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            overflow-x: hidden;
+            transition: background-color 0.3s, color 0.3s;
+            padding-bottom: 70px; /* Space for bottom nav */
+        }
+
+        header {
+            background-color: var(--card-bg);
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: var(--shadow);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        header h1 {
+            font-size: 1.2rem;
+            color: var(--primary);
+        }
+
+        .theme-toggle {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--text-color);
+        }
+
+        main {
+            padding: 20px;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .section {
+            display: none;
+            animation: fadeIn 0.4s ease-in-out;
+        }
+
+        .section.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        h2 {
+            color: var(--primary);
+            margin-bottom: 15px;
+            font-size: 1.4rem;
+            border-bottom: 2px solid var(--primary-light);
+            padding-bottom: 5px;
+        }
+
+        h3 {
+            font-size: 1.1rem;
+            margin: 15px 0 10px;
+            color: var(--text-color);
+        }
+
+        p {
+            margin-bottom: 15px;
+            font-size: 1rem;
+            text-align: justify;
+        }
+
+        ul {
+            margin-bottom: 15px;
+            padding-left: 20px;
+        }
+
+        li {
+            margin-bottom: 8px;
+        }
+
+        .card {
+            background-color: var(--card-bg);
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: var(--shadow);
+            margin-bottom: 20px;
+            border: 1px solid var(--border);
+        }
+
+        /* Bottom Navigation */
+        nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background-color: var(--nav-bg);
+            display: flex;
+            justify-content: space-around;
+            padding: 10px 0;
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
+            z-index: 100;
+            border-top: 1px solid var(--border);
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            font-size: 0.75rem;
+            color: var(--text-color);
+            opacity: 0.6;
+            cursor: pointer;
+            transition: opacity 0.2s;
+            border: none;
+            background: none;
+            font-family: var(--font-si);
+        }
+
+        .nav-item.active {
+            opacity: 1;
+            color: var(--primary);
+            font-weight: bold;
+        }
+
+        .nav-icon {
+            font-size: 1.2rem;
+            margin-bottom: 4px;
+        }
+
+        /* Interactive Flower Diagram */
+        .flower-container {
+            position: relative;
+            width: 100%;
+            max-width: 400px;
+            margin: 0 auto;
+            aspect-ratio: 1;
+        }
+
+        .flower-svg {
+            width: 100%;
+            height: 100%;
+        }
+
+        .flower-part {
+            cursor: pointer;
+            transition: fill 0.3s, stroke 0.3s;
+        }
+
+        .flower-part:hover, .flower-part.active {
+            fill: var(--primary-light);
+            stroke: var(--primary);
+            stroke-width: 2px;
+        }
+
+        .tooltip {
+            position: absolute;
+            background: var(--card-bg);
+            border: 1px solid var(--primary);
+            border-radius: 8px;
+            padding: 10px;
+            font-size: 0.85rem;
+            box-shadow: var(--shadow);
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.3s;
+            z-index: 10;
+            max-width: 200px;
+        }
+
+        .tooltip.show {
+            opacity: 1;
+        }
+
+        /* Simulation Containers */
+        .sim-container {
+            background: var(--secondary);
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            margin-bottom: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-size: 1rem;
+            cursor: pointer;
+            font-family: var(--font-si);
+            transition: background 0.2s;
+            margin: 5px;
+            display: inline-block;
+        }
+
+        .btn:active {
+            background-color: var(--primary-light);
+            transform: scale(0.98);
+        }
+
+        .btn-outline {
+            background: none;
+            border: 2px solid var(--primary);
+            color: var(--primary);
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* Fertilization Animation */
+        .fert-stage {
+            width: 100%;
+            height: 200px;
+            position: relative;
+            background: var(--card-bg);
+            border-radius: 8px;
+            margin-bottom: 15px;
+            overflow: hidden;
+            border: 1px solid var(--border);
+        }
+
+        .pollen-tube {
+            position: absolute;
+            width: 4px;
+            background: #f1c40f;
+            left: 50%;
+            top: 0;
+            transform: translateX(-50%);
+            height: 0;
+            transition: height 2s ease-in-out;
+        }
+
+        .sperm {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background: #3498db;
+            border-radius: 50%;
+            opacity: 0;
+            transition: all 1s ease-in-out;
+        }
+
+        .egg {
+            position: absolute;
+            width: 30px;
+            height: 30px;
+            background: #e74c3c;
+            border-radius: 50%;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            opacity: 0.8;
+        }
+
+        /* Flashcard */
+        .flashcard-container {
+            perspective: 1000px;
+            width: 100%;
+            height: 200px;
+            margin-bottom: 20px;
+            cursor: pointer;
+        }
+
+        .flashcard {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            transition: transform 0.6s;
+            transform-style: preserve-3d;
+        }
+
+        .flashcard.flipped {
+            transform: rotateY(180deg);
+        }
+
+        .flashcard-front, .flashcard-back {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            backface-visibility: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            font-size: 1.1rem;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border);
+        }
+
+        .flashcard-front {
+            background-color: var(--card-bg);
+            color: var(--text-color);
+        }
+
+        .flashcard-back {
+            background-color: var(--primary);
+            color: white;
+            transform: rotateY(180deg);
+        }
+
+        /* Quiz */
+        .quiz-option {
+            display: block;
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 10px;
+            background: var(--card-bg);
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            text-align: left;
+            font-size: 1rem;
+            cursor: pointer;
+            font-family: var(--font-si);
+            color: var(--text-color);
+            transition: all 0.2s;
+        }
+
+        .quiz-option:active {
+            background: var(--secondary);
+        }
+
+        .quiz-option.correct {
+            border-color: #27ae60;
+            background: rgba(39, 174, 96, 0.1);
+        }
+
+        .quiz-option.wrong {
+            border-color: #e74c3c;
+            background: rgba(231, 76, 60, 0.1);
+        }
+
+        .feedback {
+            margin-top: 10px;
+            font-weight: bold;
+            font-size: 0.9rem;
+        }
+
+        /* Highlight */
+        .highlight {
+            background-color: rgba(241, 196, 15, 0.3);
+            padding: 2px 4px;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+        
+        .img-label {
+            font-size: 0.8rem;
+            fill: var(--text-color);
+            font-family: var(--font-si);
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>ශාක - පුෂ්ප හා බීජ</h1>
+        <button class="theme-toggle" id="themeToggle" aria-label="Toggle Dark Mode">🌙</button>
+    </header>
+
+    <main>
+        <!-- 1. Home Section -->
+        <section id="home" class="section active">
+            <div class="card">
+                <h2>සාදරයෙන් පිළිගනිමු!</h2>
+                <p>මෙම අන්තර්ක්‍රියාකාරී අධ්‍යයන යෙදුම මගින් ශාකවල පුෂ්ප, පරාගණය, සංසේචනය සහ බීජ හා ඵල පිළිබඳව ඉගෙන ගත හැකිය.</p>
+                <p>පහත නාවිකරණය භාවිතා කර එක් එක් පාඩම් ඒකකයට යන්න. සෑම කොටසකම අන්තර්ක්‍රියාකාරී රූප සටහන් සහ ක්‍රියාකාරකම් ඇත.</p>
+                <ul>
+                    <li><strong>පුෂ්පයේ කොටස්:</strong> පුෂ්පයක ප්‍රධාන කොටස් හඳුනා ගන්න.</li>
+                    <li><strong>පරාගණය:</strong> පරාග රේණු මකුළු තුඩ වෙත ගමන් කරන ආකාරය.</li>
+                    <li><strong>සංසේචනය:</strong> ද්විත්ව සංසේචනය පිළිබඳ පියවරෙන් පියවර පැහැදිලි කිරීම.</li>
+                    <li><strong>බීජ හා ඵල:</strong> බීජ විසිරීමේ වැදගත්කම.</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- 2. Flower Parts Section -->
+        <section id="flower" class="section">
+            <h2>පුෂ්පයේ ප්‍රධාන කොටස්</h2>
+            <p>පහත රූප සටහනේ ඇති කොටස් මත ක්ලික් කර ඒවායේ නම් සහ ක්‍රියා සොයා ගන්න.</p>
+            
+            <div class="flower-container" id="flowerContainer">
+                <!-- Inline SVG for Flower Cross-section -->
+                <svg viewBox="0 0 400 400" class="flower-svg">
+                    <!-- Receptacle (පුෂ්ප මධ්‍යය) -->
+                    <path class="flower-part" data-name="පුෂ්ප මධ්‍යය (Receptacle)" data-desc="පුෂ්පයේ අනෙකුත් කොටස් සවි වී ඇති ප්‍රධාන අක්ෂයයි." d="M180,250 Q200,280 220,250 L210,270 L190,270 Z" fill="#8e44ad" opacity="0.7"/>
+                    
+                    <!-- Pedicel (පුෂ්ප වෘන්තය) -->
+                    <path class="flower-part" data-name="පුෂ්ප වෘන්තය (Pedicel)" data-desc="පුෂ්පය ශාකයේ කඳට සම්බන්ධ කරන මංකඩයයි." d="M190,270 L210,270 L205,350 L195,350 Z" fill="#d35400" opacity="0.7"/>
+
+                    <!-- Ovary (අණ්ඩාශය) -->
+                    <path class="flower-part" data-name="අණ්ඩාශය (Ovary)" data-desc="ඩිම්බ අඩංගු වන අතර, පසුව ඵලය බවට පත් වේ." d="M170,230 Q200,260 230,230 Q200,210 170,230 Z" fill="#2ecc71" opacity="0.7"/>
+                    
+                    <!-- Ovules (ඩිම්බාණු) -->
+                    <circle class="flower-part" data-name="ඩිම්බාණු (Ovules)" data-desc="ගැහැණු ජන්මාණු සෑදෙන ස්ථානයයි. පසුව බීජ බවට පත් වේ." cx="200" cy="235" r="8" fill="#f1c40f"/>
+                    <circle class="flower-part" data-name="ඩිම්බාණු (Ovules)" data-desc="ගැහැණු ජන්මාණු සෑදෙන ස්ථානයයි. පසුව බීජ බවට පත් වේ." cx="185" cy="240" r="6" fill="#f1c40f"/>
+                    <circle class="flower-part" data-name="ඩිම්බාණු (Ovules)" data-desc="ගැහැණු ජන්මාණු සෑදෙන ස්ථානයයි. පසුව බීජ බවට පත් වේ." cx="215" cy="240" r="6" fill="#f1c40f"/>
+
+                    <!-- Style (පරාග නාළය) -->
+                    <path class="flower-part" data-name="පරාග නාළය (Style)" data-desc="මකුළු තුඩ සහ අණ්ඩාශය අතර ඇති කොටසයි. පරාග නාළය මෙය හරහා වර්ධනය වේ." d="M195,160 L205,160 L205,220 L195,220 Z" fill="#3498db" opacity="0.7"/>
+
+                    <!-- Stigma (මකුළු තුඩ) -->
+                    <path class="flower-part" data-name="මකුළු තුඩ (Stigma)" data-desc="පරාග රේණු පිළිගන්නා කොටසයි." d="M190,150 Q200,140 210,150 Q200,160 190,150 Z" fill="#e74c3c" opacity="0.8"/>
+
+                    <!-- Anther (පරාග කෝෂය) -->
+                    <path class="flower-part" data-name="පරාග කෝෂය (Anther)" data-desc="පරාග රේණු නිපදවන ස්ථානයයි." d="M120,150 Q140,130 160,150 Q140,170 120,150 Z" fill="#f39c12" opacity="0.8"/>
+                    <path class="flower-part" data-name="පරාග කෝෂය (Anther)" data-desc="පරාග රේණු නිපදවන ස්ථානයයි." d="M240,150 Q260,130 280,150 Q260,170 240,150 Z" fill="#f39c12" opacity="0.8"/>
+
+                    <!-- Filament (පරාග තැටිය) -->
+                    <path class="flower-part" data-name="පරාග තැටිය (Filament)" data-desc="පරාග කෝෂය රඳවා තබන කොටසයි." d="M140,160 L135,210 L145,210 L150,160 Z" fill="#9b59b6" opacity="0.6"/>
+                    <path class="flower-part" data-name="පරාග තැටිය (Filament)" data-desc="පරාග කෝෂය රඳවා තබන කොටසයි." d="M250,160 L255,210 L265,210 L260,160 Z" fill="#9b59b6" opacity="0.6"/>
+
+                    <!-- Petals (පුෂ්ප දළ) - Decorative / Nectary -->
+                    <path class="flower-part" data-name="මකරන්ද (Nectary)" data-desc="පරාගණයට උදව් කරන කෘමීන් ආකර්ෂණය කර ගැනීමට මිහිරි යුෂ නිපදවයි." d="M170,120 Q120,50 90,80 Q140,130 180,180 Z" fill="#e74c3c" opacity="0.3"/>
+                    <path class="flower-part" data-name="මකරන්ද (Nectary)" data-desc="පරාගණයට උදව් කරන කෘමීන් ආකර්ෂණය කර ගැනීමට මිහිරි යුෂ නිපදවයි." d="M230,120 Q280,50 310,80 Q260,130 220,180 Z" fill="#e74c3c" opacity="0.3"/>
+                    <path class="flower-part" data-name="මකරන්ද (Nectary)" data-desc="පරාගණයට උදව් කරන කෘමීන් ආකර්ෂණය කර ගැනීමට මිහිරි යුෂ නිපදවයි." d="M150,180 Q60,200 70,250 Q130,230 170,210 Z" fill="#e74c3c" opacity="0.3"/>
+                    <path class="flower-part" data-name="මකරන්ද (Nectary)" data-desc="පරාගණයට උදව් කරන කෘමීන් ආකර්ෂණය කර ගැනීමට මිහිරි යුෂ නිපදවයි." d="M250,180 Q340,200 330,250 Q270,230 230,210 Z" fill="#e74c3c" opacity="0.3"/>
+                    
+                    <!-- Labels -->
+                    <text x="200" y="370" text-anchor="middle" class="img-label">පුෂ්ප වෘන්තය</text>
+                    <line x1="200" y1="350" x2="200" y2="360" stroke="var(--text-color)" stroke-width="1"/>
+                </svg>
+                <div class="tooltip" id="tooltip"></div>
+            </div>
+
+            <div class="card">
+                <h3>පුෂ්ප වර්ග</h3>
+                <p>පුෂ්ප ශාකවල ප්‍රජනන අවයවයයි. මෙම පුෂ්පවල ප්‍රධාන කොටස් දෙකක් ඇත:</p>
+                <ul>
+                    <li><strong>පුරුෂ කොටස්:</strong> පරාග කෝෂය (Anther) සහ පරාග තැටිය (Filament).</li>
+                    <li><strong>ගැහැණු කොටස්:</strong> මකුළු තුඩ (Stigma), පරාග නාළය (Style) සහ අණ්ඩාශය (Ovary).</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- 3. Pollination Section -->
+        <section id="pollination" class="section">
+            <h2>පරාගණය (Pollination)</h2>
+            <div class="card">
+                <p>පරාග රේණු පරාග කෝෂයේ (Anther) සිට මකුළු තුඩ (Stigma) වෙත ප්‍රවාහනය වීම <span class="highlight">පරාගණය</span> ලෙස හැඳින්වේ.</p>
+                
+                <h3>පරාගණයේ වර්ග</h3>
+                <ul>
+                    <li><strong>ස්වපරාගණය:</strong> එකම පුෂ්පයක පරාග රේණු එහිම මකුළු තුඩ වෙත ගමන් කිරීම.</li>
+                    <li><strong>පරපරාගණය:</strong> එක් පුෂ්පයක පරාග රේණු වෙනත් පුෂ්පයක මකුළු තුඩ වෙත ගමන් කිරීම.</li>
+                </ul>
+
+                <h3>පරාගණයට උපකාරී වන සාධක</h3>
+                <ul>
+                    <li><strong>කෘමි පරාගණය:</strong> කෘමීන් ආකර්ෂණය කර ගැනීමට දීප්තිමත් පාටින් යුත් පුෂ්ප සහ මකරන්ද ඇති වේ.</li>
+                    <li><strong>සුළං පරාගණය:</strong> සැහැල්ලු පරාග රේණු සුළං මගින් ප්‍රවාහනය වේ.</li>
+                    <li><strong>ජල පරාගණය:</strong> ජලය මගින් පරාග රේණු ප්‍රවාහනය වේ.</li>
+                    <li><strong>සත්ව පරාගණය:</strong> කුරුල්ලන්, වවුලන් වැනි සතුන් මගින්.</li>
+                </ul>
+            </div>
+
+            <div class="sim-container">
+                <h3>පරාගණය - ක්‍රියාකාරී ආකෘතිය</h3>
+                <p style="font-size: 0.9rem; margin-bottom: 10px;">මකුළු තුඩ වෙත පරාග රේණු ගමන් කරන ආකාරය බලන්න.</p>
+                <svg viewBox="0 0 300 200" width="100%" height="150px" id="pollinationSim">
+                    <!-- Flower 1 -->
+                    <path d="M50,180 L50,100 Q40,80 60,60 Q80,40 100,60 Q120,80 110,100 L110,180 Z" fill="var(--secondary)" stroke="var(--primary)" />
+                    <circle cx="80" cy="80" r="10" fill="#f1c40f" id="anther1"/>
+                    <circle cx="80" cy="110" r="8" fill="#e74c3c" id="stigma1"/>
+                    <text x="80" y="195" text-anchor="middle" font-size="10" fill="var(--text-color)">පුෂ්පය 1</text>
+                    
+                    <!-- Flower 2 -->
+                    <path d="M190,180 L190,100 Q180,80 200,60 Q220,40 240,60 Q260,80 250,100 L250,180 Z" fill="var(--secondary)" stroke="var(--primary)" />
+                    <circle cx="220" cy="80" r="10" fill="#f1c40f" id="anther2"/>
+                    <circle cx="220" cy="110" r="8" fill="#e74c3c" id="stigma2"/>
+                    <text x="220" y="195" text-anchor="middle" font-size="10" fill="var(--text-color)">පුෂ්පය 2</text>
+
+                    <!-- Pollen Grain -->
+                    <circle cx="80" cy="80" r="4" fill="#f1c40f" id="pollenGrain" opacity="0"/>
+                    
+                    <!-- Arrow -->
+                    <path d="M120,80 Q150,40 180,80" fill="none" stroke="var(--text-color)" stroke-width="2" stroke-dasharray="5,5" id="pollinationArrow" opacity="0"/>
+                </svg>
+                <div>
+                    <button class="btn" onclick="startPollination()">පරාගණය අරඹන්න</button>
+                    <button class="btn btn-outline" onclick="resetPollination()">යළි සකසන්න</button>
+                </div>
+                <p id="pollinationText" style="margin-top: 10px; font-weight: bold; color: var(--primary);"></p>
+            </div>
+        </section>
+
+        <!-- 4. Fertilization Section -->
+        <section id="fertilization" class="section">
+            <h2>සංසේචනය (Fertilization)</h2>
+            <div class="card">
+                <p>පරාග රේණු මකුළු තුඩ මතට පැමිණි පසු, පරාග නාළයක් (Pollen tube) වර්ධනය වී අණ්ඩාශය තුළට ගමන් කරයි.</p>
+                
+                <h3>ද්විත්ව සංසේචනය (Double Fertilization)</h3>
+                <p>ශාකවල <span class="highlight">ද්විත්ව සංසේචනය</span> සිදු වේ. මෙහිදී පුරුෂ ජන්මාණු දෙකක් ක්‍රියාකාරී වේ.</p>
+                <ul>
+                    <li>එක් පුරුෂ ජන්මාණුවක් ඩිම්බය (Egg) සමඟ එක්වී <strong>සිගෝටය (Zygote)</strong> සාදයි.</li>
+                    <li>අනෙක් පුරුෂ ජන්මාණුව ප්‍රාථමික අන්තඃපත්‍ර න්‍යෂ්ටිය (Primary Endosperm Nucleus) සමඟ එක්වේ.</li>
+                </ul>
+                <p>සිගෝටය පසුව කලලය (Embryo) බවටත්, අණ්ඩාශය ඵලය (Fruit) බවටත්, ඩිම්බය බීජය (Seed) බවටත් වර්ධනය වේ.</p>
+            </div>
+
+            <div class="sim-container">
+                <h3>ද්විත්ව සංසේචනය - පියවරෙන් පියවර</h3>
+                <div class="fert-stage">
+                    <!-- Stigma -->
+                    <div style="position: absolute; top: 10px; left: 50%; transform: translateX(-50%); width: 40px; height: 10px; background: #e74c3c; border-radius: 5px;"></div>
+                    <!-- Style -->
+                    <div id="stylePath" style="position: absolute; top: 20px; left: 50%; transform: translateX(-50%); width: 4px; height: 0; background: #bdc3c7; transition: height 1s;"></div>
+                    <!-- Ovary -->
+                    <div style="position: absolute; bottom: 10px; left: 50%; transform: translateX(-50%); width: 120px; height: 60px; border: 2px solid #27ae60; border-radius: 50%;"></div>
+                    
+                    <!-- Pollen Tube -->
+                    <div class="pollen-tube" id="pollenTube" style="top: 20px;"></div>
+                    
+                    <!-- Sperm 1 -->
+                    <div class="sperm" id="sperm1" style="top: 20px; left: 48%;"></div>
+                    <!-- Sperm 2 -->
+                    <div class="sperm" id="sperm2" style="top: 20px; left: 52%;"></div>
+                    
+                    <!-- Egg -->
+                    <div class="egg" id="egg"></div>
+                    
+                    <!-- Polar Nuclei -->
+                    <div style="position: absolute; bottom: 50px; left: 50%; transform: translateX(-50%); width: 20px; height: 20px; border: 2px dashed #8e44ad; border-radius: 50%; opacity: 0.5;" id="polarNuclei"></div>
+                </div>
+                
+                <div style="display: flex; justify-content: center; flex-wrap: wrap;">
+                    <button class="btn" id="fertBtn" onclick="nextFertStep()">ඊළඟ පියවර</button>
+                    <button class="btn btn-outline" onclick="resetFertilization()">යළි සකසන්න</button>
+                </div>
+                <p id="fertText" style="margin-top: 10px; font-weight: bold; min-height: 40px; font-size: 0.9rem;"></p>
+            </div>
+        </section>
+
+        <!-- 5. Seed & Fruit Section -->
+        <section id="seed" class="section">
+            <h2>බීජ හා ඵල</h2>
+            <div class="card">
+                <h3>බීජ හා ඵලවල වැදගත්කම</h3>
+                <ul>
+                    <li><strong>ආරක්ෂාව:</strong> බීජ අවශ්‍ය නොවන තත්ත්වවලින් ආරක්ෂා කිරීම.</li>
+                    <li><strong>විසිරීම (Dispersal):</strong> බීජ නව ප්‍රදේශවලට ව්‍යාප්ත වීම.</li>
+                    <li><strong>අංකුරණය (Germination):</strong> සුදුසු තත්ත්ව යටතේ නව ශාකයක් බිහි වීම.</li>
+                </ul>
+
+                <h3>බීජ විසිරීමේ ක්‍රම</h3>
+                <ul>
+                    <li><strong>සුළං මගින්:</strong> සැහැල්ලු බීජ (උදා: ගම්මිරිස්).</li>
+                    <li><strong>ජලය මගින්:</strong> ජලයේ පාවීමට හැකි බීජ.</li>
+                    <li><strong>සත්වයන් මගින්:</strong> ඇලෙන හෝ ආහාරයට ගන්නා බීජ (උදා: කොස්, මිදි, දෙළුම්).</li>
+                    <li><strong>යාන්ත්‍රික (පුපුරා යාම):</strong> ඵලය පුපුරා බීජ විසිරීම.</li>
+                </ul>
+            </div>
+
+            <div class="sim-container">
+                <h3>බීජ විසිරීම - සත්වයන් මගින්</h3>
+                <svg viewBox="0 0 300 150" width="100%" height="120px">
+                    <!-- Animal -->
+                    <ellipse cx="100" cy="100" rx="30" ry="20" fill="#8e44ad" id="animal" />
+                    <circle cx="130" cy="90" r="15" fill="#8e44ad" />
+                    
+                    <!-- Fruit -->
+                    <circle cx="85" cy="110" r="10" fill="#e74c3c" id="fruit" />
+                    
+                    <!-- Seed dropping -->
+                    <circle cx="150" cy="120" r="4" fill="#f1c40f" id="droppedSeed" opacity="0"/>
+                </svg>
+                <button class="btn" onclick="startDispersal()">විසිරීම බලන්න</button>
+            </div>
+        </section>
+
+        <!-- 6. Quiz & Flashcards -->
+        <section id="quiz" class="section">
+            <h2>දැනුම පරීක්ෂාව</h2>
+            
+            <h3>ෆ්ලෑෂ් කාඩ්පත්</h3>
+            <p>පදය බැලීමට කාඩ්පත මත ක්ලික් කරන්න.</p>
+            <div class="flashcard-container" id="flashcard" onclick="flipCard()">
+                <div class="flashcard" id="flashcardInner">
+                    <div class="flashcard-front" id="cardFront">පරාගණය</div>
+                    <div class="flashcard-back" id="cardBack">පරාග රේණු පරාග කෝෂයේ සිට මකුළු තුඩ වෙත ප්‍රවාහනය වීම.</div>
+                </div>
+            </div>
+            <div style="text-align: center; margin-bottom: 20px;">
+                <button class="btn btn-outline" onclick="prevCard()">◀ පෙර</button>
+                <button class="btn btn-outline" onclick="nextCard()">ඊළඟ ▶</button>
+            </div>
+
+            <div class="card">
+                <h3>බහුවරණ ප්‍රශ්නය</h3>
+                <p id="quizQuestion">ප්‍රශ්නය පූරණය වෙමින්...</p>
+                <div id="quizOptions"></div>
+                <div class="feedback" id="quizFeedback"></div>
+                <button class="btn" id="nextQuizBtn" style="display: none;" onclick="nextQuiz()">ඊළඟ ප්‍රශ්නය</button>
+            </div>
+        </section>
+
+    </main>
+
+    <nav>
+        <button class="nav-item active" onclick="showSection('home', this)">
+            <span class="nav-icon">🏠</span>
+            මුල් පිටුව
+        </button>
+        <button class="nav-item" onclick="showSection('flower', this)">
+            <span class="nav-icon">🌸</span>
+            පුෂ්පය
+        </button>
+        <button class="nav-item" onclick="showSection('pollination', this)">
+            <span class="nav-icon">🐝</span>
+            පරාගණය
+        </button>
+        <button class="nav-item" onclick="showSection('fertilization', this)">
+            <span class="nav-icon">💧</span>
+            සංසේචනය
+        </button>
+        <button class="nav-item" onclick="showSection('seed', this)">
+            <span class="nav-icon">🌱</span>
+            බීජ
+        </button>
+        <button class="nav-item" onclick="showSection('quiz', this)">
+            <span class="nav-icon">📝</span>
+            ප්‍රශ්න
+        </button>
+    </nav>
+
+    <script>
+        // --- Navigation & Theme ---
+        function showSection(id, btn) {
+            document.querySelectorAll('.section').forEach(sec => sec.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+            
+            document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
+            btn.classList.add('active');
+
+            // Scroll to top on section change
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+
+            // Init quiz if navigating to quiz section
+            if(id === 'quiz' && !quizInitialized) {
+                initQuiz();
+            }
+        }
+
+        const themeToggle = document.getElementById('themeToggle');
+        themeToggle.addEventListener('click', () => {
+            const currentTheme = document.body.getAttribute('data-theme') || 'light';
+            const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+            document.body.setAttribute('data-theme', newTheme);
+            themeToggle.textContent = newTheme === 'light' ? '🌙' : '☀️';
+        });
+
+        // --- Flower Diagram Interactions ---
+        const flowerParts = document.querySelectorAll('.flower-part');
+        const tooltip = document.getElementById('tooltip');
+        const flowerContainer = document.getElementById('flowerContainer');
+
+        flowerParts.forEach(part => {
+            part.addEventListener('click', (e) => {
+                e.stopPropagation();
+                // Remove active from all
+                flowerParts.forEach(p => p.classList.remove('active'));
+                // Add active to clicked
+                part.classList.add('active');
+
+                const name = part.getAttribute('data-name');
+                const desc = part.getAttribute('data-desc');
+
+                tooltip.innerHTML = `<strong>${name}</strong><br><small>${desc}</small>`;
+                tooltip.classList.add('show');
+
+                // Position tooltip
+                const rect = part.getBoundingClientRect();
+                const containerRect = flowerContainer.getBoundingClientRect();
+                
+                let left = rect.left - containerRect.left + (rect.width / 2) - 100; // center tooltip
+                let top = rect.top - containerRect.top - 80; // above
+
+                // Keep within bounds
+                if(left < 0) left = 0;
+                if(left > containerRect.width - 200) left = containerRect.width - 200;
+                if(top < 0) top = rect.bottom - containerRect.top + 10;
+
+                tooltip.style.left = `${left}px`;
+                tooltip.style.top = `${top}px`;
+            });
+        });
+
+        document.addEventListener('click', () => {
+            tooltip.classList.remove('show');
+            flowerParts.forEach(p => p.classList.remove('active'));
+        });
+
+        // --- Pollination Simulation ---
+        let isPollinating = false;
+        function startPollination() {
+            if(isPollinating) return;
+            isPollinating = true;
+            const pollen = document.getElementById('pollenGrain');
+            const arrow = document.getElementById('pollinationArrow');
+            const text = document.getElementById('pollinationText');
+
+            text.textContent = "පරාග රේණු මකුළු තුඩ වෙත ගමන් කරමින්...";
+            pollen.setAttribute('opacity', '1');
+            arrow.setAttribute('opacity', '1');
+
+            // Animate pollen moving from Flower 1 anther to Flower 2 stigma
+            // 1. Move to middle (up)
+            pollen.style.transition = 'cx 1s, cy 1s';
+            pollen.setAttribute('cx', '150');
+            pollen.setAttribute('cy', '40');
+
+            setTimeout(() => {
+                // 2. Move to Flower 2 stigma
+                pollen.setAttribute('cx', '220');
+                pollen.setAttribute('cy', '110');
+                text.textContent = "පරාග රේණු පුෂ්පය 2 හි මකුළු තුඩ වෙත ළඟා විය! (පරපරාගණය)";
+                
+                setTimeout(() => {
+                    isPollinating = false;
+                }, 1000);
+            }, 1000);
+        }
+
+        function resetPollination() {
+            if(isPollinating) return;
+            const pollen = document.getElementById('pollenGrain');
+            const arrow = document.getElementById('pollinationArrow');
+            const text = document.getElementById('pollinationText');
+            
+            pollen.style.transition = 'none';
+            pollen.setAttribute('cx', '80');
+            pollen.setAttribute('cy', '80');
+            pollen.setAttribute('opacity', '0');
+            
+            arrow.setAttribute('opacity', '0');
+            text.textContent = "";
+        }
+
+        // --- Fertilization Simulation ---
+        let fertStep = 0;
+        function nextFertStep() {
+            const tube = document.getElementById('pollenTube');
+            const sperm1 = document.getElementById('sperm1');
+            const sperm2 = document.getElementById('sperm2');
+            const egg = document.getElementById('egg');
+            const polar = document.getElementById('polarNuclei');
+            const text = document.getElementById('fertText');
+            const btn = document.getElementById('fertBtn');
+
+            if (fertStep === 0) {
+                tube.style.height = '130px'; // Grow tube
+                text.textContent = "පරාග නාළය අණ්ඩාශය දෙසට වර්ධනය වේ.";
+                fertStep++;
+            } else if (fertStep === 1) {
+                sperm1.style.top = '140px';
+                sperm1.style.left = '46%';
+                sperm1.style.opacity = '1';
+                sperm2.style.top = '140px';
+                sperm2.style.left = '54%';
+                sperm2.style.opacity = '1';
+                text.textContent = "පුරුෂ ජන්මාණු දෙකක් නාළය හරහා පහළට ගමන් කරයි.";
+                fertStep++;
+            } else if (fertStep === 2) {
+                sperm1.style.top = '160px';
+                sperm1.style.left = '50%'; // Fuse with egg
+                text.textContent = "එක් පුරුෂ ජන්මාණුවක් ඩිම්බය සමඟ එක්වී සිගෝටය සාදයි.";
+                egg.style.background = '#2ecc71'; // Fused color
+                fertStep++;
+            } else if (fertStep === 3) {
+                sperm2.style.top = '140px';
+                sperm2.style.left = '50%'; // Fuse with polar nuclei
+                text.textContent = "අනෙක් පුරුෂ ජන්මාණුව ප්‍රාථමික අන්තඃපත්‍ර න්‍යෂ්ටිය සමඟ එක්වේ. (ද්විත්ව සංසේචනය)";
+                polar.style.background = '#3498db';
+                btn.textContent = "යළි අරඹන්න";
+                fertStep = 0; // Reset counter for next click to restart
+            }
+        }
+
+        function resetFertilization() {
+            fertStep = 0;
+            document.getElementById('pollenTube').style.height = '0';
+            document.getElementById('sperm1').style.opacity = '0';
+            document.getElementById('sperm1').style.top = '20px';
+            document.getElementById('sperm1').style.left = '48%';
+            document.getElementById('sperm2').style.opacity = '0';
+            document.getElementById('sperm2').style.top = '20px';
+            document.getElementById('sperm2').style.left = '52%';
+            document.getElementById('egg').style.background = '#e74c3c';
+            document.getElementById('polarNuclei').style.background = 'transparent';
+            document.getElementById('fertText').textContent = "";
+            document.getElementById('fertBtn').textContent = "ඊළඟ පියවර";
+        }
+
+        // --- Seed Dispersal Simulation ---
+        function startDispersal() {
+            const animal = document.getElementById('animal');
+            const fruit = document.getElementById('fruit');
+            const seed = document.getElementById('droppedSeed');
+
+            // Reset
+            animal.setAttribute('cx', '100');
+            fruit.setAttribute('cx', '85');
+            seed.setAttribute('opacity', '0');
+            seed.setAttribute('cx', '150');
+            seed.setAttribute('cy', '120');
+
+            // Animate animal moving
+            animal.style.transition = 'cx 2s ease-in-out';
+            fruit.style.transition = 'cx 2s ease-in-out';
+            
+            animal.setAttribute('cx', '250');
+            fruit.setAttribute('cx', '235');
+
+            // Drop seed
+            setTimeout(() => {
+                seed.setAttribute('opacity', '1');
+                seed.style.transition = 'cy 1s ease-in';
+                seed.setAttribute('cy', '140'); // fall down
+            }, 1000);
+        }
+
+        // --- Flashcards ---
+        const flashcards = [
+            { front: "පරාගණය", back: "පරාග රේණු පරාග කෝෂයේ සිට මකුළු තුඩ වෙත ප්‍රවාහනය වීම." },
+            { front: "ද්විත්ව සංසේචනය", back: "පුරුෂ ජන්මාණු දෙකක් ක්‍රියාකාරී වන සංසේචනය. එකක් සිගෝටය සාදයි, අනෙක ප්‍රාථමික අන්තඃපත්‍ර න්‍යෂ්ටිය සමඟ එක්වේ." },
+            { front: "ස්වපරාගණය", back: "එකම පුෂ්පයක පරාග රේණු එහිම මකුළු තුඩ වෙත ගමන් කිරීම." },
+            { front: "පරපරාගණය", back: "එක් පුෂ්පයක පරාග රේණු වෙනත් පුෂ්පයක මකුළු තුඩ වෙත ගමන් කිරීම." },
+            { front: "අණ්ඩාශය (Ovary)", back: "ඩිම්බ අඩංගු වන අතර, පසුව ඵලය බවට පත් වේ." },
+            { front: "ඩිම්බය (Ovule)", back: "සංසේචනයෙන් පසු බීජය බවට පත් වේ." }
+        ];
+        let currentCard = 0;
+
+        function updateCard() {
+            document.getElementById('cardFront').textContent = flashcards[currentCard].front;
+            document.getElementById('cardBack').textContent = flashcards[currentCard].back;
+            document.getElementById('flashcardInner').classList.remove('flipped');
+        }
+
+        function flipCard() {
+            document.getElementById('flashcardInner').classList.toggle('flipped');
+        }
+
+        function nextCard() {
+            currentCard = (currentCard + 1) % flashcards.length;
+            updateCard();
+        }
+
+        function prevCard() {
+            currentCard = (currentCard - 1 + flashcards.length) % flashcards.length;
+            updateCard();
+        }
+
+        // --- Quiz Logic ---
+        const quizData = [
+            {
+                q: "පරාග රේණු පරාග කෝෂයේ සිට මකුළු තුඩ වෙත ප්‍රවාහනය වීම හඳුන්වන්නේ කුමක්ද?",
+                options: ["සංසේචනය", "පරාගණය", "අංකුරණය", "විසිරීම"],
+                answer: 1,
+                explain: "පරාගණය යනු පරාග රේණු මකුළු තුඩ වෙත ප්‍රවාහනය වීමයි."
+            },
+            {
+                q: "ද්විත්ව සංසේචනයේදී පුරුෂ ජන්මාණු කීයක් ක්‍රියාකාරී වේද?",
+                options: ["එකක්", "දෙකක්", "තුනක්", "හතරක්"],
+                answer: 1,
+                explain: "පුරුෂ ජන්මාණු දෙකක් ක්‍රියාකාරී වේ. එකක් සිගෝටයත්, අනෙක අන්තඃපත්‍ර න්‍යෂ්ටියත් සාදයි."
+            },
+            {
+                q: "සංසේචනයෙන් පසු අණ්ඩාශය (Ovary) කුමක් බවට පත් වේද?",
+                options: ["බීජය", "ඵලය", "පුෂ්පය", "මකුළු තුඩ"],
+                answer: 1,
+                explain: "අණ්ඩාශය ඵලය බවටත්, ඩිම්බය බීජය බවටත් පත් වේ."
+            },
+            {
+                q: "සුළං මගින් බීජ විසිරීම සඳහා බීජවල තිබිය යුතු ලක්ෂණය කුමක්ද?",
+                options: ["බර වීම", "සැහැල්ලු වීම", "ජලයේ පාවීම", "ඇලෙන සුළු වීම"],
+                answer: 1,
+                explain: "සුළං මගින් පැතිරෙන බීජ සැහැල්ලු වේ."
+            }
+        ];
+
+        let currentQuiz = 0;
+        let quizInitialized = false;
+
+        function initQuiz() {
+            quizInitialized = true;
+            loadQuiz();
+        }
+
+        function loadQuiz() {
+            if (currentQuiz >= quizData.length) {
+                document.getElementById('quizQuestion').textContent = "සියලුම ප්‍රශ්න සම්පූර්ණයි! 🎉";
+                document.getElementById('quizOptions').innerHTML = "";
+                document.getElementById('nextQuizBtn').style.display = 'none';
+                document.getElementById('quizFeedback').textContent = "";
+                return;
+            }
+
+            const data = quizData[currentQuiz];
+            document.getElementById('quizQuestion').textContent = data.q;
+            const optionsDiv = document.getElementById('quizOptions');
+            optionsDiv.innerHTML = "";
+            document.getElementById('quizFeedback').textContent = "";
+            document.getElementById('nextQuizBtn').style.display = 'none';
+
+            data.options.forEach((opt, index) => {
+                const btn = document.createElement('button');
+                btn.className = 'quiz-option';
+                btn.textContent = opt;
+                btn.onclick = () => checkAnswer(index, btn);
+                optionsDiv.appendChild(btn);
+            });
+        }
+
+        function checkAnswer(selected, btn) {
+            const data = quizData[currentQuiz];
+            const options = document.querySelectorAll('.quiz-option');
+            
+            // Disable all buttons
+            options.forEach(opt => opt.onclick = null);
+
+            if (selected === data.answer) {
+                btn.classList.add('correct');
+                document.getElementById('quizFeedback').textContent = "නිවැරදියි! " + data.explain;
+                document.getElementById('quizFeedback').style.color = "var(--primary)";
+            } else {
+                btn.classList.add('wrong');
+                options[data.answer].classList.add('correct');
+                document.getElementById('quizFeedback').textContent = "වැරදියි. " + data.explain;
+                document.getElementById('quizFeedback').style.color = "#e74c3c";
+            }
+
+            document.getElementById('nextQuizBtn').style.display = 'inline-block';
+        }
+
+        function nextQuiz() {
+            currentQuiz++;
+            loadQuiz();
+        }
+
+        // Initialize first card
+        updateCard();
+
+    </script>
+<!-- ========== BIO HUB FLOATING NAV — DO NOT REMOVE ========== -->
+<style>
+.biohub-nav{
+  position:fixed;
+  left:50%;
+  transform:translateX(-50%);
+  bottom:calc(88px + env(safe-area-inset-bottom, 0px));
+  z-index:9999;
+  display:flex;
+  align-items:center;
+  gap:4px;
+  padding:6px;
+  background:rgba(15,40,24,.92);
+  backdrop-filter:blur(14px) saturate(180%);
+  -webkit-backdrop-filter:blur(14px) saturate(180%);
+  border:1px solid rgba(110,231,183,.25);
+  border-radius:999px;
+  box-shadow:0 8px 28px rgba(0,0,0,.35), 0 2px 8px rgba(0,0,0,.2);
+  font-family:'Noto Sans Sinhala',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+  -webkit-tap-highlight-color:transparent;
+}
+.biohub-nav a,
+.biohub-nav span.biohub-btn{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  width:44px;
+  height:44px;
+  border-radius:50%;
+  color:#ecfdf5;
+  background:transparent;
+  border:none;
+  font-size:18px;
+  line-height:1;
+  cursor:pointer;
+  text-decoration:none;
+  transition:background .15s, transform .1s;
+  -webkit-tap-highlight-color:transparent;
+}
+.biohub-nav a:hover{background:rgba(16,185,129,.28);color:#fff}
+.biohub-nav a:active,
+.biohub-nav span.biohub-btn:active{transform:scale(.92)}
+.biohub-nav a.biohub-home{background:rgba(16,185,129,.35);margin:0 2px}
+.biohub-nav a.biohub-home:hover{background:rgba(16,185,129,.55)}
+.biohub-nav .biohub-disabled{
+  opacity:.32;
+  cursor:not-allowed;
+  pointer-events:none;
+}
+@media (max-width:380px){
+  .biohub-nav a,.biohub-nav span.biohub-btn{width:40px;height:40px;font-size:16px}
+}
+@media (max-height:500px){
+  .biohub-nav{bottom:calc(20px + env(safe-area-inset-bottom, 0px))}
+}
+</style>
+<nav class="biohub-nav" aria-label="පාඩම් සංචාලනය">
+  <!-- PREV (see per-file table) -->
+  <a href="11.html" class="biohub-prev" aria-label="පෙර පාඩම" title="පෙර පාඩම">◀</a>
+  <!-- HOME -->
+  <a href="index.html" class="biohub-home" aria-label="මුල් පිටුව" title="මුල් පිටුව">🏠</a>
+  <!-- NEXT (see per-file table) -->
+  <a href="13,14,15.html" class="biohub-next" aria-label="ඊළඟ පාඩම" title="ඊළඟ පාඩම">▶</a>
+</nav>
+<!-- ========== /BIO HUB FLOATING NAV ========== -->
+</body>
+</html>
